@@ -6,10 +6,16 @@ Construir un proyecto pequeño pero completo de ingeniería de machine learning 
 
 ## Alcance vigente
 
-- Trabajar únicamente en local hasta que el usuario autorice expresamente publicar o desplegar.
-- No crear repositorios remotos, hacer push, modificar el VPS ni configurar dominios.
-- No añadir Docker, WSL, servicios cloud, bases de datos, autenticación, MLflow, DVC, Airflow, Kubernetes, LLM ni GPU durante el MVP local.
-- Implementar un hito cada vez y verificarlo antes de continuar.
+- M0–M5 están cerrados. El usuario autorizó expresamente el 2026-08-19 preparar y ejecutar la
+  publicación en GitHub y el despliegue demostrativo en su VPS.
+- El hito vigente es M6: licencia, presentación pública, CI multiplataforma, contenedor mínimo,
+  auditoría, publicación y demo. Verificar cada puerta antes de avanzar a la siguiente.
+- El modelo, las features, el split, el umbral y el resultado final están congelados. No reabrir,
+  recalcular ni reutilizar el holdout para mejorar cifras o tomar decisiones de release.
+- Docker se permite solo como envoltorio reproducible de inferencia. No incorporar bases de datos,
+  autenticación, MLflow, DVC, Airflow, Kubernetes, LLM ni GPU a este proyecto.
+- La demo pública debe ser educativa, stateless y de superficie mínima; no debe almacenar inputs,
+  incluir datasets/particiones ni presentar el sistema como validado para producción industrial.
 
 ## Descripción honesta
 

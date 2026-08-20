@@ -1,0 +1,567 @@
+{
+  "feature_columns": [
+    "Type",
+    "Air temperature [K]",
+    "Process temperature [K]",
+    "Rotational speed [rpm]",
+    "Torque [Nm]",
+    "Tool wear [min]"
+  ],
+  "figures": [
+    "figures/01_target_prevalence.png",
+    "figures/02_type_support_and_rate.png",
+    "figures/03_numeric_ecdf_by_target.png",
+    "figures/04_spearman_correlation.png",
+    "figures/05_joint_relationships.png",
+    "figures/06_positive_rate_by_quintile.png"
+  ],
+  "numeric_summary": {
+    "Air temperature [K]": {
+      "by_target": {
+        "failure": {
+          "max": 304.4,
+          "median": 301.6,
+          "min": 295.7,
+          "q1": 299.2,
+          "q3": 302.5,
+          "rows": 271
+        },
+        "no_failure": {
+          "max": 304.5,
+          "median": 300.0,
+          "min": 295.3,
+          "q1": 298.3,
+          "q3": 301.4,
+          "rows": 7729
+        }
+      },
+      "overall": {
+        "max": 304.5,
+        "median": 300.1,
+        "min": 295.3,
+        "q1": 298.3,
+        "q3": 301.5
+      }
+    },
+    "Process temperature [K]": {
+      "by_target": {
+        "failure": {
+          "max": 313.7,
+          "median": 310.5,
+          "min": 306.2,
+          "q1": 309.65,
+          "q3": 311.2,
+          "rows": 271
+        },
+        "no_failure": {
+          "max": 313.8,
+          "median": 310.0,
+          "min": 305.7,
+          "q1": 308.8,
+          "q3": 311.0,
+          "rows": 7729
+        }
+      },
+      "overall": {
+        "max": 313.8,
+        "median": 310.1,
+        "min": 305.7,
+        "q1": 308.8,
+        "q3": 311.1
+      }
+    },
+    "Rotational speed [rpm]": {
+      "by_target": {
+        "failure": {
+          "max": 2886.0,
+          "median": 1366.0,
+          "min": 1181.0,
+          "q1": 1326.0,
+          "q3": 1436.5,
+          "rows": 271
+        },
+        "no_failure": {
+          "max": 2695.0,
+          "median": 1507.0,
+          "min": 1168.0,
+          "q1": 1428.0,
+          "q3": 1616.0,
+          "rows": 7729
+        }
+      },
+      "overall": {
+        "max": 2886.0,
+        "median": 1503.0,
+        "min": 1168.0,
+        "q1": 1422.0,
+        "q3": 1613.0
+      }
+    },
+    "Tool wear [min]": {
+      "by_target": {
+        "failure": {
+          "max": 253.0,
+          "median": 166.0,
+          "min": 0.0,
+          "q1": 74.0,
+          "q3": 208.0,
+          "rows": 271
+        },
+        "no_failure": {
+          "max": 244.0,
+          "median": 106.0,
+          "min": 0.0,
+          "q1": 52.0,
+          "q3": 161.0,
+          "rows": 7729
+        }
+      },
+      "overall": {
+        "max": 253.0,
+        "median": 107.0,
+        "min": 0.0,
+        "q1": 53.0,
+        "q3": 163.0
+      }
+    },
+    "Torque [Nm]": {
+      "by_target": {
+        "failure": {
+          "max": 76.6,
+          "median": 53.2,
+          "min": 3.8,
+          "q1": 45.8,
+          "q3": 61.4,
+          "rows": 271
+        },
+        "no_failure": {
+          "max": 68.9,
+          "median": 39.8,
+          "min": 12.6,
+          "q1": 33.0,
+          "q3": 46.4,
+          "rows": 7729
+        }
+      },
+      "overall": {
+        "max": 76.6,
+        "median": 40.1,
+        "min": 3.8,
+        "q1": 33.2,
+        "q3": 46.8
+      }
+    }
+  },
+  "positive_rate_by_quintile": {
+    "Air temperature [K]": [
+      {
+        "lower_bound": 295.3,
+        "lower_inclusive": true,
+        "positive": 32,
+        "positive_rate": 0.018626309662398137,
+        "quintile": 1,
+        "rows": 1718,
+        "upper_bound": 298.1,
+        "upper_inclusive": true,
+        "wilson_95_high": 0.02617614621708882,
+        "wilson_95_low": 0.013224458344910376
+      },
+      {
+        "lower_bound": 298.1,
+        "lower_inclusive": false,
+        "positive": 40,
+        "positive_rate": 0.02631578947368421,
+        "quintile": 2,
+        "rows": 1520,
+        "upper_bound": 299.2,
+        "upper_inclusive": true,
+        "wilson_95_high": 0.035635349992327855,
+        "wilson_95_low": 0.01938454183894909
+      },
+      {
+        "lower_bound": 299.2,
+        "lower_inclusive": false,
+        "positive": 36,
+        "positive_rate": 0.02155688622754491,
+        "quintile": 3,
+        "rows": 1670,
+        "upper_bound": 300.6,
+        "upper_inclusive": true,
+        "wilson_95_high": 0.029698671840939238,
+        "wilson_95_low": 0.015611230840413652
+      },
+      {
+        "lower_bound": 300.6,
+        "lower_inclusive": false,
+        "positive": 49,
+        "positive_rate": 0.032579787234042555,
+        "quintile": 4,
+        "rows": 1504,
+        "upper_bound": 301.9,
+        "upper_inclusive": true,
+        "wilson_95_high": 0.04281050995983658,
+        "wilson_95_low": 0.024730802071878166
+      },
+      {
+        "lower_bound": 301.9,
+        "lower_inclusive": false,
+        "positive": 114,
+        "positive_rate": 0.07178841309823678,
+        "quintile": 5,
+        "rows": 1588,
+        "upper_bound": 304.5,
+        "upper_inclusive": true,
+        "wilson_95_high": 0.08554495254613328,
+        "wilson_95_low": 0.06009868435844314
+      }
+    ],
+    "Process temperature [K]": [
+      {
+        "lower_bound": 305.7,
+        "lower_inclusive": true,
+        "positive": 40,
+        "positive_rate": 0.02308136180034622,
+        "quintile": 1,
+        "rows": 1733,
+        "upper_bound": 308.6,
+        "upper_inclusive": true,
+        "wilson_95_high": 0.03127670528585833,
+        "wilson_95_low": 0.0169957451206727
+      },
+      {
+        "lower_bound": 308.6,
+        "lower_inclusive": false,
+        "positive": 28,
+        "positive_rate": 0.0170316301703163,
+        "quintile": 2,
+        "rows": 1644,
+        "upper_bound": 309.6,
+        "upper_inclusive": true,
+        "wilson_95_high": 0.024505577457152032,
+        "wilson_95_low": 0.011809563512708177
+      },
+      {
+        "lower_bound": 309.6,
+        "lower_inclusive": false,
+        "positive": 74,
+        "positive_rate": 0.04827136333985649,
+        "quintile": 3,
+        "rows": 1533,
+        "upper_bound": 310.5,
+        "upper_inclusive": true,
+        "wilson_95_high": 0.060176113967155824,
+        "wilson_95_low": 0.038624959611279326
+      },
+      {
+        "lower_bound": 310.5,
+        "lower_inclusive": false,
+        "positive": 65,
+        "positive_rate": 0.0417201540436457,
+        "quintile": 4,
+        "rows": 1558,
+        "upper_bound": 311.3,
+        "upper_inclusive": true,
+        "wilson_95_high": 0.05282768783824275,
+        "wilson_95_low": 0.032867045865866557
+      },
+      {
+        "lower_bound": 311.3,
+        "lower_inclusive": false,
+        "positive": 64,
+        "positive_rate": 0.04177545691906005,
+        "quintile": 5,
+        "rows": 1532,
+        "upper_bound": 313.8,
+        "upper_inclusive": true,
+        "wilson_95_high": 0.05299342443976841,
+        "wilson_95_low": 0.03284980314307606
+      }
+    ],
+    "Rotational speed [rpm]": [
+      {
+        "lower_bound": 1168.0,
+        "lower_inclusive": true,
+        "positive": 189,
+        "positive_rate": 0.118125,
+        "quintile": 1,
+        "rows": 1600,
+        "upper_bound": 1404.8000000000002,
+        "upper_inclusive": true,
+        "wilson_95_high": 0.13486224222350043,
+        "wilson_95_low": 0.103217129205698
+      },
+      {
+        "lower_bound": 1404.8000000000002,
+        "lower_inclusive": false,
+        "positive": 27,
+        "positive_rate": 0.016822429906542057,
+        "quintile": 2,
+        "rows": 1605,
+        "upper_bound": 1469.0,
+        "upper_inclusive": true,
+        "wilson_95_high": 0.024365533714884046,
+        "wilson_95_low": 0.011586793723690394
+      },
+      {
+        "lower_bound": 1469.0,
+        "lower_inclusive": false,
+        "positive": 11,
+        "positive_rate": 0.0068879148403256105,
+        "quintile": 3,
+        "rows": 1597,
+        "upper_bound": 1541.0,
+        "upper_inclusive": true,
+        "wilson_95_high": 0.012292111107174056,
+        "wilson_95_low": 0.0038503979330707754
+      },
+      {
+        "lower_bound": 1541.0,
+        "lower_inclusive": false,
+        "positive": 8,
+        "positive_rate": 0.004990642545227698,
+        "quintile": 4,
+        "rows": 1603,
+        "upper_bound": 1645.0,
+        "upper_inclusive": true,
+        "wilson_95_high": 0.009817249034279728,
+        "wilson_95_low": 0.0025309500663659107
+      },
+      {
+        "lower_bound": 1645.0,
+        "lower_inclusive": false,
+        "positive": 36,
+        "positive_rate": 0.0225705329153605,
+        "quintile": 5,
+        "rows": 1595,
+        "upper_bound": 2886.0,
+        "upper_inclusive": true,
+        "wilson_95_high": 0.03108808643237696,
+        "wilson_95_low": 0.016347256756091486
+      }
+    ],
+    "Tool wear [min]": [
+      {
+        "lower_bound": 0.0,
+        "lower_inclusive": true,
+        "positive": 43,
+        "positive_rate": 0.026348039215686275,
+        "quintile": 1,
+        "rows": 1632,
+        "upper_bound": 42.0,
+        "upper_inclusive": true,
+        "wilson_95_high": 0.035301439871089337,
+        "wilson_95_low": 0.01961928105934794
+      },
+      {
+        "lower_bound": 42.0,
+        "lower_inclusive": false,
+        "positive": 37,
+        "positive_rate": 0.023125,
+        "quintile": 2,
+        "rows": 1600,
+        "upper_bound": 86.0,
+        "upper_inclusive": true,
+        "wilson_95_high": 0.0317112880921601,
+        "wilson_95_low": 0.016823180648393825
+      },
+      {
+        "lower_bound": 86.0,
+        "lower_inclusive": false,
+        "positive": 30,
+        "positive_rate": 0.018796992481203006,
+        "quintile": 3,
+        "rows": 1596,
+        "upper_bound": 129.0,
+        "upper_inclusive": true,
+        "wilson_95_high": 0.02670693796837302,
+        "wilson_95_low": 0.013198012621735394
+      },
+      {
+        "lower_bound": 129.0,
+        "lower_inclusive": false,
+        "positive": 35,
+        "positive_rate": 0.021806853582554516,
+        "quintile": 4,
+        "rows": 1605,
+        "upper_bound": 174.0,
+        "upper_inclusive": true,
+        "wilson_95_high": 0.030176326948919686,
+        "wilson_95_low": 0.015721044178231672
+      },
+      {
+        "lower_bound": 174.0,
+        "lower_inclusive": false,
+        "positive": 126,
+        "positive_rate": 0.08040842373962986,
+        "quintile": 5,
+        "rows": 1567,
+        "upper_bound": 253.0,
+        "upper_inclusive": true,
+        "wilson_95_high": 0.09492105218763604,
+        "wilson_95_low": 0.0679480747822634
+      }
+    ],
+    "Torque [Nm]": [
+      {
+        "lower_bound": 3.8,
+        "lower_inclusive": true,
+        "positive": 37,
+        "positive_rate": 0.022896039603960396,
+        "quintile": 1,
+        "rows": 1616,
+        "upper_bound": 31.5,
+        "upper_inclusive": true,
+        "wilson_95_high": 0.03139890090679973,
+        "wilson_95_low": 0.016656168181437038
+      },
+      {
+        "lower_bound": 31.5,
+        "lower_inclusive": false,
+        "positive": 8,
+        "positive_rate": 0.004965859714463066,
+        "quintile": 2,
+        "rows": 1611,
+        "upper_bound": 37.5,
+        "upper_inclusive": true,
+        "wilson_95_high": 0.009768654213098367,
+        "wilson_95_low": 0.0025183713378906596
+      },
+      {
+        "lower_bound": 37.5,
+        "lower_inclusive": false,
+        "positive": 10,
+        "positive_rate": 0.006273525721455458,
+        "quintile": 3,
+        "rows": 1594,
+        "upper_bound": 42.7,
+        "upper_inclusive": true,
+        "wilson_95_high": 0.01150994929407748,
+        "wilson_95_low": 0.0034111793084072714
+      },
+      {
+        "lower_bound": 42.7,
+        "lower_inclusive": false,
+        "positive": 36,
+        "positive_rate": 0.022613065326633167,
+        "quintile": 4,
+        "rows": 1592,
+        "upper_bound": 48.4,
+        "upper_inclusive": true,
+        "wilson_95_high": 0.03114637209060945,
+        "wilson_95_low": 0.016378144127040223
+      },
+      {
+        "lower_bound": 48.4,
+        "lower_inclusive": false,
+        "positive": 180,
+        "positive_rate": 0.11342155009451796,
+        "quintile": 5,
+        "rows": 1587,
+        "upper_bound": 76.6,
+        "upper_inclusive": true,
+        "wilson_95_high": 0.12996593012367513,
+        "wilson_95_low": 0.09874420669950074
+      }
+    ]
+  },
+  "protocol": {
+    "cv_folds": 5,
+    "holdout_profiled": false,
+    "pooled_oof_average_precision_role": "diagnostic_only",
+    "primary_metric": "average_precision",
+    "random_seed": 42,
+    "secondary_metric": "roc_auc",
+    "threshold_decision_rule": "score >= threshold",
+    "threshold_score": "predict_proba[:, 1]",
+    "threshold_strategy": "maximize_f1_on_out_of_fold_training_predictions",
+    "tie_tolerance": 1e-12
+  },
+  "quality": {
+    "duplicate_feature_rows": 0,
+    "missing_cells": 0
+  },
+  "schema_version": 2,
+  "scope": "training_only",
+  "source": {
+    "filename": "ai4i2020.csv",
+    "rows": 10000,
+    "sha256": "dc6630cd9b1f0f853922fad78a1b6436570d3f1ec863f1dd5c4340ac56bc8a8e"
+  },
+  "spearman_correlations": {
+    "Air temperature [K]": {
+      "Air temperature [K]": 1.0,
+      "Process temperature [K]": 0.8643308881844738,
+      "Rotational speed [rpm]": 0.012930476105926781,
+      "Tool wear [min]": 0.009679535525386286,
+      "Torque [Nm]": -0.011768830621057986
+    },
+    "Process temperature [K]": {
+      "Air temperature [K]": 0.8643308881844738,
+      "Process temperature [K]": 1.0,
+      "Rotational speed [rpm]": 0.01211562772317859,
+      "Tool wear [min]": 0.012655888022320028,
+      "Torque [Nm]": -0.01097747829094684
+    },
+    "Rotational speed [rpm]": {
+      "Air temperature [K]": 0.012930476105926781,
+      "Process temperature [K]": 0.01211562772317859,
+      "Rotational speed [rpm]": 1.0,
+      "Tool wear [min]": 0.010113283699614502,
+      "Torque [Nm]": -0.9168383225459075
+    },
+    "Tool wear [min]": {
+      "Air temperature [K]": 0.009679535525386286,
+      "Process temperature [K]": 0.012655888022320028,
+      "Rotational speed [rpm]": 0.010113283699614502,
+      "Tool wear [min]": 1.0,
+      "Torque [Nm]": -0.0105904723787489
+    },
+    "Torque [Nm]": {
+      "Air temperature [K]": -0.011768830621057986,
+      "Process temperature [K]": -0.01097747829094684,
+      "Rotational speed [rpm]": -0.9168383225459075,
+      "Tool wear [min]": -0.0105904723787489,
+      "Torque [Nm]": 1.0
+    }
+  },
+  "split": {
+    "holdout_fraction": 0.2,
+    "method": "sklearn.model_selection.train_test_split",
+    "random_seed": 42,
+    "rows_sorted_within_partitions": true,
+    "stratified_by": "Machine failure"
+  },
+  "target": {
+    "negative": 7729,
+    "positive": 271,
+    "prevalence": 0.033875
+  },
+  "target_column": "Machine failure",
+  "training_rows": 8000,
+  "type_summary": [
+    {
+      "positive": 197,
+      "positive_rate": 0.04078674948240166,
+      "rows": 4830,
+      "type": "L",
+      "wilson_95_high": 0.04673968463462874,
+      "wilson_95_low": 0.0355637156257356
+    },
+    {
+      "positive": 58,
+      "positive_rate": 0.024359512809743807,
+      "rows": 2381,
+      "type": "M",
+      "wilson_95_high": 0.031360313267499204,
+      "wilson_95_low": 0.01889107449762533
+    },
+    {
+      "positive": 16,
+      "positive_rate": 0.020278833967046894,
+      "rows": 789,
+      "type": "H",
+      "wilson_95_high": 0.03268633587265569,
+      "wilson_95_low": 0.01252017195942577
+    }
+  ]
+}

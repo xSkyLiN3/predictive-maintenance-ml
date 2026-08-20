@@ -1,0 +1,49 @@
+{
+  "holdout": {
+    "access_policy": "Do not inspect until the final M3 evaluation.",
+    "columns": [
+      "Type",
+      "Air temperature [K]",
+      "Process temperature [K]",
+      "Rotational speed [rpm]",
+      "Torque [Nm]",
+      "Tool wear [min]",
+      "Machine failure"
+    ],
+    "filename": "holdout.csv",
+    "rows": 2000,
+    "sha256": "50a1c9c07a57afbc6f34dd112852b61a44f81b6a83341241dd1bc7079f3ac4b7"
+  },
+  "schema_version": 1,
+  "source": {
+    "filename": "ai4i2020.csv",
+    "rows": 10000,
+    "sha256": "dc6630cd9b1f0f853922fad78a1b6436570d3f1ec863f1dd5c4340ac56bc8a8e"
+  },
+  "split": {
+    "holdout_fraction": 0.2,
+    "method": "sklearn.model_selection.train_test_split",
+    "random_seed": 42,
+    "rows_sorted_within_partitions": true,
+    "stratified_by": "Machine failure"
+  },
+  "training": {
+    "columns": [
+      "Type",
+      "Air temperature [K]",
+      "Process temperature [K]",
+      "Rotational speed [rpm]",
+      "Torque [Nm]",
+      "Tool wear [min]",
+      "Machine failure"
+    ],
+    "filename": "train.csv",
+    "rows": 8000,
+    "sha256": "3b114192f249951632f4c700c07b5edf4306fcff89ac90abe556f15687cf803a"
+  },
+  "versions": {
+    "pandas": "3.0.5",
+    "python": "3.12.0",
+    "scikit_learn": "1.9.0"
+  }
+}

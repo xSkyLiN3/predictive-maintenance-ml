@@ -1,0 +1,166 @@
+{
+  "artifact": {
+    "directory": "b15bab7b54bc2e1f",
+    "pipeline_filename": "pipeline.joblib",
+    "pipeline_sha256": "8f383492fff0a1199a7f62289651a29da39f4c6a149762aa9b75c099efc1568a"
+  },
+  "baseline_gate_passed": true,
+  "configuration": {
+    "candidates": {
+      "dummy": {
+        "strategy": "prior"
+      },
+      "logistic_regression": {
+        "C": 1.0,
+        "class_weight": "balanced",
+        "l1_ratio": 0.0,
+        "max_iter": 1000,
+        "random_state": 42,
+        "solver": "liblinear"
+      },
+      "random_forest": {
+        "bootstrap": true,
+        "class_weight": "balanced",
+        "criterion": "gini",
+        "max_depth": 8,
+        "max_features": "sqrt",
+        "min_samples_leaf": 5,
+        "min_samples_split": 10,
+        "n_estimators": 300,
+        "n_jobs": 1,
+        "random_state": 42
+      }
+    },
+    "cv": {
+      "class": "StratifiedKFold",
+      "n_splits": 5,
+      "primary_metric": "average_precision",
+      "random_state": 42,
+      "secondary_metric": "roc_auc",
+      "shuffle": true,
+      "standard_deviation_ddof": 0
+    },
+    "features": [
+      "Type",
+      "Air temperature [K]",
+      "Process temperature [K]",
+      "Rotational speed [rpm]",
+      "Torque [Nm]",
+      "Tool wear [min]"
+    ],
+    "preprocessing": {
+      "categorical": {
+        "categories": [
+          [
+            "L",
+            "M",
+            "H"
+          ]
+        ],
+        "columns": [
+          "Type"
+        ],
+        "handle_unknown": "error",
+        "sparse_output": false,
+        "transformer": "OneHotEncoder"
+      },
+      "numeric": {
+        "columns": [
+          "Air temperature [K]",
+          "Process temperature [K]",
+          "Rotational speed [rpm]",
+          "Torque [Nm]",
+          "Tool wear [min]"
+        ],
+        "transformer": "StandardScaler"
+      },
+      "remainder": "drop"
+    },
+    "selection": {
+      "candidate_tie_tolerance": 1e-12,
+      "candidate_tie_winner": "logistic_regression",
+      "dummy_gate": "selected_mean_ap > dummy_mean_ap"
+    },
+    "target": "Machine failure",
+    "threshold": {
+      "decision_rule": "score >= threshold",
+      "score": "predict_proba[:, 1]",
+      "strategy": "maximize_f1_on_out_of_fold_training_predictions",
+      "tie_breakers": [
+        "minimum_abs_precision_minus_recall",
+        "lower_threshold"
+      ],
+      "tie_tolerance": 1e-12
+    }
+  },
+  "configuration_sha256": "d880c8048fcb3c09395e38702fd9ca04b1d6e3e0b53fd882e7dd728bdb1b9065",
+  "dummy_mean_average_precision": 0.033875,
+  "fold_plan_sha256": "2c24c5165e54481a6eb35ac08f579c78601ea191eee8a0d0a76537b034eddf48",
+  "holdout": {
+    "access_policy": "Do not inspect until the final M3 evaluation.",
+    "columns": [
+      "Type",
+      "Air temperature [K]",
+      "Process temperature [K]",
+      "Rotational speed [rpm]",
+      "Torque [Nm]",
+      "Tool wear [min]",
+      "Machine failure"
+    ],
+    "filename": "holdout.csv",
+    "rows": 2000,
+    "sha256": "50a1c9c07a57afbc6f34dd112852b61a44f81b6a83341241dd1bc7079f3ac4b7"
+  },
+  "holdout_accessed_during_selection": false,
+  "run_id": "b15bab7b54bc2e1f",
+  "schema_version": 1,
+  "selected_mean_average_precision": 0.6438124425485383,
+  "selected_model": "random_forest",
+  "selection_receipts": {
+    "cv_figure_filename": "figures/01_cv_average_precision.png",
+    "cv_figure_sha256": "66910cc58d584d022d24f30a11b6d5cee416b8f1555ddad63cadbe4a17230bf4",
+    "cv_results_filename": "cv_results.json",
+    "cv_results_sha256": "ce9f62b79834c0da8d6a44311ae3714c18922820fc33f61a8ca9b3ab9f9e12f2",
+    "oof_figure_filename": "figures/02_oof_precision_recall.png",
+    "oof_figure_sha256": "f6dff3af775046a40fad32fc9330340b0dc6ec6abc3f0803def3c70cea327f4e",
+    "selection_report_filename": "SELECTION_REPORT.md",
+    "selection_report_sha256": "a236ebd307a6f4d54527ef617ccfddc6d2ca94073f00f3b32174c27b9118e177",
+    "threshold_selection_filename": "threshold_selection.json",
+    "threshold_selection_sha256": "9790eedc834f5624029a24c2e64a544392c171995bde51d33f89cf7cbe70d412"
+  },
+  "source": {
+    "filename": "ai4i2020.csv",
+    "rows": 10000,
+    "sha256": "dc6630cd9b1f0f853922fad78a1b6436570d3f1ec863f1dd5c4340ac56bc8a8e"
+  },
+  "split": {
+    "holdout_fraction": 0.2,
+    "method": "sklearn.model_selection.train_test_split",
+    "random_seed": 42,
+    "rows_sorted_within_partitions": true,
+    "stratified_by": "Machine failure"
+  },
+  "threshold": 0.6965799216184142,
+  "training": {
+    "columns": [
+      "Type",
+      "Air temperature [K]",
+      "Process temperature [K]",
+      "Rotational speed [rpm]",
+      "Torque [Nm]",
+      "Tool wear [min]",
+      "Machine failure"
+    ],
+    "filename": "train.csv",
+    "rows": 8000,
+    "sha256": "3b114192f249951632f4c700c07b5edf4306fcff89ac90abe556f15687cf803a"
+  },
+  "versions": {
+    "joblib": "1.5.3",
+    "matplotlib": "3.11.1",
+    "numpy": "2.5.2",
+    "pandas": "3.0.5",
+    "python": "3.12.0",
+    "scikit_learn": "1.9.0"
+  }
+}

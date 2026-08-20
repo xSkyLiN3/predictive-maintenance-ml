@@ -1,0 +1,32 @@
+{
+  "decision_rule": "score >= threshold",
+  "oof_metrics": {
+    "average_precision_pooled_diagnostic": 0.6332800463156792,
+    "confusion_matrix": [
+      [
+        7593,
+        136
+      ],
+      [
+        77,
+        194
+      ]
+    ],
+    "f1": 0.6455906821963394,
+    "fn": 77,
+    "fp": 136,
+    "precision": 0.5878787878787879,
+    "predicted_positive": 330,
+    "recall": 0.7158671586715867,
+    "roc_auc_pooled_diagnostic": 0.968384753067352,
+    "tn": 7593,
+    "tp": 194
+  },
+  "run_id": "b15bab7b54bc2e1f",
+  "schema_version": 1,
+  "scope": "out_of_fold_training_selection",
+  "score": "predict_proba[:, 1]",
+  "selected_model": "random_forest",
+  "strategy": "maximize_f1_on_out_of_fold_training_predictions",
+  "value": 0.6965799216184142
+}

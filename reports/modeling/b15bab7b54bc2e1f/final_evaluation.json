@@ -1,0 +1,56 @@
+{
+  "holdout": {
+    "application_reads_for_evaluation": 1,
+    "filename": "holdout.csv",
+    "rows": 2000,
+    "sha256": "50a1c9c07a57afbc6f34dd112852b61a44f81b6a83341241dd1bc7079f3ac4b7"
+  },
+  "metrics": {
+    "accuracy": 0.9735,
+    "average_precision": 0.6495379423468456,
+    "confusion_matrix": [
+      [
+        1897,
+        35
+      ],
+      [
+        18,
+        50
+      ]
+    ],
+    "decision_rule": "score >= threshold",
+    "f1": 0.6535947712418301,
+    "fn": 18,
+    "fp": 35,
+    "majority_class_accuracy": 0.966,
+    "precision": 0.5882352941176471,
+    "predicted_positive": 85,
+    "recall": 0.7352941176470589,
+    "roc_auc": 0.9654579222993546,
+    "target_prevalence": 0.034,
+    "threshold": 0.6965799216184142,
+    "tn": 1897,
+    "tp": 50
+  },
+  "outputs": {
+    "confusion_figure_filename": "figures/03_holdout_confusion_matrix.png",
+    "confusion_figure_sha256": "324a1b06b5ea2926fc0c79c7e562b10091f2c5cd35c94a43f131081c7db4dfd5",
+    "report_filename": "M3_REPORT.md",
+    "report_sha256": "24068a9147848cd8f9beed6d8b508297ee6f72e9e0a6ee6d2fadf10d0e275bff"
+  },
+  "pipeline_sha256": "8f383492fff0a1199a7f62289651a29da39f4c6a149762aa9b75c099efc1568a",
+  "receipt": "final_holdout_evaluation_complete",
+  "run_id": "b15bab7b54bc2e1f",
+  "schema_version": 1,
+  "score": "predict_proba[:, 1] (not assessed for calibration)",
+  "selected_model": "random_forest",
+  "selection_receipts": {
+    "cv_figure_sha256": "66910cc58d584d022d24f30a11b6d5cee416b8f1555ddad63cadbe4a17230bf4",
+    "cv_results_sha256": "ce9f62b79834c0da8d6a44311ae3714c18922820fc33f61a8ca9b3ab9f9e12f2",
+    "oof_figure_sha256": "f6dff3af775046a40fad32fc9330340b0dc6ec6abc3f0803def3c70cea327f4e",
+    "run_manifest_sha256": "01c3c72a75df64922470ee163166fbb2437fad0b6c279ca54f0b5687ccb02a2a",
+    "selection_report_sha256": "a236ebd307a6f4d54527ef617ccfddc6d2ca94073f00f3b32174c27b9118e177",
+    "threshold_selection_sha256": "9790eedc834f5624029a24c2e64a544392c171995bde51d33f89cf7cbe70d412"
+  },
+  "threshold": 0.6965799216184142
+}

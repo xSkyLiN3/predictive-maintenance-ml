@@ -1,0 +1,15 @@
+{
+  "final_receipt_sha256": "f3c947fe38fca0053c3f14e75c01681e5cef1dbcbc09e57fddb15409fd1e26c8",
+  "holdout_sha256": "50a1c9c07a57afbc6f34dd112852b61a44f81b6a83341241dd1bc7079f3ac4b7",
+  "run_id": "b15bab7b54bc2e1f",
+  "schema_version": 1,
+  "selection_receipts": {
+    "cv_figure_sha256": "66910cc58d584d022d24f30a11b6d5cee416b8f1555ddad63cadbe4a17230bf4",
+    "cv_results_sha256": "ce9f62b79834c0da8d6a44311ae3714c18922820fc33f61a8ca9b3ab9f9e12f2",
+    "oof_figure_sha256": "f6dff3af775046a40fad32fc9330340b0dc6ec6abc3f0803def3c70cea327f4e",
+    "run_manifest_sha256": "01c3c72a75df64922470ee163166fbb2437fad0b6c279ca54f0b5687ccb02a2a",
+    "selection_report_sha256": "a236ebd307a6f4d54527ef617ccfddc6d2ca94073f00f3b32174c27b9118e177",
+    "threshold_selection_sha256": "9790eedc834f5624029a24c2e64a544392c171995bde51d33f89cf7cbe70d412"
+  },
+  "status": "holdout_evaluation_complete"
+}

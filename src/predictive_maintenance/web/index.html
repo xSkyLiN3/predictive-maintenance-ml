@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="dark">
+    <meta name="theme-color" content="#07111f">
+    <link rel="icon" href="/static/favicon.svg?v=1.0.0" type="image/svg+xml">
+    <meta
+      name="description"
+      content="Demo educativa del clasificador de riesgo de fallo con AI4I 2020 sintético."
+    >
+    <title>Machine Failure Risk Classifier</title>
+    <link rel="stylesheet" href="/static/app.css?v=1.0.0">
+    <script src="/static/app.js?v=1.0.0" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Saltar al contenido principal</a>
+
+    <header class="site-header" aria-label="Encabezado del producto">
+      <div class="header-inner">
+        <a class="brand" href="/" aria-label="Machine Failure Risk Classifier, inicio">
+          <span class="brand-mark" aria-hidden="true">
+            <span></span>
+            <span></span>
+            <span></span>
+          </span>
+          <span>Machine Failure Risk Classifier</span>
+        </a>
+        <span class="environment-badge">
+          <span class="status-dot" aria-hidden="true"></span>
+          Demo educativa
+        </span>
+      </div>
+    </header>
+
+    <main id="main-content" class="page-shell" tabindex="-1">
+      <section class="hero" aria-labelledby="page-title">
+        <div class="eyebrow"><span aria-hidden="true">AI4I</span> · observación individual</div>
+        <h1 id="page-title">Evalúa el riesgo de fallo de una máquina</h1>
+        <p class="hero-copy">
+          Introduce las seis variables de una observación. Si quedan dentro de la envolvente de
+          referencia, el modelo devolverá un score y lo comparará con el umbral validado; fuera de
+          ella no emitirá score ni clasificación.
+        </p>
+      </section>
+
+      <aside class="education-notice" aria-labelledby="notice-title">
+        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+          <path
+            d="M12 3.5 21 20H3L12 3.5Zm0 5v5.5m0 3v.2"
+            fill="none"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="1.8"
+          />
+        </svg>
+        <div>
+          <h2 id="notice-title">Alcance educativo</h2>
+          <p>
+              AI4I 2020 es un dataset sintético. El score no está calibrado, no estima vida útil
+              restante (RUL) y no valida uso industrial. No lo uses para seguridad, mantenimiento
+              real ni decisiones operativas. La API compara cada entrada con una envolvente de
+              referencia obtenida solo de training, no con una detección general de OOD; fuera de ella
+              no entrega score ni clasificación.
+          </p>
+        </div>
+      </aside>
+
+      <div class="workspace-grid">
+        <section class="panel input-panel" aria-labelledby="input-title">
+          <div class="panel-heading">
+            <div>
+              <p class="step-label">01 · Entrada</p>
+              <h2 id="input-title">Datos de la observación</h2>
+            </div>
+            <span class="field-count">6 variables</span>
+          </div>
+
+          <div id="form-errors" class="error-summary" role="alert" tabindex="-1" hidden>
+            <p class="error-title">No se pudo calcular el score</p>
+            <ul id="error-list"></ul>
+          </div>
+
+          <form id="prediction-form" novalidate>
+            <div class="form-grid">
+              <div class="field field-wide">
+                <label for="type">Tipo de producto</label>
+                <select
+                  id="type"
+                  name="type"
+                  required
+                  aria-describedby="type-hint"
+                  aria-errormessage="type-error"
+                >
+                  <option value="L">L — calidad baja</option>
+                  <option value="M" selected>M — calidad media</option>
+                  <option value="H">H — calidad alta</option>
+                </select>
+                <p class="field-hint" id="type-hint">Categoría original declarada en AI4I.</p>
+                <p class="field-error" id="type-error" hidden></p>
+              </div>
+
+              <div class="field">
+                <label for="air-temperature">Temperatura del aire</label>
+                <div class="input-with-unit">
+                  <input
+                    id="air-temperature"
+                    name="air_temperature_k"
+                    type="number"
+                    inputmode="decimal"
+                    step="any"
+                    value="300.0"
+                    required
+                    aria-describedby="air-temperature-hint"
+                    aria-errormessage="air-temperature-error"
+                  >
+                  <span aria-hidden="true">K</span>
+                </div>
+                <p class="field-hint" id="air-temperature-hint">Número finito mayor que 0 K.</p>
+                <p class="field-error" id="air-temperature-error" hidden></p>
+              </div>
+
+              <div class="field">
+                <label for="process-temperature">Temperatura del proceso</label>
+                <div class="input-with-unit">
+                  <input
+                    id="process-temperature"
+                    name="process_temperature_k"
+                    type="number"
+                    inputmode="decimal"
+                    step="any"
+                    value="310.0"
+                    required
+                    aria-describedby="process-temperature-hint"
+                    aria-errormessage="process-temperature-error"
+                  >
+                  <span aria-hidden="true">K</span>
+                </div>
+                <p class="field-hint" id="process-temperature-hint">Número finito mayor que 0 K.</p>
+                <p class="field-error" id="process-temperature-error" hidden></p>
+              </div>
+
+              <div class="field">
+                <label for="rotational-speed">Velocidad rotacional</label>
+                <div class="input-with-unit">
+                  <input
+                    id="rotational-speed"
+                    name="rotational_speed_rpm"
+                    type="number"
+                    inputmode="numeric"
+                    min="0"
+                    step="1"
+                    value="1500"
+                    required
+                    aria-describedby="rotational-speed-hint"
+                    aria-errormessage="rotational-speed-error"
+                  >
+                  <span aria-hidden="true">rpm</span>
+                </div>
+                <p class="field-hint" id="rotational-speed-hint">Entero no negativo, en rpm.</p>
+                <p class="field-error" id="rotational-speed-error" hidden></p>
+              </div>
+
+              <div class="field">
+                <label for="torque">Torque</label>
+                <div class="input-with-unit">
+                  <input
+                    id="torque"
+                    name="torque_nm"
+                    type="number"
+                    inputmode="decimal"
+                    min="0"
+                    step="any"
+                    value="40.0"
+                    required
+                    aria-describedby="torque-hint"
+                    aria-errormessage="torque-error"
+                  >
+                  <span aria-hidden="true">Nm</span>
+                </div>
+                <p class="field-hint" id="torque-hint">Número finito no negativo, en Nm.</p>
+                <p class="field-error" id="torque-error" hidden></p>
+              </div>
+
+              <div class="field field-wide">
+                <label for="tool-wear">Desgaste de herramienta</label>
+                <div class="input-with-unit">
+                  <input
+                    id="tool-wear"
+                    name="tool_wear_min"
+                    type="number"
+                    inputmode="numeric"
+                    min="0"
+                    step="1"
+                    value="100"
+                    required
+                    aria-describedby="tool-wear-hint"
+                    aria-errormessage="tool-wear-error"
+                  >
+                  <span aria-hidden="true">min</span>
+                </div>
+                <p class="field-hint" id="tool-wear-hint">Entero no negativo, en minutos.</p>
+                <p class="field-error" id="tool-wear-error" hidden></p>
+              </div>
+            </div>
+
+            <button id="submit-button" class="primary-button" type="submit">
+              <span class="button-label">Calcular score de riesgo</span>
+              <span class="button-loader" aria-hidden="true"></span>
+              <svg viewBox="0 0 20 20" width="20" height="20" aria-hidden="true">
+                <path
+                  d="m7 4 6 6-6 6"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="1.8"
+                />
+              </svg>
+            </button>
+          </form>
+        </section>
+
+        <section
+          id="result-panel"
+          class="panel result-panel"
+          aria-labelledby="result-title"
+          aria-live="polite"
+          aria-busy="false"
+        >
+          <div class="panel-heading">
+            <div>
+              <p class="step-label">02 · Resultado</p>
+              <h2 id="result-title">Estimación del modelo</h2>
+            </div>
+            <span id="result-status" class="result-status result-status-idle">Sin evaluar</span>
+          </div>
+
+          <div id="result-empty" class="result-empty">
+            <div class="empty-visual" aria-hidden="true">
+              <span></span>
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+            <h3>El resultado aparecerá aquí</h3>
+            <p>Completa el formulario y calcula el score para esta observación.</p>
+          </div>
+
+          <div id="result-content" class="result-content" hidden>
+            <div id="domain-notice" class="domain-notice" hidden>
+              <h3>Fuera del dominio observado</h3>
+              <p>
+                Esta observación está fuera de la envolvente de training AI4I. No se calcula
+                un score ni se emite una clasificación.
+              </p>
+            </div>
+
+            <div class="score-block">
+              <p class="score-label">Score de riesgo</p>
+              <div class="score-row">
+                <output id="risk-score" class="score-value" for="prediction-form">—</output>
+                <span id="decision-pill" class="decision-pill">—</span>
+              </div>
+              <p id="score-raw" class="score-raw"></p>
+            </div>
+
+            <div id="risk-scale-wrap" class="risk-scale-wrap">
+              <div class="progress-row">
+                <span>Score</span>
+                <progress id="risk-meter" class="risk-meter" max="1" value="0">0</progress>
+              </div>
+              <div class="progress-row">
+                <span>Umbral</span>
+                <progress id="threshold-meter" class="threshold-meter" max="1" value="0">0</progress>
+              </div>
+              <div class="scale-labels" aria-hidden="true">
+                <span>0</span>
+                <span>1</span>
+              </div>
+            </div>
+
+            <dl class="metric-list">
+              <div>
+                <dt>Umbral de decisión</dt>
+                <dd id="threshold-value">—</dd>
+              </div>
+              <div>
+                <dt>Clasificación</dt>
+                <dd id="classification-value">—</dd>
+              </div>
+            </dl>
+
+            <div id="warnings-box" class="warnings-box" hidden>
+              <h3>
+                <svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true">
+                  <path
+                    d="M10 2.8 18 17H2L10 2.8Zm0 4.6v4.8m0 2.2v.2"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="1.5"
+                  />
+                </svg>
+                Advertencias de la API
+              </h3>
+              <ul id="warnings-list"></ul>
+            </div>
+
+            <p id="threshold-explanation" class="threshold-explanation">
+              La clasificación es positiva cuando el score es igual o superior al umbral. Este
+              resultado describe una observación y no un diagnóstico mecánico.
+            </p>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <p>Proyecto educativo · AI4I 2020 sintético · Sin validación industrial</p>
+    </footer>
+
+    <noscript>
+      <div class="noscript-message" role="alert">
+        Esta interfaz necesita JavaScript para enviar la observación a la API de la demo.
+      </div>
+    </noscript>
+  </body>
+</html>

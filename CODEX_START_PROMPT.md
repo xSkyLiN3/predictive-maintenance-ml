@@ -1,25 +1,23 @@
-# Prompt para iniciar el proyecto en una tarea nueva de Codex
+# Prompt para continuar el proyecto en una tarea nueva de Codex
 
-Lee completamente `AGENTS.md` y toda la documentación enlazada desde `README.md` antes de modificar archivos.
+Lee completamente `AGENTS.md`, `README.md`, `docs/MODEL_CARD.md`,
+`docs/PORTFOLIO_REVIEW.md` y el resto de la documentación enlazada antes de modificar archivos.
 
-Trabaja exclusivamente en local y ejecuta solo los hitos M0 y M1 de `docs/ROADMAP.md`. En concreto:
+M0–M5 están completados y el MVP local quedó cerrado. M6 de publicación y demo fue autorizado
+expresamente por el usuario el 2026-08-19. El resultado congelado es el run
+`b15bab7b54bc2e1f`, con random forest y umbral `0.6965799216184142`. No abras de nuevo
+`holdout.csv`, no recalcules métricas finales y no cambies modelo, features, target o umbral.
+La API 1.0 se abstiene de puntuar fuera de la envolvente marginal de training documentada;
+conserva esa distinción entre validación semántica, aplicabilidad educativa y límites físicos.
 
-1. Valida el entorno disponible y usa explícitamente Python 3.12.
-2. Inicializa `.venv` sin modificar el Python global.
-3. Crea un `pyproject.toml` mínimo y reproducible con estructura `src/`, pytest y Ruff.
-4. Implementa la descarga programática del dataset UCI AI4I 2020 desde una fuente oficial.
-5. Conserva los datos descargados fuera de Git y registra su procedencia y checksum.
-6. Implementa validación de esquema, target, categorías y columnas prohibidas por leakage.
-7. Añade pruebas para descarga/lectura, validación y exclusión de columnas.
-8. Ejecuta Ruff y pytest, corrige los fallos y actualiza `TASKS.md` y `docs/DECISIONS.md`.
+Conserva estas fronteras:
 
-No hagas todavía EDA extensa, entrenamiento de modelos, API, interfaz, Docker, despliegue, GitHub ni cambios en el VPS.
+1. La licencia del código es MIT y no sustituye la `CC BY 4.0` declarada para AI4I.
+2. GitHub, CI, un contenedor mínimo y una demo pública stateless están dentro de M6.
+3. No publiques hasta que el snapshot staged pase pruebas y auditoría de secretos/dependencias.
+4. No añadas autenticación, base de datos, telemetría, tracking de experimentos, LLM, GPU ni
+   infraestructura distribuida salvo que el usuario cambie expresamente el alcance.
+5. No describas la demo educativa como un sistema de producción ni como validación industrial.
 
-Al terminar, detente y entrega un informe breve con:
-
-- estructura creada;
-- dependencias añadidas y justificación;
-- comandos exactos para reproducir el entorno y las pruebas;
-- origen, tamaño y checksum del dataset;
-- resultado de Ruff y pytest;
-- riesgos o decisiones pendientes antes de comenzar M2.
+Al completar M6, verifica y actualiza `TASKS.md`, `docs/DECISIONS.md`, `docs/ROADMAP.md` y esta guía.
+No inventes resultados ni describas AI4I como validación industrial.

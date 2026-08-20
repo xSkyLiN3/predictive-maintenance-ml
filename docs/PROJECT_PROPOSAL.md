@@ -30,7 +30,7 @@ Una observación con:
 
 ### Salida
 
-- probabilidad estimada de `Machine failure`;
+- score de riesgo de `Machine failure` sin afirmar calibración probabilística;
 - clasificación según un umbral documentado;
 - versión del modelo y advertencia de uso educativo.
 
@@ -51,7 +51,7 @@ Una observación con:
 - Licencia: CC BY 4.0.
 - Sin datos personales.
 
-Fuente oficial: https://archive.ics.uci.edu/dataset/601/ai4i+2020+predictive+maint
+Fuente oficial: <https://archive.ics.uci.edu/dataset/601/ai4i+2020+predictive+maintenance+dataset>
 
 Los identificadores `UDI` y `Product ID` no aportan señal generalizable. Los indicadores `TWF`, `HDF`, `PWF`, `OSF` y `RNF` describen modos de fallo relacionados con el target y se excluirán para evitar fuga de información.
 
@@ -84,29 +84,32 @@ Los identificadores `UDI` y `Product ID` no aportan señal generalizable. Los in
 - búsqueda extensa de hiperparámetros;
 - predicción temporal o vida útil restante.
 
-## Arquitectura prevista
+## Arquitectura implementada
 
 ```text
 predictive-maintenance-ml/
 ├── src/predictive_maintenance/
+│   ├── artifact_io.py
 │   ├── config.py
-│   ├── data.py
-│   ├── features.py
-│   ├── train.py
-│   ├── evaluate.py
+│   ├── dataset.py
+│   ├── validation.py
+│   ├── splitting.py
+│   ├── eda.py
+│   ├── modeling.py
+│   ├── evaluation.py
 │   ├── inference.py
 │   ├── schemas.py
-│   └── api.py
+│   ├── api.py
+│   └── web/
 ├── tests/
 ├── notebooks/
-├── templates/
-├── static/
 ├── data/
 ├── artifacts/
 └── reports/
 ```
 
-Los notebooks se usarán para exploración, no como única implementación. La lógica reutilizable vivirá en `src/`.
+La EDA se implementó como módulo y CLI reproducibles; `notebooks/` queda reservado para vistas
+exploratorias opcionales. Toda la lógica reutilizable vive en `src/`.
 
 ## Estimación realista
 

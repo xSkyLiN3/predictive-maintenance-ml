@@ -1,0 +1,88 @@
+{
+  "candidates": {
+    "dummy": {
+      "average_precision_by_fold": [
+        0.03375,
+        0.03375,
+        0.03375,
+        0.03375,
+        0.034375
+      ],
+      "average_precision_mean": 0.033875,
+      "average_precision_std": 0.0002500000000000002,
+      "roc_auc_by_fold": [
+        0.5,
+        0.5,
+        0.5,
+        0.5,
+        0.5
+      ],
+      "roc_auc_mean": 0.5,
+      "roc_auc_std": 0.0
+    },
+    "logistic_regression": {
+      "average_precision_by_fold": [
+        0.41266348050038226,
+        0.5701583004235514,
+        0.4491937766383906,
+        0.37739063115155913,
+        0.39775808671821883
+      ],
+      "average_precision_delta_vs_dummy_by_fold": [
+        0.37891348050038226,
+        0.5364083004235514,
+        0.4154437766383906,
+        0.34364063115155913,
+        0.36338308671821884
+      ],
+      "average_precision_mean": 0.44143285508642044,
+      "average_precision_mean_delta_vs_dummy": 0.40755785508642045,
+      "average_precision_std": 0.06850845339545959,
+      "roc_auc_by_fold": [
+        0.8878827080638206,
+        0.9087250251545207,
+        0.9203679747017393,
+        0.89297350390494,
+        0.8864254192409533
+      ],
+      "roc_auc_mean": 0.8992749262131948,
+      "roc_auc_std": 0.013181968376843576
+    },
+    "random_forest": {
+      "average_precision_by_fold": [
+        0.6572867305606113,
+        0.6809245290316667,
+        0.6253935606752442,
+        0.6351334436973535,
+        0.6203239487778157
+      ],
+      "average_precision_delta_vs_dummy_by_fold": [
+        0.6235367305606112,
+        0.6471745290316666,
+        0.5916435606752442,
+        0.6013834436973535,
+        0.5859489487778157
+      ],
+      "average_precision_mean": 0.6438124425485383,
+      "average_precision_mean_delta_vs_dummy": 0.6099374425485383,
+      "average_precision_std": 0.02247288575462437,
+      "roc_auc_by_fold": [
+        0.9776723683580086,
+        0.9702817306310191,
+        0.9746059125101816,
+        0.977636433328542,
+        0.9494792586054722
+      ],
+      "roc_auc_mean": 0.9699351406866447,
+      "roc_auc_std": 0.010578789591731013
+    }
+  },
+  "fold_plan_sha256": "2c24c5165e54481a6eb35ac08f579c78601ea191eee8a0d0a76537b034eddf48",
+  "folds": 5,
+  "primary_metric": "average_precision",
+  "run_id": "b15bab7b54bc2e1f",
+  "schema_version": 1,
+  "scope": "training_cross_validation_only",
+  "secondary_metric": "roc_auc",
+  "standard_deviation_ddof": 0
+}
