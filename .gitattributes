@@ -1,6 +1,8 @@
 * text=auto
 .gitattributes text eol=lf
+.dockerignore text eol=lf
 .gitignore text eol=lf
+Dockerfile text eol=lf
 LICENSE text eol=lf
 *.json text eol=lf
 *.html text eol=lf
@@ -10,5 +12,7 @@ LICENSE text eol=lf
 *.py text eol=lf
 *.toml text eol=lf
 *.txt text eol=lf
+*.yaml text eol=lf
+*.yml text eol=lf
 *.png binary
 *.svg text eol=lf

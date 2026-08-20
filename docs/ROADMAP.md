@@ -1,4 +1,4 @@
-# Hoja de ruta local
+# Hoja de ruta
 
 Cada hito tiene una puerta de revisión. No se debe comenzar el siguiente solo porque queden tokens o tiempo disponibles.
 
@@ -30,15 +30,17 @@ Cada hito tiene una puerta de revisión. No se debe comenzar el siguiente solo p
 
 **Resultado:** informe breve que sustenta las decisiones de modelado.
 
+- Materializar primero la partición estratificada reproducible y sellar el holdout.
 - Medir prevalencia y revisar rangos.
 - Crear 5–7 visualizaciones relevantes.
 - Identificar anomalías y limitaciones.
-- Materializar la partición estratificada reproducible.
 - Confirmar por escrito métricas y estrategia de umbral.
 
 **Puerta:** revisión humana del informe antes de entrenar modelos candidatos.
 
 ## M3 — Baseline, modelos y evaluación
+
+**Estado:** completado y verificado en el run `b15bab7b54bc2e1f`.
 
 **Resultado:** modelo seleccionado y evaluado limpiamente.
 
@@ -52,19 +54,27 @@ Cada hito tiene una puerta de revisión. No se debe comenzar el siguiente solo p
 
 ## M4 — API e interfaz local
 
+**Estado:** completado y verificado sobre el run `b15bab7b54bc2e1f`.
+
 **Resultado:** demo funcional en localhost.
 
 - Implementar `/health`, `/model-info` y `/predict`.
 - Validar inputs con esquemas estrictos.
 - Crear interfaz HTML/CSS sencilla servida localmente.
-- Mostrar probabilidad, decisión y advertencia educativa.
+- Mostrar score, decisión y advertencia educativa sin afirmar calibración.
 - Añadir pruebas de API e inferencia.
+- Abstenerse explícitamente fuera de la envolvente marginal educativa, sin presentarla como límite
+  físico ni detector OOD completo.
+- Rechazar de forma controlada JSON ambiguo o excesivo y evitar pérdida de precisión en la UI.
 
-**Puerta:** un usuario puede levantar la aplicación siguiendo el README y completar el flujo principal.
+**Puerta:** un usuario puede levantar la aplicación siguiendo el README, completar el flujo
+principal y obtener respuestas controladas ante entradas adversariales.
 
 ## M5 — Cierre y revisión de publicación
 
-**Resultado:** candidato a portfolio, aún local.
+**Estado:** completado y verificado en local.
+
+**Resultado:** candidato técnico aprobado para preparar publicación.
 
 - Completar README, ficha del modelo y arquitectura.
 - Verificar instalación desde cero.
@@ -72,4 +82,24 @@ Cada hito tiene una puerta de revisión. No se debe comenzar el siguiente solo p
 - Revisar accesibilidad y claridad de la interfaz.
 - Comparar claims del README con evidencia generada.
 
-**Puerta:** decisión explícita del usuario sobre publicación en GitHub y, por separado, despliegue.
+**Puerta:** el MVP local pasó la revisión. La licencia, publicación y demo fueron autorizadas para
+M6 el 2026-08-19, pero el push sigue condicionado a una auditoría limpia del snapshot staged.
+
+## M6 — Publicación y demo educativa
+
+**Estado:** en progreso.
+
+**Resultado:** release público `v1.0.0`, CI verificable y demo stateless detrás de HTTPS.
+
+- Adoptar MIT sin mezclarla con la licencia `CC BY 4.0` del dataset.
+- Mantener modelo, features, umbral y holdout congelados; corregir solo la trazabilidad de la
+  envolvente y contextualizar precision/recall desde la matriz ya versionada.
+- Verificar el paquete en Windows y Linux, y construir un runtime no root sin particiones de datos.
+- Curar README, changelog, captura, metadata y commits honestos.
+- Auditar secretos, dependencias, archivos staged y tamaños antes del push.
+- Publicar el repositorio y release en GitHub.
+- Desplegar una demo educativa con TLS, límites de recursos y sin persistencia de inputs.
+- Integrar el enlace únicamente después de smoke tests externos satisfactorios.
+
+**Puerta:** CI verde, release verificable, demo saludable y claims públicos conciliados con la
+evidencia versionada. Un proyecto ML posterior será un hito distinto, no una expansión de este MVP.
