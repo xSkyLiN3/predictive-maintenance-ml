@@ -56,14 +56,16 @@ COPY data/split_manifest.json data/split_manifest.json
 COPY reports/modeling reports/modeling
 COPY reports/holdout_access reports/holdout_access
 
-# `train` reads only train.csv. It reconstructs the frozen pipeline and checks
-# the existing versioned receipts; evaluate-holdout is intentionally absent.
+# `train` reads only train.csv. It rebuilds reports in scratch space because
+# Matplotlib PNG bytes are not portable across operating systems. Loading the
+# service afterwards validates the rebuilt pipeline against the frozen,
+# versioned receipts without regenerating or reading the sealed holdout.
 RUN mkdir -p data/raw data/processed artifacts/m3 \
     && machine-failure-data download \
     && machine-failure-data split \
-    && machine-failure-data train \
+    && machine-failure-data train --report-dir /tmp/rebuilt-modeling \
     && python -c "from predictive_maintenance.inference import load_inference_service; service = load_inference_service(); assert service.metadata.run_id == 'b15bab7b54bc2e1f'" \
-    && rm -rf data/raw data/processed
+    && rm -rf data/raw data/processed /tmp/rebuilt-modeling
 
 FROM ${RUNTIME_IMAGE} AS runtime
 

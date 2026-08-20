@@ -14,9 +14,11 @@ El `Dockerfile` usa tres etapas:
 
 El build **no ejecuta** `evaluate-holdout`. `split` materializa temporalmente `train.csv` y
 `holdout.csv` en la etapa de construcción porque ambos hashes forman parte del contrato, pero el
-comando de entrenamiento solo resuelve `train.csv`. Ningún CSV raw, de training o de holdout se
-copia a la imagen final. Los recibos finales versionados se conservan únicamente para que el
-loader pueda comprobar la identidad del modelo ya evaluado.
+comando de entrenamiento solo resuelve `train.csv`. Los diagnósticos regenerados se escriben en
+un directorio temporal: los PNG de Matplotlib no son byte a byte portables entre Windows y Linux.
+Después, el loader valida el pipeline reconstruido contra los recibos versionados de selección y
+evaluación final; los diagnósticos temporales se descartan. Ningún CSV raw, de training o de
+holdout se copia a la imagen final.
 
 Las dos imágenes base están fijadas por digest. La etapa histórica de entrenamiento usa Python
 `3.12.0` porque la versión de parche forma parte del identificador del run congelado; el runtime
