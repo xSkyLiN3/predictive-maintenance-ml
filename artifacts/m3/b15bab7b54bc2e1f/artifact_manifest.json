@@ -1,0 +1,19 @@
+{
+  "configuration_sha256": "d880c8048fcb3c09395e38702fd9ca04b1d6e3e0b53fd882e7dd728bdb1b9065",
+  "fold_plan_sha256": "2c24c5165e54481a6eb35ac08f579c78601ea191eee8a0d0a76537b034eddf48",
+  "pipeline_filename": "pipeline.joblib",
+  "pipeline_sha256": "8f383492fff0a1199a7f62289651a29da39f4c6a149762aa9b75c099efc1568a",
+  "run_id": "b15bab7b54bc2e1f",
+  "schema_version": 1,
+  "selected_model": "random_forest",
+  "threshold": 0.6965799216184142,
+  "training_sha256": "3b114192f249951632f4c700c07b5edf4306fcff89ac90abe556f15687cf803a",
+  "versions": {
+    "joblib": "1.5.3",
+    "matplotlib": "3.11.1",
+    "numpy": "2.5.2",
+    "pandas": "3.0.5",
+    "python": "3.12.0",
+    "scikit_learn": "1.9.0"
+  }
+}

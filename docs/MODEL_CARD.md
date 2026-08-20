@@ -357,12 +357,16 @@ ejecución posterior debe reutilizar el recibo, no volver a abrir ese holdout.
 | joblib | `1.5.3` |
 | matplotlib | `3.11.1` |
 
-El pipeline binario permanece local y fuera de Git. `python -m predictive_maintenance train` lo
-reconstruye desde training bajo el entorno fijado, sin leer holdout. La resolución exacta probada
-se conserva en `requirements/constraints-win-py312.txt`.
+El pipeline exacto evaluado se versiona junto a su manifiesto SHA-256. La decisión evita sustituir
+en Linux la serialización Joblib fijada por el recibo final; esos bytes no son portables entre
+sistemas operativos aunque el entrenamiento sea determinista. `python -m predictive_maintenance
+train` permite reproducir el flujo desde training sin leer holdout, mientras que la demo carga
+únicamente el artefacto propio del repositorio después de validar toda la cadena de recibos. La
+resolución exacta probada se conserva en `requirements/constraints-win-py312.txt`.
 
 Artefactos versionados principales:
 
+- [manifiesto del pipeline](../artifacts/m3/b15bab7b54bc2e1f/artifact_manifest.json);
 - [manifiesto del run](../reports/modeling/b15bab7b54bc2e1f/run_manifest.json);
 - [resultados de validación cruzada](../reports/modeling/b15bab7b54bc2e1f/cv_results.json);
 - [selección OOF del umbral](../reports/modeling/b15bab7b54bc2e1f/threshold_selection.json);
@@ -379,8 +383,9 @@ el umbral están congelados para este MVP local.
 
 Reglas de mantenimiento:
 
-- si falta el binario local, reconstruir el mismo pipeline con `train`; no repetir la evaluación
-  del holdout consumido;
+- si falta el binario versionado, restaurarlo desde una revisión Git verificada; `train` puede
+  reproducir el flujo, pero una reserialización en otro sistema operativo no sustituye
+  silenciosamente el artefacto evaluado ni autoriza repetir el holdout consumido;
 - validar siempre run, hashes, recibo final, ledger, versiones, clases y orden de features antes
   de servir inferencia;
 - tratar cambios de target, features, dataset, split, protocolo, modelos, umbral o contrato API

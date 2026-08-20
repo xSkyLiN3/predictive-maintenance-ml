@@ -16,6 +16,11 @@ stateless. La envolvente de abstención quedó ligada al resumen versionado `tra
 intervalos Wilson de precision y recall se derivan de la matriz final ya registrada. Ninguno de
 estos cambios vuelve a leer el holdout ni modifica el resultado M3.
 
+La primera validación Linux demostró que los PNG de Matplotlib y la serialización Joblib no son
+idénticos byte a byte entre Windows y Linux. El runtime no relaja los hashes ni reemplaza el
+modelo: distribuye el pipeline exacto evaluado de 1,25 MB, comprueba su SHA-256 antes de cargarlo y
+mantiene dataset, particiones y artefactos aportados por usuarios fuera de la imagen.
+
 Las conclusiones de autorización/estado escritas durante M5 y conservadas más abajo son evidencia
 histórica de aquella puerta; quedan evolucionadas por D-029 y por la auditoría final de M6.
 

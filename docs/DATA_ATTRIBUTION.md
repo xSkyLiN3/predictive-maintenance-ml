@@ -32,9 +32,11 @@ se realizan estas transformaciones:
 - métricas y figuras de una evaluación final única del holdout;
 - entrenamiento de un pipeline y exposición mediante una demo educativa.
 
-Los reportes, figuras y código producidos por este proyecto se publican bajo la licencia MIT. El
-pipeline binario se reconstruye localmente y no se versiona. La licencia MIT del proyecto es
-independiente de la licencia `CC BY 4.0` que UCI declara para el dataset AI4I.
+Los reportes, figuras, código y pipeline producido por este proyecto se publican bajo la licencia
+MIT, conservando esta atribución al dataset fuente. El pipeline exacto evaluado sí se versiona:
+Joblib no produce bytes portables entre sistemas operativos y sustituirlo durante el despliegue
+rompería el recibo SHA-256. La licencia MIT del proyecto es independiente de la licencia
+`CC BY 4.0` que UCI declara para el dataset AI4I; los datos originales no se redistribuyen.
 
 ## Snapshot utilizado
 

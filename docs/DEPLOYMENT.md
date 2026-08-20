@@ -5,29 +5,22 @@ convierte el clasificador educativo en un servicio industrial.
 
 ## Garantías del build
 
-El `Dockerfile` usa tres etapas:
+El `Dockerfile` usa dos etapas:
 
 1. construye el wheel del paquete;
-2. descarga el snapshot AI4I fijado, reproduce la partición y ejecuta solamente `train` con
-   Python `3.12.0` y versiones fijadas;
-3. instala el wheel y copia el pipeline verificado a una imagen de runtime separada.
+2. instala el wheel y el pipeline exacto evaluado en una imagen de runtime separada.
 
-El build **no ejecuta** `evaluate-holdout`. `split` materializa temporalmente `train.csv` y
-`holdout.csv` en la etapa de construcción porque ambos hashes forman parte del contrato, pero el
-comando de entrenamiento solo resuelve `train.csv`. Los diagnósticos regenerados se escriben en
-un directorio temporal: los PNG de Matplotlib no son byte a byte portables entre Windows y Linux.
-Después, el loader valida el pipeline reconstruido contra los recibos versionados de selección y
-evaluación final; los diagnósticos temporales se descartan. Ningún CSV raw, de training o de
-holdout se copia a la imagen final.
+El build no descarga el dataset, no ejecuta `split`, `train` ni `evaluate-holdout`, y no contiene
+ningún CSV. Joblib y los PNG de Matplotlib no son byte a byte portables entre Windows y Linux;
+reentrenar dentro de la imagen produciría una serialización distinta de la que fijó el recibo
+final. Por ello se versionan únicamente el pipeline evaluado de 1,25 MB y su manifiesto. Antes de
+cargarlo, el loader reconcilia su SHA-256, run, versiones, recibos de selección, evaluación final y
+ledger global. La API no acepta artefactos aportados por usuarios.
 
-Las dos imágenes base están fijadas por digest. La etapa histórica de entrenamiento usa Python
-`3.12.0` porque la versión de parche forma parte del identificador del run congelado; el runtime
-usa una imagen Python 3.12 más reciente y fijada por separado. Las dependencias Python se fijan en
-`requirements/constraints-py312.txt`. Esto busca una reconstrucción controlada por versiones, no
-promete que dos builds produzcan una imagen byte a byte idéntica.
-
-El build necesita acceso saliente a Docker Hub, PyPI y la fuente de UCI. Si la fuente no está
-disponible o cambia su checksum, falla cerrado.
+Las dos imágenes base están fijadas por digest y las dependencias Python por versión en
+`requirements/constraints-py312.txt`. El build necesita acceso saliente a Docker Hub y PyPI, pero
+no a UCI. La reproducción de training sigue disponible como flujo separado y nunca vuelve a
+abrir el holdout consumido.
 
 ## Construir y ejecutar localmente
 

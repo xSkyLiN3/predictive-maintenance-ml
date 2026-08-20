@@ -86,8 +86,9 @@ docker run --rm -p 8000:8000 \
   machine-failure-risk-classifier:1.0.0
 ```
 
-Open <http://127.0.0.1:8000>. The image builds the frozen training-only pipeline in a separate
-stage; source data, training partitions and build tools are not copied into the runtime image.
+Open <http://127.0.0.1:8000>. The image packages the exact evaluated pipeline, verifies its
+SHA-256 and linked receipts before loading it, and contains no source data or train/holdout
+partitions.
 
 ### From source
 
@@ -97,15 +98,17 @@ Python 3.12 is required. On Windows PowerShell:
 py -3.12 -m venv .venv
 .\.venv\Scripts\python.exe -m pip install --upgrade pip
 .\.venv\Scripts\python.exe -m pip install -c requirements\constraints-win-py312.txt -e ".[dev]"
-
-.\.venv\Scripts\python.exe -m predictive_maintenance download
-.\.venv\Scripts\python.exe -m predictive_maintenance split
-.\.venv\Scripts\python.exe -m predictive_maintenance train
 .\.venv\Scripts\machine-failure-app.exe
 ```
 
-Those commands reconstruct the already selected pipeline without performing another final holdout
-evaluation. Open <http://127.0.0.1:8000> after the server starts.
+Open <http://127.0.0.1:8000> after the server starts. The repository-owned Joblib file is loaded
+only after its hash, run identity, dependency contract, selection receipts and final evaluation
+ledger reconcile. The API never accepts uploaded model files.
+
+To reproduce the training workflow separately, run `download`, `split` and `train` with the same
+CLI. This does not repeat the final holdout evaluation. Joblib and Matplotlib bytes are
+platform-dependent, so the public runtime deliberately ships the exact artifact that was
+evaluated instead of silently substituting a Linux reserialization.
 
 ## API
 
@@ -150,7 +153,7 @@ tests/                        unit, adversarial and integration tests
 reports/                      curated EDA and model-evaluation evidence
 docs/                         model card, attribution and decision record
 data/                         versioned manifest; local CSV files are ignored
-artifacts/                    documentation only; model binaries are ignored
+artifacts/                    exact evaluated pipeline plus its SHA-256 manifest
 ```
 
 ## Documentation

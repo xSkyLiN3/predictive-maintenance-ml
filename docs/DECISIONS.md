@@ -307,3 +307,17 @@
   la publicación y el despliegue siguen siendo decisiones conceptualmente separadas; la
   autorización no descongela modelo, features, split, umbral o métricas y no permite reabrir el
   holdout. La demo solo se declarará disponible después de verificar el endpoint desplegado.
+
+## D-030 — Distribuir el artefacto exacto evaluado
+
+- **Estado:** aceptada el `2026-08-19` tras la validación Linux de CI.
+- **Decisión:** versionar el pipeline Joblib de 1,25 MB y su manifiesto, y copiar esos bytes exactos
+  al runtime. Verificar SHA-256, identidad del run, versiones, recibos de selección, evaluación
+  final y ledger antes de `joblib.load`. No aceptar modelos subidos ni incluir datasets o
+  particiones en la imagen. Mantener `train` como flujo reproducible separado, no como mecanismo
+  que sustituya silenciosamente el artefacto desplegado.
+- **Motivo:** CI confirmó que tanto los PNG de Matplotlib como la serialización Joblib varían byte
+  a byte entre Windows y Linux. Regenerar el pipeline en el build rompía correctamente el recibo
+  del modelo evaluado; relajar el hash habría servido un artefacto distinto. Distribuir el binario
+  propio, pequeño y fijado preserva la identidad de evaluación y reduce la superficie del build,
+  que ya no descarga datos ni materializa el holdout.

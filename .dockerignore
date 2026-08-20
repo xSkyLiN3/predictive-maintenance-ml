@@ -18,7 +18,7 @@ htmlcov
 Thumbs.db
 build
 dist
-artifacts
+artifacts/*
 data/raw
 data/processed
 reports/eda
@@ -29,3 +29,7 @@ notebooks
 *.joblib
 *.pkl
 *.pickle
+!artifacts/m3
+!artifacts/m3/b15bab7b54bc2e1f
+!artifacts/m3/b15bab7b54bc2e1f/artifact_manifest.json
+!artifacts/m3/b15bab7b54bc2e1f/pipeline.joblib
