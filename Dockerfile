@@ -51,6 +51,7 @@ RUN python -m pip install "pip==26.2.1" \
         --constraint /tmp/constraints-py312.txt \
         /wheels/machine_failure_risk_classifier-1.0.0-py3-none-any.whl \
     && python -m pip check \
+    && python -m pip uninstall --yes pip setuptools \
     && rm -rf /wheels /tmp/constraints-py312.txt
 
 WORKDIR /app

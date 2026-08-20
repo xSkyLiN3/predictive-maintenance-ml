@@ -19,8 +19,9 @@ ledger global. La API no acepta artefactos aportados por usuarios.
 
 Las dos imágenes base están fijadas por digest y las dependencias Python por versión en
 `requirements/constraints-py312.txt`. El build necesita acceso saliente a Docker Hub y PyPI, pero
-no a UCI. La reproducción de training sigue disponible como flujo separado y nunca vuelve a
-abrir el holdout consumido.
+no a UCI. `pip` y `setuptools` se retiran después de instalar y verificar el wheel porque el
+servicio no necesita gestores de paquetes en runtime. La reproducción de training sigue
+disponible como flujo separado y nunca vuelve a abrir el holdout consumido.
 
 ## Construir y ejecutar localmente
 
