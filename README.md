@@ -55,7 +55,7 @@ positives. Precision and recall are therefore estimates with meaningful sampling
 ## Architecture
 
 ```mermaid
-flowchart LR
+flowchart TD
     A["UCI snapshot"] --> B["Checksum + schema validation"]
     B --> C["Stratified 80/20 split"]
     C -->|"Training only"| D["EDA + 5-fold CV"]

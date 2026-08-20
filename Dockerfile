@@ -35,6 +35,7 @@ LABEL org.opencontainers.image.title="Machine Failure Risk Classifier" \
 ENV MACHINE_FAILURE_ALLOWED_HOSTS="127.0.0.1,localhost" \
     MACHINE_FAILURE_HOST="0.0.0.0" \
     MACHINE_FAILURE_PORT="8000" \
+    MPLCONFIGDIR="/tmp/matplotlib" \
     PIP_DISABLE_PIP_VERSION_CHECK=1 \
     PIP_NO_CACHE_DIR=1 \
     PYTHONDONTWRITEBYTECODE=1 \

@@ -17,8 +17,8 @@
 | Umbral congelado | `0.6965799216184142` |
 | Regla de decisión | `risk_score >= threshold` |
 | Capa de aplicabilidad | Envolvente marginal derivada solo de training; abstención fuera de ella |
-| Estado | Resultado M3 congelado; preparación de release educativo M6 |
-| Disponibilidad | Publicación y demo educativa autorizadas, todavía en preparación y verificación |
+| Estado | Release educativo `1.0.0`; resultado M3 congelado |
+| Disponibilidad | Demo pública verificada en `https://ml.nightstrike.cloud` |
 
 El servicio recibe seis variables de una observación operativa. Solo invoca el modelo y devuelve un
 score para la clase positiva `Machine failure` cuando las cinco variables numéricas están dentro de

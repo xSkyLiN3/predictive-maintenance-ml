@@ -1,7 +1,11 @@
 # Contenedor y despliegue de la demo
 
-Este documento cubre la imagen de la demo `v1.0.0`. No registra un despliegue ya realizado ni
-convierte el clasificador educativo en un servicio industrial.
+Este documento cubre la imagen y el despliegue público de la demo `v1.0.0`. La disponibilidad del
+servicio no convierte el clasificador educativo en un sistema industrial.
+
+La instancia pública verificada vive en <https://ml.nightstrike.cloud>, detrás de Nginx y TLS. El
+contenedor escucha solo en loopback, ejecuta como UID/GID `10001`, usa filesystem de solo lectura,
+carece de capabilities y tiene límites explícitos de CPU, memoria y procesos.
 
 ## Garantías del build
 

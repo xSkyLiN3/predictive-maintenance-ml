@@ -26,16 +26,17 @@ histórica de aquella puerta; quedan evolucionadas por D-029 y por la auditoría
 
 Evidencia local de release sobre el snapshot M6:
 
-- `pip check`, Ruff y formato pasan; Ruff verificó `49` archivos.
+- `pip check`, Ruff y formato pasan; Ruff verificó `46` archivos.
 - pytest pasa `227/227` pruebas.
 - wheel y sdist construidos con `setuptools 84.0.0` pasan `227/227` pruebas cada uno.
 - OSV no reporta advisories activos en los `45` pins auditados; los pins de PyPI no están yanked.
 - Gitleaks `8.30.1`, descargado desde el release oficial y verificado por SHA-256, no encontró
-  secretos en los `82` archivos candidatos a publicación. Se repetirá contra todo el historial
-  después de crear los commits locales.
+  secretos en el snapshot ni en todo el historial alcanzable.
 - La captura pública es un PNG `1440 × 1100`, sin metadata ni strings sensibles detectados.
-- El build, escaneo Trivy y smoke Linux reales del contenedor quedan como puerta obligatoria de
-  GitHub Actions porque el equipo Windows actual no tiene Docker ni Podman.
+- GitHub Actions pasó calidad en Windows/Linux, instalación de wheel/sdist, build Docker, Trivy
+  sin vulnerabilidades `HIGH`/`CRITICAL` corregibles y smoke endurecido del runtime.
+- El repositorio es público y la demo HTTPS fue verificada por IPv4 e IPv6, con health, inferencia,
+  abstención, límites de cuerpo/frecuencia y regresión de los servicios existentes.
 
 ## Veredicto de cierre M5
 

@@ -83,11 +83,11 @@ principal y obtener respuestas controladas ante entradas adversariales.
 - Comparar claims del README con evidencia generada.
 
 **Puerta:** el MVP local pasó la revisión. La licencia, publicación y demo fueron autorizadas para
-M6 el 2026-08-19, pero el push sigue condicionado a una auditoría limpia del snapshot staged.
+M6 el 2026-08-19 y posteriormente superaron la auditoría del snapshot e historial.
 
 ## M6 — Publicación y demo educativa
 
-**Estado:** en progreso.
+**Estado:** completado y verificado.
 
 **Resultado:** release público `v1.0.0`, CI verificable y demo stateless detrás de HTTPS.
 
@@ -101,5 +101,6 @@ M6 el 2026-08-19, pero el push sigue condicionado a una auditoría limpia del sn
 - Desplegar una demo educativa con TLS, límites de recursos y sin persistencia de inputs.
 - Integrar el enlace únicamente después de smoke tests externos satisfactorios.
 
-**Puerta:** CI verde, release verificable, demo saludable y claims públicos conciliados con la
-evidencia versionada. Un proyecto ML posterior será un hito distinto, no una expansión de este MVP.
+**Puerta superada:** CI verde, release verificable, demo saludable y claims públicos conciliados
+con la evidencia versionada. Un proyecto ML posterior será un hito distinto, no una expansión de
+este MVP.

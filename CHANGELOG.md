@@ -18,6 +18,9 @@ All notable changes to this project are documented here. The format follows
 - Adversarial API tests for malformed JSON, oversized bodies, non-finite values and invalid model
   outputs.
 - MIT license and public-release metadata.
+- Exact SHA-verified evaluated pipeline for portable Linux deployment without redistributing data.
+- Hardened non-root Docker runtime, cross-platform CI and Trivy vulnerability scanning.
+- Public stateless HTTPS demo with request-size, rate and resource limits.
 
 ### Results
 
