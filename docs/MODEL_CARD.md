@@ -293,8 +293,9 @@ El modo local conserva `127.0.0.1:8000` y hosts locales como defaults. M6 permit
 puerto y una allowlist explícita de hosts mediante variables de entorno para ejecutarlo detrás de un
 proxy; no admite una allowlist `*`. La aplicación carga una vez el pipeline después de validar puntero
 activo, manifiestos, hashes, recibo final, ledger, versiones, clases y orden de features. El arranque
-de inferencia no debe leer raw, training ni holdout. La disponibilidad pública no se considera
-establecida hasta completar las verificaciones de despliegue M6.
+de inferencia no debe leer raw, training ni holdout. La disponibilidad pública quedó establecida al
+completar las verificaciones de despliegue M6; sigue siendo una demo educativa y no una validación
+industrial.
 
 ## 7. Limitaciones y consideraciones responsables
 

@@ -121,8 +121,9 @@ AI4I es sintético, el score no fue evaluado como probabilidad calibrada y el re
 uso industrial, RUL ni causalidad.
 
 La atribución del dataset registra título, UCI, DOI, `CC BY 4.0`, cita recomendada y las
-transformaciones realizadas en [DATA_ATTRIBUTION.md](DATA_ATTRIBUTION.md). El CSV original y el
-pipeline binario permanecen fuera de Git.
+transformaciones realizadas en [DATA_ATTRIBUTION.md](DATA_ATTRIBUTION.md). El CSV original
+permanece fuera de Git. El pipeline exacto evaluado sí está versionado en
+`artifacts/m3/b15bab7b54bc2e1f/pipeline.joblib`, ligado a su manifiesto y verificado por SHA-256.
 
 ## Interfaz y accesibilidad
 
@@ -142,12 +143,14 @@ exposición pública. Los textos alternativos de las figuras EDA se hicieron des
 
 ## Higiene, secretos y artefactos
 
-- No hay remoto Git configurado y no se realizó ninguna publicación.
-- Una búsqueda estática por patrones no encontró claves, tokens, credenciales, correos ni rutas
-  personales en los candidatos versionables o el único commit existente.
-- Esto no sustituye un scanner especializado del snapshot staged antes de un push.
-- `.gitignore` excluye `.venv`, cachés, datos raw/processed, metadata local, pipelines y bundles.
-- Se añadieron defensas globales para `*.joblib`, `*.pkl` y `*.pickle`.
+- Durante M5 aún no había remoto ni publicación; M6 configuró el repositorio público y completó el
+  release `v1.0.0` después de las verificaciones registradas al inicio de este documento.
+- La búsqueda estática inicial no encontró claves, tokens, credenciales, correos ni rutas
+  personales. Antes de publicar, Gitleaks revisó el snapshot y todo el historial alcanzable sin
+  detectar secretos.
+- `.gitignore` excluye `.venv`, cachés, datos raw/processed, metadata local y bundles generados.
+- `*.joblib`, `*.pkl` y `*.pickle` permanecen ignorados globalmente; solo la ruta nominal del
+  pipeline evaluado está permitida de forma explícita.
 - Reportes y figuras curados son versionables; suman aproximadamente `990 KB` y el mayor PNG es
   de aproximadamente `247 KB`.
 - No se detectaron binarios grandes o inesperados candidatos a Git.
@@ -177,14 +180,15 @@ sustituir la `CC BY 4.0` de los datos.
 
 ## Puerta de publicación
 
-Estado local: **GO**; M5 fue reproducido y el modelo está congelado.
-
-Estado M6: **GO técnico condicionado** a completar y registrar, en este orden:
+Estado final M6: **GO completado y publicado**. El modelo permanece congelado y las cuatro puertas
+definidas durante M5 quedaron satisfechas:
 
 1. suite limpia y build de paquete en Windows/Linux;
-2. auditoría del snapshot staged, secretos, dependencias y artefactos;
+2. auditoría del snapshot, secretos, dependencias y artefactos;
 3. CI verde sobre el commit público;
-4. smoke tests HTTPS de la demo antes de crear el tag `v1.0.0`.
+4. smoke tests HTTPS antes de crear el tag `v1.0.0`.
 
-La autorización ya existe, pero no sustituye esas puertas verificables. La demo seguirá descrita
-como educativa y no como un despliegue industrial o de producción.
+La evidencia se resume al inicio del documento y permanece accesible en el
+[release `v1.0.0`](https://github.com/xSkyLiN3/predictive-maintenance-ml/releases/tag/v1.0.0) y la
+[demo educativa](https://ml.nightstrike.cloud). Esta publicación no convierte el sistema en un
+despliegue industrial ni valida su uso en producción.
