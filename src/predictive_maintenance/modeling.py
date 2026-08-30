@@ -454,7 +454,7 @@ def _write_reproducible_text(path: Path, content: str) -> None:
 
 
 def _plot_cv_average_precision(results: Mapping[str, Mapping[str, Any]], path: Path) -> None:
-    labels = ("Dummy", "Logística", "Random forest")
+    labels = ("Dummy", "Logistic regression", "Random forest")
     means = [float(results[name]["average_precision_mean"]) for name in CANDIDATE_ORDER]
     deviations = [float(results[name]["average_precision_std"]) for name in CANDIDATE_ORDER]
     figure = _new_figure(8.4, 5.2)
@@ -473,7 +473,7 @@ def _plot_cv_average_precision(results: Mapping[str, Mapping[str, Any]], path: P
         )
     axis.set_xticks(positions, labels=labels)
     axis.set_ylabel("Average Precision")
-    axis.set_title("AP por fold y media ± desviación — solo training", weight="bold")
+    axis.set_title("AP by fold and mean ± standard deviation — training only", weight="bold")
     axis.set_ylim(0.0, min(1.0, max(means) * 1.3 + 0.02))
     axis.grid(axis="y", color="#DCE3E8", linewidth=0.8)
     axis.set_axisbelow(True)
@@ -491,18 +491,18 @@ def _plot_oof_precision_recall(
     metrics = threshold_result["oof_metrics"]
     figure = _new_figure(7.2, 5.4)
     axis = figure.subplots()
-    axis.plot(recall_values, precision_values, color="#2A9D8F", linewidth=2.0, label="Curva OOF")
+    axis.plot(recall_values, precision_values, color="#2A9D8F", linewidth=2.0, label="OOF curve")
     axis.scatter(
         [metrics["recall"]],
         [metrics["precision"]],
         color="#D1495B",
         s=60,
         zorder=3,
-        label=f"Umbral {threshold_result['value']:.4f}",
+        label=f"Threshold {threshold_result['value']:.4f}",
     )
-    axis.axhline(float(np.mean(target)), color="#7A8793", linestyle="--", label="Prevalencia")
+    axis.axhline(float(np.mean(target)), color="#7A8793", linestyle="--", label="Prevalence")
     axis.set(xlim=(0.0, 1.0), ylim=(0.0, 1.0), xlabel="Recall", ylabel="Precision")
-    axis.set_title("Precision–recall OOF del modelo elegido — solo training", weight="bold")
+    axis.set_title("OOF precision–recall for the selected model — training only", weight="bold")
     axis.grid(color="#DCE3E8", linewidth=0.8)
     axis.legend(frameon=False)
     axis.spines[["top", "right"]].set_visible(False)
@@ -518,7 +518,7 @@ def _selection_report(
     table_rows = []
     display_names = {
         "dummy": "Dummy prior",
-        "logistic_regression": "Regresión logística",
+        "logistic_regression": "Logistic regression",
         "random_forest": "Random forest",
     }
     for name in CANDIDATE_ORDER:
@@ -529,28 +529,30 @@ def _selection_report(
         )
     if selected_model is None or threshold_result is None:
         selection_text = (
-            "Ningún candidato superó estrictamente al dummy en AP media. La puerta se cerró y el "
-            "holdout permanece sin consultar."
+            "No candidate strictly beat the dummy in mean AP. The gate closed and the holdout "
+            "remains sealed."
         )
     else:
         metrics = threshold_result["oof_metrics"]
-        selection_text = f"""Se eligió `{selected_model}` exclusivamente por AP media de CV.
-El umbral OOF congelado es
-`{threshold_result["value"]:.12g}` con la regla `score >= threshold`: precision
-{metrics["precision"]:.4f}, recall {metrics["recall"]:.4f} y F1 {metrics["f1"]:.4f}. Estas son
-estimaciones de selección sobre training, no resultados finales."""
-    return f"""# Selección M3 sobre training
+        selection_text = f"""`{selected_model}` was selected exclusively by mean
+cross-validation AP.
+The frozen OOF threshold is `{threshold_result["value"]:.12g}` with the
+`score >= threshold` rule: precision {metrics["precision"]:.4f}, recall
+{metrics["recall"]:.4f}, and F1 {metrics["f1"]:.4f}. These are training selection estimates, not
+final results."""
+    return f"""# M3 selection on training data
 
-> Run `{run_id}`. AI4I 2020 es sintético; los scores no están calibrados ni validan uso industrial.
+> Run `{run_id}`. AI4I 2020 is synthetic; the scores are not calibrated and do not validate
+> industrial use.
 
-| Candidato | AP media | AP std (ddof=0) | ROC-AUC media |
+| Candidate | Mean AP | AP std (ddof=0) | Mean ROC-AUC |
 |---|---:|---:|---:|
 {chr(10).join(table_rows)}
 
 {selection_text}
 
-![Comparación CV](figures/01_cv_average_precision.png)
-{"" if threshold_result is None else "![Curva OOF](figures/02_oof_precision_recall.png)"}
+![Cross-validation comparison](figures/01_cv_average_precision.png)
+{"" if threshold_result is None else "![OOF curve](figures/02_oof_precision_recall.png)"}
 """
 
 

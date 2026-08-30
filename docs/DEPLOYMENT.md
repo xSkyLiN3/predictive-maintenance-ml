@@ -1,52 +1,58 @@
-# Contenedor y despliegue de la demo
+# Demo container and deployment
 
-Este documento cubre la imagen y el despliegue público de la demo `v1.0.0`. La disponibilidad del
-servicio no convierte el clasificador educativo en un sistema industrial.
+This document covers the `v1.0.1` image and its deployment procedure. It does not claim that this
+release candidate is already running publicly. Service availability does not turn the educational
+classifier into an industrial system.
 
-La instancia pública verificada vive en <https://ml.nightstrike.cloud>, detrás de Nginx y TLS. El
-contenedor escucha solo en loopback, ejecuta como UID/GID `10001`, usa filesystem de solo lectura,
-carece de capabilities y tiene límites explícitos de CPU, memoria y procesos.
+The public endpoint is <https://ml.nightstrike.cloud>, behind Nginx and TLS. Until `v1.0.1` is
+deployed, that endpoint may still serve the previous release. After deployment, verify the version,
+English interface, API messages, and asset cache keys before announcing the release. The host must
+publish the container port only on loopback. The container must run as UID/GID `10001`, use a
+read-only filesystem, have no capabilities, and have explicit CPU, memory, and process limits.
 
-## Garantías del build
+## Build guarantees
 
-El `Dockerfile` usa dos etapas:
+The `Dockerfile` uses two stages:
 
-1. construye el wheel del paquete;
-2. instala el wheel y el pipeline exacto evaluado en una imagen de runtime separada.
+1. builds the package wheel;
+2. installs the wheel and the exact evaluated pipeline in a separate runtime image.
 
-El build no descarga el dataset, no ejecuta `split`, `train` ni `evaluate-holdout`, y no contiene
-ningún CSV. Joblib y los PNG de Matplotlib no son byte a byte portables entre Windows y Linux;
-reentrenar dentro de la imagen produciría una serialización distinta de la que fijó el recibo
-final. Por ello se versionan únicamente el pipeline evaluado de 1,25 MB y su manifiesto. Antes de
-cargarlo, el loader reconcilia su SHA-256, run, versiones, recibos de selección, evaluación final y
-ledger global. La API no acepta artefactos aportados por usuarios.
+The build does not download the dataset, run `split`, `train`, or `evaluate-holdout`, and contains
+no CSV files. Re-training or re-rendering across platforms is not expected to reproduce identical
+Joblib and Matplotlib bytes. Therefore, the 1.25 MB evaluated pipeline and its manifest are
+versioned alongside the receipts, reports, and ledgers instead of being regenerated in the image.
+Before loading the pipeline, the loader reconciles its SHA-256, run, versions, selection receipts,
+final evaluation, and global ledger. The API does not accept user-supplied artifacts.
 
-Las dos imágenes base están fijadas por digest y las dependencias Python por versión en
-`requirements/constraints-py312.txt`. El build necesita acceso saliente a Docker Hub y PyPI, pero
-no a UCI. `pip` y `setuptools` se retiran después de instalar y verificar el wheel porque el
-servicio no necesita gestores de paquetes en runtime. La reproducción de training sigue
-disponible como flujo separado y nunca vuelve a abrir el holdout consumido.
+Both base images are pinned by digest and the Python dependencies by version in
+`requirements/constraints-py312.txt`. The build needs outbound access to Docker Hub and PyPI, but
+not to UCI. `pip` and `setuptools` are removed after installing and verifying the wheel because the
+service does not need package managers at runtime. Reproducing training remains available as a
+separate workflow and never reopens the consumed holdout.
 
-## Construir y ejecutar localmente
+## Build and run locally
 
-Desde la raíz del repositorio:
+From the repository root:
 
 ```bash
-docker build --tag machine-failure-risk-classifier:1.0.0 .
+docker build --tag machine-failure-risk-classifier:1.0.1 .
 docker run --rm \
   --name machine-failure-demo \
   --read-only \
   --tmpfs /tmp:rw,noexec,nosuid,size=64m \
   --cap-drop ALL \
   --security-opt no-new-privileges \
+  --cpus 1.0 \
+  --memory 512m \
+  --pids-limit 128 \
   --publish 127.0.0.1:8000:8000 \
-  machine-failure-risk-classifier:1.0.0
+  machine-failure-risk-classifier:1.0.1
 ```
 
-Abrir <http://127.0.0.1:8000>. La imagen se ejecuta como UID/GID `10001`, declara un healthcheck
-y no necesita un volumen escribible.
+Open <http://127.0.0.1:8000>. The image runs as UID/GID `10001`, declares a healthcheck, and does not
+need a writable volume.
 
-Comprobaciones útiles:
+Useful checks:
 
 ```bash
 docker inspect --format '{{.State.Health.Status}}' machine-failure-demo
@@ -54,15 +60,15 @@ docker exec machine-failure-demo id
 docker exec machine-failure-demo test ! -e /app/data
 ```
 
-## Variables de entorno
+## Environment variables
 
-| Variable | Valor en la imagen | Propósito |
+| Variable | Value in the image | Purpose |
 |---|---|---|
-| `MACHINE_FAILURE_HOST` | `0.0.0.0` | Dirección en la que escucha Uvicorn dentro del contenedor. |
-| `MACHINE_FAILURE_PORT` | `8000` | Puerto interno, entre `1` y `65535`. |
-| `MACHINE_FAILURE_ALLOWED_HOSTS` | `127.0.0.1,localhost` | Lista explícita de valores `Host` aceptados. |
+| `MACHINE_FAILURE_HOST` | `0.0.0.0` | Address on which Uvicorn listens inside the container. |
+| `MACHINE_FAILURE_PORT` | `8000` | Internal port, between `1` and `65535`. |
+| `MACHINE_FAILURE_ALLOWED_HOSTS` | `127.0.0.1,localhost` | Explicit list of accepted `Host` values. |
 
-Para usar otro puerto interno:
+To use another internal port:
 
 ```bash
 docker run --rm \
@@ -70,43 +76,44 @@ docker run --rm \
   --tmpfs /tmp:rw,noexec,nosuid,size=64m \
   --cap-drop ALL \
   --security-opt no-new-privileges \
+  --cpus 1.0 \
+  --memory 512m \
+  --pids-limit 128 \
   --publish 127.0.0.1:8080:8080 \
   --env MACHINE_FAILURE_PORT=8080 \
-  machine-failure-risk-classifier:1.0.0
+  machine-failure-risk-classifier:1.0.1
 ```
 
-`MACHINE_FAILURE_ALLOWED_HOSTS` no acepta `*`, esquemas ni rutas. En un proxy para
-`ml.nightstrike.cloud`, por ejemplo, debe incluir el dominio:
+`MACHINE_FAILURE_ALLOWED_HOSTS` does not accept `*`, schemes, or paths. For example, a proxy for
+`ml.nightstrike.cloud` must include the domain:
 
 ```bash
 --env MACHINE_FAILURE_ALLOWED_HOSTS=ml.nightstrike.cloud,127.0.0.1,localhost
 ```
 
-El proxy debe preservar `Host`, terminar HTTPS y aplicar límites de frecuencia y tamaño. La API
-no tiene autenticación, persistencia ni rate limiting propio; por ello el contenedor no debe
-publicarse directamente en Internet. La aplicación no guarda los inputs, pero los logs del proxy
-y de la plataforma deben configurarse de manera coherente con esa política.
+The proxy must preserve `Host`, terminate HTTPS, and apply rate and size limits. The API has no
+authentication, persistence, or built-in rate limiting; therefore, the container must not be
+published directly to the Internet. The application does not store inputs, but proxy and platform
+logs must be configured consistently with that policy.
 
 ## CI
 
-`.github/workflows/ci.yml` ejecuta:
+`.github/workflows/ci.yml` runs:
 
-- Ruff, formato, `pip check` y pytest en Python 3.12 sobre Ubuntu y Windows;
-- build de `sdist` y `wheel`, instalación aislada y suite completa sobre cada distribución;
-- build real de la imagen y escaneo Trivy de vulnerabilidades `HIGH`/`CRITICAL` con corrección
-  disponible;
-- espera del healthcheck, smoke de `/health`, comprobación de usuario no root y ausencia de los
-  CSV en runtime.
+- Ruff, formatting, `pip check`, and pytest on Python 3.12 on Ubuntu and Windows;
+- `sdist` and `wheel` builds, isolated installation, and the full suite on each distribution;
+- a real image build and Trivy scan for `HIGH`/`CRITICAL` vulnerabilities with a fix available;
+- waiting for the healthcheck, a `/health` smoke test, a non-root user check, and verification that
+  no CSV files are present at runtime.
 
-Las Actions oficiales están fijadas por SHA y anotadas con su versión. El workflow solo solicita
-`contents: read`; no publica paquetes, imágenes ni despliega infraestructura.
+Official Actions are pinned by SHA and annotated with their version. The workflow requests only
+`contents: read`; it does not publish packages or images or deploy infrastructure.
 
-## Límites operacionales
+## Operational limits
 
-- Es una demo educativa con un dataset sintético, no un sistema de mantenimiento.
-- No hay garantía de disponibilidad, calibración, detección conjunta OOD ni monitorización de
-  deriva.
-- Un fallo de arranque indica que el pipeline o alguno de sus recibos no pasó la validación de
-  integridad; no se debe desactivar ese fallo cerrado.
-- Cambiar dependencias de NumPy, pandas, scikit-learn o joblib exige reconstruir y revisar de forma
-  explícita la compatibilidad del artefacto.
+- This is an educational demo with a synthetic dataset, not a maintenance system.
+- There is no guarantee of availability, calibration, joint OOD detection, or drift monitoring.
+- A startup failure indicates that the pipeline or one of its receipts did not pass integrity
+  validation; this fail-closed behavior must not be disabled.
+- Changing NumPy, pandas, scikit-learn, or joblib dependencies requires rebuilding and explicitly
+  reviewing artifact compatibility.

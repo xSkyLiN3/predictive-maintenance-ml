@@ -73,17 +73,17 @@ async def _guard_predict_body(request: Request) -> JSONResponse | None:
         except ValueError:
             return JSONResponse(
                 status_code=400,
-                content={"detail": "Content-Length no es válido."},
+                content={"detail": "Content-Length is invalid."},
             )
         if parsed_length < 0:
             return JSONResponse(
                 status_code=400,
-                content={"detail": "Content-Length no es válido."},
+                content={"detail": "Content-Length is invalid."},
             )
         if parsed_length > MAX_PREDICT_BODY_BYTES:
             return JSONResponse(
                 status_code=413,
-                content={"detail": "El cuerpo de /predict supera el máximo de 16 KiB."},
+                content={"detail": "The /predict request body exceeds the 16 KiB limit."},
             )
 
     try:
@@ -91,12 +91,12 @@ async def _guard_predict_body(request: Request) -> JSONResponse | None:
     except Exception:
         return JSONResponse(
             status_code=400,
-            content={"detail": "No se pudo leer el cuerpo de la solicitud."},
+            content={"detail": "The request body could not be read."},
         )
     if len(body) > MAX_PREDICT_BODY_BYTES:
         return JSONResponse(
             status_code=413,
-            content={"detail": "El cuerpo de /predict supera el máximo de 16 KiB."},
+            content={"detail": "The /predict request body exceeds the 16 KiB limit."},
         )
 
     if not _is_json_media_type(request.headers.get("content-type", "")):
@@ -107,7 +107,7 @@ async def _guard_predict_body(request: Request) -> JSONResponse | None:
         key = str(error)[:80]
         return JSONResponse(
             status_code=400,
-            content={"detail": f"El JSON repite la clave {key!r}."},
+            content={"detail": f"The JSON object repeats the key {key!r}."},
         )
     except (UnicodeDecodeError, json.JSONDecodeError, RecursionError):
         # Preserve FastAPI's normal malformed-body response and its sanitized validation shape.
@@ -119,7 +119,7 @@ def get_service(request: Request) -> InferenceService:
     """Return the model loaded once during lifespan startup."""
     loaded = getattr(request.app.state, "inference_service", None)
     if not isinstance(loaded, InferenceService):
-        raise HTTPException(status_code=503, detail="El servicio del modelo no está disponible.")
+        raise HTTPException(status_code=503, detail="The model service is unavailable.")
     return loaded
 
 
@@ -173,8 +173,8 @@ def create_app(service: InferenceService | None = None) -> FastAPI:
         title="Machine Failure Risk Classifier",
         version=__version__,
         description=(
-            "Demo educativa sobre AI4I 2020 sintético. "
-            "El risk_score no es una probabilidad calibrada."
+            "Educational demo using the synthetic AI4I 2020 dataset. "
+            "risk_score is not a calibrated probability."
         ),
         lifespan=lifespan,
         docs_url=None,
@@ -208,7 +208,7 @@ def create_app(service: InferenceService | None = None) -> FastAPI:
                 LOGGER.exception("Unhandled exception while processing an HTTP request.")
                 response = JSONResponse(
                     status_code=500,
-                    content={"detail": "Error interno inesperado."},
+                    content={"detail": "Unexpected internal error."},
                 )
         response.headers["Content-Security-Policy"] = (
             "default-src 'self'; script-src 'self'; style-src 'self'; "
@@ -247,7 +247,7 @@ def create_app(service: InferenceService | None = None) -> FastAPI:
         except InferenceError as error:
             raise HTTPException(
                 status_code=503,
-                detail="El modelo local no pudo procesar esta observación.",
+                detail="The local model could not process this observation.",
             ) from error
 
     return application

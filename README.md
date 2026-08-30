@@ -10,7 +10,7 @@ pipeline, a strict FastAPI service and a responsive browser demo.
 
 **[Try the educational demo](https://ml.nightstrike.cloud)** ·
 **[Read the model card](docs/MODEL_CARD.md)** ·
-**[Inspect the evaluation report](reports/modeling/b15bab7b54bc2e1f/M3_REPORT.md)**
+**[Inspect the evaluation report](docs/EVALUATION_REPORT.md)**
 
 > [!IMPORTANT]
 > AI4I 2020 is synthetic. This project is not validated for real machinery, safety decisions or
@@ -80,10 +80,10 @@ before serving a prediction.
 ### With Docker
 
 ```bash
-docker build -t machine-failure-risk-classifier:1.0.0 .
+docker build -t machine-failure-risk-classifier:1.0.1 .
 docker run --rm -p 8000:8000 \
   --read-only --tmpfs /tmp --cap-drop=ALL \
-  machine-failure-risk-classifier:1.0.0
+  machine-failure-risk-classifier:1.0.1
 ```
 
 Open <http://127.0.0.1:8000>. The image packages the exact evaluated pipeline, verifies its
@@ -159,14 +159,18 @@ artifacts/                    exact evaluated pipeline plus its SHA-256 manifest
 ## Documentation
 
 - [Model card](docs/MODEL_CARD.md)
+- [Evaluation report](docs/EVALUATION_REPORT.md)
 - [Data and evaluation contract](docs/DATA_EVALUATION.md)
 - [Data attribution and transformations](docs/DATA_ATTRIBUTION.md)
 - [Decision record](docs/DECISIONS.md)
 - [Portfolio review](docs/PORTFOLIO_REVIEW.md)
 - [Changelog](CHANGELOG.md)
 
-The implementation documentation is written in Spanish; the public overview and API use English
-to keep the project accessible to a wider technical audience.
+The canonical editable and public-facing documentation, API contract, warnings, and browser UI are
+written in English. Spanish-language reports inside the sealed M3 run directory remain immutable
+archived evidence; the [English evaluation report](docs/EVALUATION_REPORT.md) is their public-facing
+counterpart. Source-dataset field names remain unchanged where they form part of the reproducibility
+contract.
 
 ## Data and licensing
 

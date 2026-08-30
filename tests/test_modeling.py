@@ -261,6 +261,9 @@ def test_training_selection_is_holdout_independent_idempotent_and_serializable(
     assert second == first
     assert not (processed_dir / "holdout.csv").exists()
     assert report_bytes == {path: path.read_bytes() for path in report_bytes}
+    selection_report = first.selection_report.read_text(encoding="utf-8")
+    assert "# M3 selection on training data" in selection_report
+    assert "Logistic regression" in selection_report
     run_manifest = json.loads(first.run_manifest.read_text(encoding="utf-8"))
     assert run_manifest["baseline_gate_passed"] is True
     assert run_manifest["holdout_accessed_during_selection"] is False

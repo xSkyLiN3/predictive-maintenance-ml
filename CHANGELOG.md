@@ -4,6 +4,24 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+
+- Made English the canonical public language across the browser demo, API descriptions, warnings,
+  validation messages, documentation, and generated reports.
+- Added an English public evaluation report and presentation figures derived from the
+  training-only workflow and frozen final receipt.
+- Clarified the reference-envelope and industrial-validation language to avoid overstating OOD
+  detection or real-world applicability.
+- Added an automated language regression gate for editable public surfaces.
+
+### Integrity
+
+- The evaluated model, run `b15bab7b54bc2e1f`, threshold, metrics, pipeline bytes, manifests,
+  single-use holdout receipt, and archived M3 evidence remain unchanged.
+- The final holdout was not reopened for this localization release.
+
 ## [1.0.0] - 2026-08-19
 
 ### Added
@@ -35,4 +53,5 @@ All notable changes to this project are documented here. The format follows
 - The score is not calibrated as a real-world failure probability.
 - The demo is educational and must not be used to make maintenance or safety decisions.
 
+[Unreleased]: https://github.com/xSkyLiN3/predictive-maintenance-ml/compare/v1.0.0...HEAD
 [1.0.0]: https://github.com/xSkyLiN3/predictive-maintenance-ml/releases/tag/v1.0.0

@@ -1,20 +1,21 @@
-# Contrato de datos y evaluación
+# Data and evaluation contract
 
-Este documento fija las reglas antes de observar resultados. Cambiarlas después requiere registrarlo en `docs/DECISIONS.md` y explicar el motivo.
+This document establishes the rules before results are observed. Changing them afterward requires
+recording the change in `docs/DECISIONS.md` and explaining the reason.
 
-## Fuente y trazabilidad
+## Source and traceability
 
 - Dataset: AI4I 2020 Predictive Maintenance.
-- Fuente canónica: UCI Machine Learning Repository, ID 601.
-- Licencia: CC BY 4.0.
-- La descarga debe guardar URL, fecha, tamaño y SHA-256.
-- El archivo original es inmutable; cualquier transformación genera una salida separada.
+- Canonical source: UCI Machine Learning Repository, ID 601.
+- License: CC BY 4.0.
+- The download must store the URL, date, size, and SHA-256.
+- The original file is immutable; every transformation generates a separate output.
 
 ## Target
 
-`Machine failure`, clasificación binaria.
+`Machine failure`, binary classification.
 
-## Features permitidas inicialmente
+## Initially allowed features
 
 - `Type`
 - `Air temperature [K]`
@@ -23,39 +24,41 @@ Este documento fija las reglas antes de observar resultados. Cambiarlas después
 - `Torque [Nm]`
 - `Tool wear [min]`
 
-Estos nombres se confirmaron contra el CSV oficial fijado en M1 y forman la allowlist exacta.
+These names were confirmed against the official CSV pinned in M1 and form the exact allowlist.
 
-## Columnas prohibidas
+## Prohibited columns
 
-- Identificadores: `UDI`, `Product ID`.
-- Indicadores de modos de fallo: `TWF`, `HDF`, `PWF`, `OSF`, `RNF`.
+- Identifiers: `UDI`, `Product ID`.
+- Failure-mode indicators: `TWF`, `HDF`, `PWF`, `OSF`, `RNF`.
 
-Los indicadores de modos de fallo están vinculados directamente a la definición del target. Incluirlos inflaría artificialmente el desempeño y haría que el proyecto no demostrara inferencia útil desde señales operativas.
+The failure-mode indicators are directly tied to the target definition. Including them would
+artificially inflate performance and prevent the project from demonstrating useful inference from
+operational signals.
 
-## Contrato del snapshot confirmado en M1
+## Snapshot contract confirmed in M1
 
-El contrato estricto corresponde al dataset fuente completo, no a una futura observación de API:
+The strict contract applies to the complete source dataset, not to a future API observation:
 
-- 10.000 filas y 14 columnas en el orden oficial;
-- strings: `Product ID` y `Type`;
-- floats: temperaturas del aire y proceso, y torque;
-- enteros: `UDI`, velocidad rotacional, desgaste, target y cinco modos de fallo;
-- cero nulos, strings vacíos, infinitos y filas crudas completamente duplicadas;
-- `Type` contiene exactamente `L`, `M` y `H`;
-- target y modos de fallo son binarios, y el target contiene ambas clases;
-- `UDI` es positivo y único; `Product ID` es único, sigue `[LMH]` más cinco dígitos y su
-  prefijo coincide con `Type`.
+- 10,000 rows and 14 columns in the official order;
+- strings: `Product ID` and `Type`;
+- floats: air and process temperatures, and torque;
+- integers: `UDI`, rotational speed, wear, target, and five failure modes;
+- zero nulls, empty strings, infinities, and fully duplicated raw rows;
+- `Type` contains exactly `L`, `M`, and `H`;
+- the target and failure modes are binary, and the target contains both classes;
+- `UDI` is positive and unique; `Product ID` is unique, follows `[LMH]` plus five digits, and its
+  prefix matches `Type`.
 
-Los guardrails numéricos de regresión son: aire 295–305 K, proceso 305–315 K, velocidad
-1.000–3.000 rpm, torque 0–80 Nm y desgaste 0–260 min. Contienen el snapshot observado, pero no
-son límites físicos universales ni el contrato de inputs de la API M4.
+The numerical regression guardrails are: air 295–305 K, process 305–315 K, speed 1,000–3,000 rpm,
+torque 0–80 Nm, and wear 0–260 min. They contain the observed snapshot, but they are neither
+universal physical limits nor the M4 API input contract.
 
-Los extremos exactos del snapshot completo se inspeccionaron en M1 como control de calidad de la
-fuente, pero **no son la procedencia de la regla de abstención**. La envolvente del servicio se
-congeló exclusivamente desde `reports/eda/summary.json`, un artefacto versionado que declara
-`scope = "training_only"`, `training_rows = 8000` y `holdout_profiled = false`:
+The exact endpoints of the complete snapshot were inspected in M1 as source quality control, but
+they are **not the provenance of the abstention rule**. The service envelope was frozen exclusively
+from `reports/eda/summary.json`, a versioned artifact that declares
+`scope = "training_only"`, `training_rows = 8000`, and `holdout_profiled = false`:
 
-| Variable | Mínimo y máximo observados, inclusivos |
+| Variable | Observed minimum and maximum, inclusive |
 |---|---:|
 | `Air temperature [K]` | `295.3`–`304.5` K |
 | `Process temperature [K]` | `305.7`–`313.8` K |
@@ -63,197 +66,194 @@ congeló exclusivamente desde `reports/eda/summary.json`, un artefacto versionad
 | `Torque [Nm]` | `3.8`–`76.6` Nm |
 | `Tool wear [min]` | `0`–`253` min |
 
-Estos son los extremos univariados de **training**, no del holdout. Describen soporte marginal de
-datos sintéticos; no son límites industriales, reglas físicas ni evidencia de que toda combinación
-interior pertenezca al dominio del generador. La coincidencia de estos cinco pares con los extremos
-globales observados durante M1 no cambia su procedencia: el contrato y la regresión automatizada
-usan solamente el resumen EDA de training.
+These are the univariate endpoints of **training**, not of the holdout. They describe marginal
+support in synthetic data; they are not industrial limits, physical rules, or evidence that every
+interior combination belongs to the generator's domain. The fact that these five pairs match the
+global endpoints observed during M1 does not change their provenance: the contract and automated
+regression use only the training EDA summary.
 
-## Contrato de inferencia local de M4
+## M4 local inference contract
 
-La API define un contrato independiente para una observación, no reutiliza el validador del CSV
-ni los guardrails de fuente. Exige exactamente estos campos JSON:
+The API defines an independent contract for one observation; it does not reuse the CSV validator or
+the source guardrails. It requires exactly these JSON fields:
 
-- `type`: string exacto `L`, `M` o `H`;
-- `air_temperature_k` y `process_temperature_k`: números finitos mayores que cero;
-- `rotational_speed_rpm`: entero no negativo;
-- `torque_nm`: número finito no negativo;
-- `tool_wear_min`: entero no negativo.
+- `type`: exact string `L`, `M`, or `H`;
+- `air_temperature_k` and `process_temperature_k`: finite numbers greater than zero;
+- `rotational_speed_rpm`: non-negative integer;
+- `torque_nm`: finite non-negative number;
+- `tool_wear_min`: non-negative integer.
 
-No se aceptan campos extra, `null`, booleanos, strings numéricos, `NaN` ni infinitos. Las cinco
-restricciones numéricas expresan unidades y signos semánticos, no soporte estadístico ni límites
-industriales. Los nombres JSON deben ser únicos: una clave duplicada devuelve `400`. El body tiene
-un máximo de `16 KiB` (`16.384` bytes) y excederlo devuelve `413`. Los demás rechazos de validación
-y los fallos de inferencia se representan mediante respuestas JSON controladas y serializables.
+Extra fields, `null`, booleans, numerical strings, `NaN`, and infinities are not accepted. The five
+numerical constraints express semantic units and signs, not statistical support or industrial
+limits. JSON names must be unique: a duplicate key returns `400`. The body has a maximum size of
+`16 KiB` (`16,384` bytes), and exceeding it returns `413`. Other validation rejections and inference
+failures are represented by controlled, serializable JSON responses.
 
-La UI exige además `Number.isSafeInteger` para velocidad y desgaste, entre `0` y
-`9.007.199.254.740.991`, con el único fin de impedir pérdida de precisión al convertir el formulario
-a números JavaScript. Esta protección del cliente no es un límite físico ni reemplaza la validación
-del servidor.
+The UI additionally requires `Number.isSafeInteger` for speed and wear, between `0` and
+`9,007,199,254,740,991`, solely to prevent precision loss when converting the form to JavaScript
+numbers. This client-side protection is not a physical limit and does not replace server
+validation.
 
-Una observación que pasa el schema se compara con la envolvente marginal de training registrada
-arriba. Los valores están fijados en el código para que inferencia no lea datasets ni reportes en
-runtime; `tests/test_reference_envelope.py` demuestra que coinciden exactamente con el resumen EDA
-`training_only` y que ese resumen declara no haber perfilado el holdout.
-Si todas las variables quedan dentro de sus extremos inclusivos,
+An observation that passes the schema is compared with the training marginal envelope recorded
+above. The values are pinned in code so that inference does not read datasets or reports at runtime;
+`tests/test_reference_envelope.py` demonstrates that they exactly match the `training_only` EDA
+summary and that the summary declares the holdout was not profiled. If all variables remain within
+their inclusive endpoints,
 `domain_status = "within_reference_envelope"`,
-`decision_applicable = true` y el pipeline produce `risk_score` y `predicted_failure` normalmente.
-Si cualquier variable queda fuera, la respuesta sigue siendo HTTP `200`, pero el pipeline no se
-invoca: `domain_status = "outside_reference_envelope"`, `decision_applicable = false`,
-`risk_score = null` y
-`predicted_failure = null`. Las advertencias identifican por separado cada campo fuera de rango.
+`decision_applicable = true`, and the pipeline produces `risk_score` and `predicted_failure`
+normally. If any variable falls outside, the response remains HTTP `200`, but the pipeline is not
+invoked: `domain_status = "outside_reference_envelope"`, `decision_applicable = false`,
+`risk_score = null`, and `predicted_failure = null`. Warnings separately identify each out-of-range
+field.
 
-Esta abstención no convierte la API en un detector OOD completo. Solo comprueba cinco proyecciones
-univariadas; no valida soporte conjunto, correlaciones, densidad, deriva, orden temporal ni
-plausibilidad física. Un input marcado `within_reference_envelope` todavía puede estar fuera de
-distribución. Adoptar
-esta capa de servicio no modifica el modelo, el umbral ni ninguna métrica M3, y no reutiliza el
-holdout para seleccionar o ajustar el sistema.
+This abstention does not turn the API into a complete OOD detector. It checks only five univariate
+projections; it does not validate joint support, correlations, density, drift, temporal order, or
+physical plausibility. An input marked `within_reference_envelope` may still be out of distribution.
+Adopting this service layer does not modify the model, threshold, or any M3 metric, and it does not
+reuse the holdout to select or tune the system.
 
-Además de duplicados crudos, el validador informa observaciones repetidas sobre las seis features
-sin rechazarlas: mediciones operativas iguales pueden ser legítimas. En el snapshot fijado ambos
-conteos son cero.
+In addition to raw duplicates, the validator reports observations repeated across the six features
+without rejecting them: identical operational measurements may be legitimate. In the pinned
+snapshot, both counts are zero.
 
-El archivo contiene 27 desacuerdos entre `Machine failure` y el OR de los cinco indicadores: 9
-positivos sin modo activo y 18 negativos con `RNF = 1`. Se conserva el target original, no se
-imputa ni corrige ninguna fila y no se exige que los modos sean mutuamente excluyentes. Esta
-anomalía refuerza que los indicadores se auditen pero nunca entren al conjunto de features.
+The file contains 27 disagreements between `Machine failure` and the OR of the five indicators: 9
+positives without an active mode and 18 negatives with `RNF = 1`. The original target is preserved,
+no row is imputed or corrected, and the modes are not required to be mutually exclusive. This
+anomaly reinforces that the indicators should be audited but never enter the feature set.
 
-## Partición
+## Partition
 
-1. Separar una vez un 20 % estratificado como test.
-2. Conservar el 80 % restante para entrenamiento y validación cruzada.
-3. Ajustar preprocesamiento dentro de cada fold mediante `Pipeline`.
-4. Elegir modelo y umbral sin consultar test.
-5. Ejecutar una evaluación final sobre test y conservarla como resultado del MVP.
+1. Designate a stratified 20% holdout once.
+2. Keep the remaining 80% for training and cross-validation.
+3. Fit preprocessing within each fold through `Pipeline`.
+4. Choose the model and threshold without consulting the holdout.
+5. Run one final evaluation on the holdout and preserve it as the MVP result.
 
-La semilla fija, elegida arbitrariamente antes de modelar y sin probar alternativas, es `42`; se
-reutiliza en todos los componentes compatibles. La partición se
-materializó al inicio de M2, antes de la EDA, mediante `train_test_split` de scikit-learn 1.9.0.
-Las filas se ordenan por su posición original dentro de cada partición para obtener CSV canónicos.
+The fixed seed, chosen arbitrarily before modeling and without testing alternatives, is `42`; it is
+reused in all compatible components. The partition was materialized at the beginning of M2, before
+the EDA, with scikit-learn 1.9.0 `train_test_split`. Rows are sorted by their original position
+within each partition to produce canonical CSV files.
 
-Los derivados locales contienen exclusivamente las seis features permitidas y el target. El
-manifiesto versionado `data/split_manifest.json` registra hash de fuente, algoritmo, semilla,
-proporción, columnas, versiones, tamaños y hashes de ambas particiones, pero ninguna estadística
-específica del holdout. La EDA carga y verifica solo `train.csv`; no resuelve `holdout.csv`.
-Las versiones del manifiesto registran el entorno que creó el archivo; no son invariantes de
-integridad entre revisiones de Python 3.12. Los hashes derivados sí deben coincidir exactamente.
+The local derivatives contain exclusively the six allowed features and the target. The versioned
+`data/split_manifest.json` manifest records the source hash, algorithm, seed, ratio, columns,
+versions, sizes, and hashes of both partitions, but no holdout-specific statistics. The EDA loads
+and verifies only `train.csv`; it does not resolve `holdout.csv`. The manifest versions record the
+environment that created the file; they are not integrity invariants across Python 3.12 revisions.
+The derived hashes must match exactly.
 
-M1 necesariamente inspeccionó conteos y rangos globales para validar el contrato de la fuente.
-Desde la materialización de M2, ninguna distribución, ejemplo o resultado específico del holdout
-participa en decisiones.
+M1 necessarily inspected global counts and ranges to validate the source contract. Since the M2
+partition was materialized, no holdout-specific distribution, example, or result has participated
+in decisions.
 
-## Validación cruzada y selección
+## Cross-validation and selection
 
-- `StratifiedKFold(n_splits=5, shuffle=True, random_state=42)` compartido por los candidatos.
-- Todo preprocesamiento se ajusta dentro de cada fold mediante `Pipeline`.
-- La selección usa la media no ponderada de Average Precision en los cinco folds; se publican
-  también valores por fold y desviación estándar.
-- Average Precision pooled sobre las predicciones OOF se podrá mostrar solo como diagnóstico; no
-  sustituye la media de los cinco folds para seleccionar.
-- ROC-AUC es secundaria y no desempata la selección.
-- `DummyClassifier(strategy="prior")` es el baseline.
-- Entre regresión logística y random forest gana la mayor AP media. Un empate numérico dentro de
-  `1e-12` favorece regresión logística por simplicidad.
-- Si ningún candidato supera al dummy en AP media, el holdout no se abre y M3 se detiene para
-  revisión.
+- `StratifiedKFold(n_splits=5, shuffle=True, random_state=42)` shared by the candidates.
+- All preprocessing is fitted within each fold through `Pipeline`.
+- Selection uses the unweighted mean Average Precision across the five folds; per-fold values and
+  standard deviation are also published.
+- Average Precision pooled over the OOF predictions may be shown only as a diagnostic; it does not
+  replace the mean of the five folds for selection.
+- ROC-AUC is secondary and does not break a selection tie.
+- `DummyClassifier(strategy="prior")` is the baseline.
+- Between logistic regression and random forest, the higher mean AP wins. A numerical tie within
+  `1e-12` favors logistic regression for simplicity.
+- If no candidate beats the dummy on mean AP, the holdout is not opened, and M3 stops for review.
 
-## Modelos iniciales
+## Initial models
 
-1. `DummyClassifier` como referencia mínima.
-2. Regresión logística con preprocesamiento y balance de clases cuando corresponda.
-3. Random forest con complejidad controlada.
+1. `DummyClassifier` as the minimum reference.
+2. Logistic regression with preprocessing and class balancing where applicable.
+3. Random forest with controlled complexity.
 
-No se añadirán más algoritmos hasta comprender el error de estos modelos.
+No additional algorithms will be added until the error profiles of these models are understood.
 
-La configuración quedó congelada antes de ejecutar M3 y no se hará búsqueda de hiperparámetros:
+The configuration was frozen before running M3, and no hyperparameter search will be performed:
 
-- los tres estimadores viven dentro de `Pipeline`;
-- `Type` se codifica con `OneHotEncoder` usando categorías fijas `L`, `M`, `H`; las cinco
-  variables numéricas pasan por `StandardScaler`; el `ColumnTransformer` elimina cualquier otra
-  columna;
+- all three estimators live inside a `Pipeline`;
+- `Type` is encoded with `OneHotEncoder` using fixed categories `L`, `M`, `H`; the five numerical
+  variables pass through `StandardScaler`; the `ColumnTransformer` removes every other column;
 - dummy: `DummyClassifier(strategy="prior")`;
-- logística: L2 mediante `l1_ratio=0`, `C=1`, solver `liblinear`,
-  `class_weight="balanced"`, `max_iter=1000` y semilla `42`;
-- random forest: 300 árboles, Gini, profundidad máxima 8, `min_samples_split=10`,
-  `min_samples_leaf=5`, `max_features="sqrt"`, bootstrap, `class_weight="balanced"`, semilla `42`
-  y `n_jobs=1`.
+- logistic regression: L2 through `l1_ratio=0`, `C=1`, solver `liblinear`,
+  `class_weight="balanced"`, `max_iter=1000`, and seed `42`;
+- random forest: 300 trees, Gini, maximum depth 8, `min_samples_split=10`,
+  `min_samples_leaf=5`, `max_features="sqrt"`, bootstrap, `class_weight="balanced"`, seed `42`, and
+  `n_jobs=1`.
 
-La desviación estándar de CV se calculará con `ddof=0`. La puerta frente al dummy conserva la
-lectura literal del protocolo: la AP media del mejor candidato debe ser estrictamente mayor que
-la AP media del dummy; la tolerancia `1e-12` solo se usa para el desempate entre logística y
-random forest y para empates del umbral.
+The CV standard deviation will be calculated with `ddof=0`. The gate against the dummy preserves
+the protocol's literal interpretation: the best candidate's mean AP must be strictly greater than
+the dummy's mean AP; the `1e-12` tolerance is used only for ties between logistic regression and
+random forest and for threshold ties.
 
-## Métricas
+## Metrics
 
-### Principal
+### Primary
 
-**Average Precision**, adecuada para resumir precision-recall cuando la clase positiva es minoritaria.
+**Average Precision**, suitable for summarizing precision-recall when the positive class is a
+minority.
 
-### En el umbral elegido
+### At the selected threshold
 
 - precision;
 - recall;
 - F1;
-- matriz de confusión;
-- cantidad de falsos positivos y falsos negativos.
+- confusion matrix;
+- number of false positives and false negatives.
 
-### Secundaria
+### Secondary
 
 - ROC-AUC.
 
-Accuracy se informará solamente acompañada de prevalencia, baseline y las métricas anteriores.
+Accuracy will be reported only together with prevalence, the baseline, and the metrics above.
 
-## Umbral
+## Threshold
 
-El umbral no será necesariamente 0,5. Después de seleccionar el modelo se generará exactamente
-una probabilidad out-of-fold `predict_proba[:, 1]` por fila de training usando los mismos cinco
-folds. Se elegirá el umbral que maximice F1 con la regla `score >= threshold`. Los empates dentro
-de `1e-12` se resolverán primero
-por menor diferencia absoluta entre precision y recall y luego por el menor umbral. Este último
-desempate es solo determinista y no representa costos industriales. El valor se congelará antes
-de ajustar el pipeline elegido sobre todo training y evaluar el holdout una sola vez.
+The threshold will not necessarily be 0.5. After selecting the model, exactly one out-of-fold
+`predict_proba[:, 1]` probability will be generated per training row using the same five folds. The
+threshold that maximizes F1 under the rule `score >= threshold` will be selected. Ties within
+`1e-12` will first be resolved by the smallest absolute difference between precision and recall,
+then by the lower threshold. This last tiebreaker is deterministic only and does not represent
+industrial costs. The value will be frozen before fitting the selected pipeline on all training and
+evaluating the holdout once.
 
-Precision, recall y F1 OOF se etiquetarán como estimaciones usadas para selección, no como
-resultados finales. El reporte mostrará el intercambio completo sin inventar costos de operación.
+OOF precision, recall, and F1 will be labeled as estimates used for selection, not final results.
+The report will show the complete tradeoff without inventing operating costs.
 
-## Ejecución registrada de M3
+## Recorded M3 execution
 
-El contrato anterior se ejecutó sin tuning ni cambios de features en el run
-`b15bab7b54bc2e1f`. Random forest ganó por AP media CV (`0.643812`), por encima de regresión
-logística (`0.441433`) y Dummy (`0.033875`). El umbral OOF congelado fue
-`0.6965799216184142`; en training OOF produjo precision `0.587879`, recall `0.715867` y F1
-`0.645591`.
+The contract above was executed without tuning or feature changes in run `b15bab7b54bc2e1f`.
+Random forest won on mean CV AP (`0.643812`), ahead of logistic regression (`0.441433`) and Dummy
+(`0.033875`). The frozen OOF threshold was `0.6965799216184142`; on OOF training predictions it
+produced precision `0.587879`, recall `0.715867`, and F1 `0.645591`.
 
-Después de congelar modelo y umbral, el holdout se leyó una sola vez. El resultado final fue AP
-`0.649538`, ROC-AUC `0.965458`, precision `0.588235`, recall `0.735294`, F1 `0.653595` y matriz
-`[[1897, 35], [18, 50]]`. Accuracy fue `0.973500`, junto a prevalencia `0.034` y referencia
-mayoritaria `0.966`.
+After freezing the model and threshold, the holdout was read once. The final result was AP
+`0.649538`, ROC-AUC `0.965458`, precision `0.588235`, recall `0.735294`, F1 `0.653595`, and matrix
+`[[1897, 35], [18, 50]]`. Accuracy was `0.973500`, alongside prevalence `0.034` and majority
+reference `0.966`.
 
-Como cierre posterior, sin volver a abrir el holdout ni recalcular predicciones, se añadieron
-intervalos Wilson bilaterales del 95 % derivados **solo** de esa matriz versionada. Para precision,
-los éxitos son `TP = 50` entre `TP + FP = 85`: IC `0.482010`–`0.686830`. Para recall, los
-éxitos son `TP = 50` entre `TP + FN = 68`: IC `0.619923`–`0.825503`. Se usa el cuantil normal
-`z = 1.9599639845400536`; la fórmula y sus regresiones viven en
-`src/predictive_maintenance/uncertainty.py` y `tests/test_uncertainty.py`.
+As a subsequent closure step, without reopening the holdout or recomputing predictions, two-sided
+95% Wilson intervals derived **only** from that versioned matrix were added. For precision, the
+successes are `TP = 50` out of `TP + FP = 85`: CI `0.482010`–`0.686830`. For recall, the successes
+are `TP = 50` out of `TP + FN = 68`: CI `0.619923`–`0.825503`. The normal quantile
+`z = 1.9599639845400536` is used; the formula and its regressions live in
+`src/predictive_maintenance/uncertainty.py` and `tests/test_uncertainty.py`.
 
-Estos intervalos cuantifican solamente incertidumbre binomial por soporte finito bajo el holdout
-fijado. No corrigen sesgo de selección, naturaleza sintética, shift de distribución, dependencia
-entre observaciones ni incertidumbre por predicción. No se usaron para elegir o modificar modelo,
-features, umbral o claims.
+These intervals quantify only binomial uncertainty from finite support under the pinned holdout.
+They do not correct for selection bias, synthetic nature, distribution shift, dependence among
+observations, or per-prediction uncertainty. They were not used to select or modify the model,
+features, threshold, or claims.
 
-El recibo y los gráficos están en
-`reports/modeling/b15bab7b54bc2e1f/`. Un ledger versionado por SHA-256 en
-`reports/holdout_access/` impide que otro run consuma nuevamente ese holdout. Estos scores no se
-evaluaron como probabilidades calibradas y el resultado sintético no acredita utilidad industrial.
+The receipt and plots are in `reports/modeling/b15bab7b54bc2e1f/`. A SHA-256-indexed versioned
+ledger in `reports/holdout_access/` prevents another run from consuming that holdout again. These
+scores were not evaluated as calibrated probabilities, and the synthetic result does not establish
+industrial usefulness.
 
-## Resultado aceptable
+## Acceptable result
 
-No existe una cifra mínima prefijada para el portfolio. Un resultado es válido si:
+There is no preset minimum portfolio figure. A result is valid if:
 
-- supera al baseline en AP media de CV y reporta los deltas por fold, aunque estos no son una
-  puerta adicional;
-- fue obtenido sin leakage;
-- es reproducible;
-- se informa completo, incluso si es modesto;
-- sus limitaciones quedan claras.
+- it beats the baseline on mean CV AP and reports per-fold deltas, although those are not an
+  additional gate;
+- it was obtained without leakage;
+- it is reproducible;
+- it is reported in full, even if modest;
+- its limitations are clear.

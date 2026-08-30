@@ -1,57 +1,57 @@
-# Revisión de portfolio y publicación
+# Portfolio and publication review
 
-**Fecha:** 2026-08-17
-**Actualización adversarial:** 2026-08-18
-**Actualización de release:** 2026-08-19
-**Alcance:** evidencia del cierre M5 y puerta técnica para el release educativo M6.
+**Date:** 2026-08-17
+**Adversarial update:** 2026-08-18
+**Release update:** 2026-08-19
+**Scope:** evidence from M5 closure and the technical gate for the educational M6 release.
 
-## Actualización M6
+## M6 update
 
-El usuario autorizó de forma explícita preparar y ejecutar la publicación y el despliegue. Se
-adoptó MIT para el código, separada de la `CC BY 4.0` del dataset, y se fijó la versión pública
-`1.0.0`. El modelo, las features, el split, el umbral y la evaluación permanecen congelados.
+The project owner approved publication and deployment after local review. MIT was adopted for the
+code, separately from the dataset's `CC BY 4.0`, and public version `1.0.0` was pinned. The model,
+features, split, threshold, and evaluation remain frozen.
 
-M6 añade CI Windows/Linux, empaquetado, un contenedor runtime sin datos y una demo educativa
-stateless. La envolvente de abstención quedó ligada al resumen versionado `training_only`; los
-intervalos Wilson de precision y recall se derivan de la matriz final ya registrada. Ninguno de
-estos cambios vuelve a leer el holdout ni modifica el resultado M3.
+M6 adds Windows/Linux CI, packaging, a data-free runtime container, and a stateless educational
+demo. The abstention envelope was tied to the versioned `training_only` summary; the Wilson
+intervals for precision and recall are derived from the already recorded final matrix. None of
+these changes rereads the holdout or modifies the M3 result.
 
-La primera validación Linux demostró que los PNG de Matplotlib y la serialización Joblib no son
-idénticos byte a byte entre Windows y Linux. El runtime no relaja los hashes ni reemplaza el
-modelo: distribuye el pipeline exacto evaluado de 1,25 MB, comprueba su SHA-256 antes de cargarlo y
-mantiene dataset, particiones y artefactos aportados por usuarios fuera de la imagen.
+The first Linux validation showed that Matplotlib PNGs and Joblib serialization are not
+byte-for-byte identical between Windows and Linux. The runtime does not relax hashes or replace the
+model: it distributes the exact 1.25 MB evaluated pipeline, checks its SHA-256 before loading it,
+and keeps the dataset, partitions, and user-supplied artifacts outside the image.
 
-Las conclusiones de autorización/estado escritas durante M5 y conservadas más abajo son evidencia
-histórica de aquella puerta; quedan evolucionadas por D-029 y por la auditoría final de M6.
+The authorization/status conclusions written during M5 and retained below are historical evidence
+of that gate; they are superseded by D-029 and the final M6 audit.
 
-Evidencia local de release sobre el snapshot M6:
+Local release evidence for the M6 snapshot:
 
-- `pip check`, Ruff y formato pasan; Ruff verificó `46` archivos.
-- pytest pasa `227/227` pruebas.
-- wheel y sdist construidos con `setuptools 84.0.0` pasan `227/227` pruebas cada uno.
-- OSV no reporta advisories activos en los `45` pins auditados; los pins de PyPI no están yanked.
-- Gitleaks `8.30.1`, descargado desde el release oficial y verificado por SHA-256, no encontró
-  secretos en el snapshot ni en todo el historial alcanzable.
-- La captura pública es un PNG `1440 × 1100`, sin metadata ni strings sensibles detectados.
-- GitHub Actions pasó calidad en Windows/Linux, instalación de wheel/sdist, build Docker, Trivy
-  sin vulnerabilidades `HIGH`/`CRITICAL` corregibles y smoke endurecido del runtime.
-- El repositorio es público y la demo HTTPS fue verificada por IPv4 e IPv6, con health, inferencia,
-  abstención, límites de cuerpo/frecuencia y regresión de los servicios existentes.
+- `pip check`, Ruff, and formatting pass; Ruff verified `46` files.
+- pytest passes `227/227` tests.
+- The wheel and sdist built with `setuptools 84.0.0` each pass `227/227` tests.
+- OSV reports no active advisories in the `45` audited pins; the PyPI pins are not yanked.
+- Gitleaks `8.30.1`, downloaded from the official release and verified by SHA-256, found no secrets
+  in the snapshot or the entire reachable history.
+- The public screenshot is a `1440 × 1100` PNG, with no detected metadata or sensitive strings.
+- GitHub Actions passed quality checks on Windows/Linux, wheel/sdist installation, the Docker
+  build, Trivy with no fixable `HIGH`/`CRITICAL` vulnerabilities, and hardened runtime smoke tests.
+- The repository is public, and the HTTPS demo was verified over IPv4 and IPv6, including health,
+  inference, abstention, body/rate limits, and regression of the existing services.
 
-## Veredicto de cierre M5
+## M5 closure verdict
 
-El MVP local es reproducible y apto para revisión técnica. La documentación, los recibos, las
-métricas y la aplicación concilian con el run congelado `b15bab7b54bc2e1f`. No se volvió a
-evaluar el holdout durante M5.
+The local MVP is reproducible and suitable for technical review. The documentation, receipts,
+metrics, and application reconcile with frozen run `b15bab7b54bc2e1f`. The holdout was not
+reevaluated during M5.
 
-En el cierre de M5, el repositorio todavía no estaba autorizado ni listo para publicación: faltaba
-elegir licencia y curar el commit del MVP. Esas condiciones motivaron M6; no describen su estado
-actual.
+At M5 closure, the repository was not yet authorized or ready for publication: its license still
+had to be selected, and the MVP commit had to be curated. Those conditions motivated M6; they do
+not describe its current status.
 
-## Reconstrucción limpia
+## Clean reconstruction
 
-Se creó una copia temporal aislada sin `.venv`, cachés, datos locales ni artefactos binarios. La
-secuencia se ejecutó siguiendo solamente el README con CPython `3.12.0` y pip `26.2.1`:
+An isolated temporary copy was created without `.venv`, caches, local data, or binary artifacts.
+The sequence was executed using only the README, with CPython `3.12.0` and pip `26.2.1`:
 
 ```powershell
 py -3.12 -m venv .venv
@@ -68,99 +68,100 @@ py -3.12 -m venv .venv
 .\.venv\Scripts\python.exe -m predictive_maintenance train
 ```
 
-Resultados:
+Results:
 
-- las `40` versiones del archivo de constraints coincidieron y `pip check` no halló conflictos;
-- Ruff y el control de formato pasaron;
-- pytest pasó `174/174` pruebas;
-- los ocho outputs de EDA fueron byte a byte idénticos;
-- se reprodujo el run `b15bab7b54bc2e1f`;
-- se reprodujo exactamente el pipeline SHA-256
+- the `40` versions in the constraints file matched, and `pip check` found no conflicts;
+- Ruff and the formatting check passed;
+- pytest passed `174/174` tests;
+- all eight EDA outputs were byte-for-byte identical;
+- run `b15bab7b54bc2e1f` was reproduced;
+- the pipeline SHA-256 was reproduced exactly:
   `8f383492fff0a1199a7f62289651a29da39f4c6a149762aa9b75c099efc1568a`;
-- los reportes versionados, el puntero activo y el ledger permanecieron byte a byte idénticos;
-- Uvicorn arrancó con el holdout inaccesible para la aplicación y `/health`, `/model-info` y
-  `/predict` respondieron `200` con identidad y umbral correctos.
+- the versioned reports, active pointer, and ledger remained byte-for-byte identical;
+- Uvicorn started with the holdout inaccessible to the application, and `/health`, `/model-info`,
+  and `/predict` returned `200` with the correct identity and threshold.
 
-No se ejecutó `evaluate-holdout`: el recibo y el ledger existentes siguieron siendo la fuente de
-verdad. El archivo de holdout de la copia limpia se mantuvo bajo un bloqueo exclusivo durante
-training y el smoke de la aplicación.
+`evaluate-holdout` was not run: the existing receipt and ledger remained the source of truth. The
+holdout file in the clean copy remained under an exclusive lock during training and the application
+smoke test.
 
-Tiempos orientativos de esa máquina, no benchmarks: creación de venv `8,472 s`, instalación
-`88,836 s`, pytest `27,769 s`, descarga `3,340 s`, validación `1,993 s`, split `2,067 s`, EDA
-`4,025 s` y training `13,114 s`.
+Indicative times on that machine, not benchmarks: venv creation `8.472 s`, installation `88.836 s`,
+pytest `27.769 s`, download `3.340 s`, validation `1.993 s`, split `2.067 s`, EDA `4.025 s`, and
+training `13.114 s`.
 
-Identidades principales:
+Primary identities:
 
-| Elemento | SHA-256 |
+| Item | SHA-256 |
 |---|---|
-| CSV fuente | `dc6630cd9b1f0f853922fad78a1b6436570d3f1ec863f1dd5c4340ac56bc8a8e` |
+| Source CSV | `dc6630cd9b1f0f853922fad78a1b6436570d3f1ec863f1dd5c4340ac56bc8a8e` |
 | Training | `3b114192f249951632f4c700c07b5edf4306fcff89ac90abe556f15687cf803a` |
 | Holdout | `50a1c9c07a57afbc6f34dd112852b61a44f81b6a83341241dd1bc7079f3ac4b7` |
 | Pipeline | `8f383492fff0a1199a7f62289651a29da39f4c6a149762aa9b75c099efc1568a` |
 
-## Endurecimiento adversarial posterior
+## Subsequent adversarial hardening
 
-El 2026-08-18 se revisaron entradas inesperadas sin abrir datos, reentrenar ni volver a evaluar el
-holdout. La API local pasó inicialmente a la versión `0.2.0`; M6 la fija como `1.0.0`. Las
-nuevas regresiones cubren extremos marginales inclusivos, abstención sin invocar el pipeline,
-enteros de tamaño arbitrario, claves JSON duplicadas, cuerpos mayores que `16 KiB`, valores no
-finitos, excepciones internas, matrices de probabilidad inválidas y cabeceras defensivas.
+On 2026-08-18, unexpected inputs were reviewed without opening data, retraining, or reevaluating the
+holdout. The local API initially moved to version `0.2.0`; M6 pins it as `1.0.0`. The new regressions
+cover inclusive marginal endpoints, abstention without invoking the pipeline, arbitrary-size
+integers, duplicate JSON keys, bodies larger than `16 KiB`, non-finite values, internal exceptions,
+invalid probability matrices, and defensive headers.
 
-El smoke con el artefacto real confirmó respuestas controladas para todos esos casos: las
-observaciones fuera de la envolvente marginal devuelven `200` con score y decisión nulos; schema
-inválido devuelve `422`, JSON ambiguo `400` y body excesivo `413`, siempre como JSON y sin exponer
-tracebacks. La UI se verificó contra la API real en los estados aplicable/no aplicable y sus assets
-usan versión en la URL para evitar mezclar JavaScript antiguo con un contrato nuevo. Esta revisión
-no alteró el run, modelo, features, umbral ni métricas M3.
+The smoke test with the real artifact confirmed controlled responses for all these cases:
+observations outside the marginal envelope return `200` with null score and decision; an invalid
+schema returns `422`, ambiguous JSON returns `400`, and an excessive body returns `413`, always as
+JSON and without exposing tracebacks. The UI was verified against the real API in the
+applicable/not-applicable states, and its assets use a version in the URL to prevent old JavaScript
+from being mixed with a new contract. This review did not alter the M3 run, model, features,
+threshold, or metrics.
 
-## Claims y evidencia
+## Claims and evidence
 
-Se contrastaron README y Model Card con los JSON, manifiestos, figuras y ledger versionados. El
-modelo, umbral, CV, OOF, métricas finales y matriz de confusión coinciden. Los textos declaran que
-AI4I es sintético, el score no fue evaluado como probabilidad calibrada y el resultado no acredita
-uso industrial, RUL ni causalidad.
+The README and Model Card were checked against the versioned JSON files, manifests, figures, and
+ledger. The model, threshold, CV, OOF, final metrics, and confusion matrix match. The texts state
+that AI4I is synthetic, the score was not evaluated as a calibrated probability, and the result
+does not establish industrial use, RUL, or causality.
 
-La atribución del dataset registra título, UCI, DOI, `CC BY 4.0`, cita recomendada y las
-transformaciones realizadas en [DATA_ATTRIBUTION.md](DATA_ATTRIBUTION.md). El CSV original
-permanece fuera de Git. El pipeline exacto evaluado sí está versionado en
-`artifacts/m3/b15bab7b54bc2e1f/pipeline.joblib`, ligado a su manifiesto y verificado por SHA-256.
+The dataset attribution records the title, UCI, DOI, `CC BY 4.0`, recommended citation, and the
+transformations performed in [DATA_ATTRIBUTION.md](DATA_ATTRIBUTION.md). The original CSV remains
+outside Git. The exact evaluated pipeline is versioned at
+`artifacts/m3/b15bab7b54bc2e1f/pipeline.joblib`, linked to its manifest and verified by SHA-256.
 
-## Interfaz y accesibilidad
+## Interface and accessibility
 
-Se revisó el flujo real en el navegador local tanto en escritorio como en un viewport móvil de
-`390 × 844`:
+The actual flow was reviewed in the local browser both on desktop and in a `390 × 844` mobile
+viewport:
 
-- predicción válida, score, umbral, decisión y advertencias visibles;
-- validación inválida con foco en el resumen y `aria-invalid` en el campo;
-- sin overflow horizontal ni errores de consola;
-- estructura con skip link, landmarks, headings, labels y región live;
-- foco visible, targets táctiles y soporte de movimiento reducido;
-- contrastes muestreados entre `5,14:1` y `17,56:1`.
+- valid prediction, score, threshold, decision, and warnings visible;
+- invalid validation with focus on the summary and `aria-invalid` on the field;
+- no horizontal overflow or console errors;
+- structure with a skip link, landmarks, headings, labels, and a live region;
+- visible focus, touch targets, and reduced-motion support;
+- sampled contrast ratios between `5.14:1` and `17.56:1`.
 
-Esta revisión no es una certificación WCAG. No se ejecutó una sesión completa con lector de
-pantalla ni una auditoría manual a zoom de `200 %`; son verificaciones recomendables antes de una
-exposición pública. Los textos alternativos de las figuras EDA se hicieron descriptivos en M5.
+This review is not a WCAG certification. A complete screen-reader session and a manual audit at
+`200%` zoom were not performed; they are advisable checks before public exposure. The alternative
+text for the EDA figures was made descriptive in M5.
 
-## Higiene, secretos y artefactos
+## Hygiene, secrets, and artifacts
 
-- Durante M5 aún no había remoto ni publicación; M6 configuró el repositorio público y completó el
-  release `v1.0.0` después de las verificaciones registradas al inicio de este documento.
-- La búsqueda estática inicial no encontró claves, tokens, credenciales, correos ni rutas
-  personales. Antes de publicar, Gitleaks revisó el snapshot y todo el historial alcanzable sin
-  detectar secretos.
-- `.gitignore` excluye `.venv`, cachés, datos raw/processed, metadata local y bundles generados.
-- `*.joblib`, `*.pkl` y `*.pickle` permanecen ignorados globalmente; solo la ruta nominal del
-  pipeline evaluado está permitida de forma explícita.
-- Reportes y figuras curados son versionables; suman aproximadamente `990 KB` y el mayor PNG es
-  de aproximadamente `247 KB`.
-- No se detectaron binarios grandes o inesperados candidatos a Git.
+- During M5 there was not yet a remote or publication; M6 configured the public repository and
+  completed release `v1.0.0` after the checks recorded at the beginning of this document.
+- The initial static search found no keys, tokens, credentials, email addresses, or personal paths.
+  Before publication, Gitleaks reviewed the snapshot and the entire reachable history without
+  detecting secrets.
+- `.gitignore` excludes `.venv`, caches, raw/processed data, local metadata, and generated bundles.
+- `*.joblib`, `*.pkl`, and `*.pickle` remain globally ignored; only the nominal path of the
+  evaluated pipeline is explicitly allowed.
+- Curated reports and figures are versionable; together they total approximately `990 KB`, and the
+  largest PNG is approximately `247 KB`.
+- No large or unexpected binaries suitable for Git were detected.
 
-## Licencias
+## Licenses
 
-El dataset usa `CC BY 4.0`; su atribución y los cambios derivados están documentados por separado.
-Las expresiones siguientes se revisaron en la metadata instalada de las dependencias directas:
+The dataset uses `CC BY 4.0`; its attribution and the derived changes are documented separately.
+The following expressions were reviewed in the installed metadata of the direct dependencies:
 
-| Dependencia directa | Licencia declarada |
+| Direct dependency | Declared license |
 |---|---|
 | FastAPI | MIT |
 | Pydantic | MIT |
@@ -171,24 +172,24 @@ Las expresiones siguientes se revisaron en la metadata instalada de las dependen
 | httpx2 (dev) | BSD-3-Clause |
 | pytest (dev) | MIT |
 | Ruff (dev) | MIT |
-| Matplotlib | licencia permisiva propia Matplotlib/PSF |
-| NumPy | expresión compuesta de licencias permisivas según su metadata |
+| Matplotlib | Matplotlib/PSF's own permissive license |
+| NumPy | composite expression of permissive licenses according to its metadata |
 
-No se observó una incompatibilidad evidente; esto no es asesoría legal. M6 repite la revisión sobre
-el entorno efectivo de release. El proyecto usa MIT, declarada en `LICENSE` y `pyproject.toml`, sin
-sustituir la `CC BY 4.0` de los datos.
+No evident incompatibility was observed; this is not legal advice. M6 repeats the review against
+the effective release environment. The project uses MIT, declared in `LICENSE` and
+`pyproject.toml`, without replacing the data's `CC BY 4.0`.
 
-## Puerta de publicación
+## Publication gate
 
-Estado final M6: **GO completado y publicado**. El modelo permanece congelado y las cuatro puertas
-definidas durante M5 quedaron satisfechas:
+Final M6 status: **GO completed and published**. The model remains frozen, and the four gates
+defined during M5 were satisfied:
 
-1. suite limpia y build de paquete en Windows/Linux;
-2. auditoría del snapshot, secretos, dependencias y artefactos;
-3. CI verde sobre el commit público;
-4. smoke tests HTTPS antes de crear el tag `v1.0.0`.
+1. clean suite and package build on Windows/Linux;
+2. audit of the snapshot, secrets, dependencies, and artifacts;
+3. green CI on the public commit;
+4. HTTPS smoke tests before creating tag `v1.0.0`.
 
-La evidencia se resume al inicio del documento y permanece accesible en el
-[release `v1.0.0`](https://github.com/xSkyLiN3/predictive-maintenance-ml/releases/tag/v1.0.0) y la
-[demo educativa](https://ml.nightstrike.cloud). Esta publicación no convierte el sistema en un
-despliegue industrial ni valida su uso en producción.
+The evidence is summarized at the beginning of this document and remains accessible in release
+[`v1.0.0`](https://github.com/xSkyLiN3/predictive-maintenance-ml/releases/tag/v1.0.0) and the
+[educational demo](https://ml.nightstrike.cloud). This publication does not turn the system into an
+industrial deployment or validate production use.

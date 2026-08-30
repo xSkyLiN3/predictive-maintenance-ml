@@ -31,12 +31,12 @@ const positiveTemperatureFieldNames = new Set([
 ]);
 
 const fieldLabels = {
-  type: "Tipo de producto",
-  air_temperature_k: "Temperatura del aire",
-  process_temperature_k: "Temperatura del proceso",
-  rotational_speed_rpm: "Velocidad rotacional",
+  type: "Product type",
+  air_temperature_k: "Air temperature",
+  process_temperature_k: "Process temperature",
+  rotational_speed_rpm: "Rotational speed",
   torque_nm: "Torque",
-  tool_wear_min: "Desgaste de herramienta",
+  tool_wear_min: "Tool wear",
 };
 
 const fieldErrorElements = {
@@ -52,7 +52,7 @@ function setLoading(isLoading) {
   submitButton.disabled = isLoading;
   submitButton.classList.toggle("is-loading", isLoading);
   if (isLoading) {
-    submitButton.setAttribute("aria-label", "Calculando score de riesgo");
+    submitButton.setAttribute("aria-label", "Calculating risk score");
   } else {
     submitButton.removeAttribute("aria-label");
   }
@@ -134,29 +134,29 @@ function getControlError(control) {
   let reason = null;
 
   if (control.validity.badInput) {
-    reason = "debe ser un número válido";
+    reason = "must be a valid number";
   } else if (control.validity.valueMissing) {
-    reason = "es obligatorio";
+    reason = "is required";
   } else if (control.validity.rangeUnderflow) {
-    reason = `debe ser igual o superior a ${control.min}`;
+    reason = `must be greater than or equal to ${control.min}`;
   } else if (control.validity.rangeOverflow) {
-    reason = `debe ser igual o inferior a ${control.max}`;
+    reason = `must be less than or equal to ${control.max}`;
   } else if (control.validity.stepMismatch) {
     reason = integerFieldNames.has(control.name)
-      ? "debe ser un número entero"
-      : "debe respetar la precisión indicada";
+      ? "must be an integer"
+      : "must match the specified precision";
   } else if (!control.validity.valid) {
-    reason = "revisa el valor ingresado";
+    reason = "has an invalid value";
   } else if (control instanceof HTMLInputElement) {
     const numericValue = Number(control.value);
     if (!Number.isFinite(numericValue)) {
-      reason = "debe ser un número finito";
+      reason = "must be a finite number";
     } else if (positiveTemperatureFieldNames.has(control.name) && numericValue <= 0) {
-      reason = "debe ser mayor que 0";
+      reason = "must be greater than 0";
     } else if (integerFieldNames.has(control.name) && !Number.isInteger(numericValue)) {
-      reason = "debe ser un número entero";
+      reason = "must be an integer";
     } else if (integerFieldNames.has(control.name) && !Number.isSafeInteger(numericValue)) {
-      reason = "supera el rango entero seguro admitido por esta interfaz";
+      reason = "exceeds the safe integer range supported by this interface";
     }
   }
 
@@ -233,7 +233,7 @@ function buildPayload() {
 
 function asFiniteUnitInterval(value, fieldName) {
   if (typeof value !== "number" || !Number.isFinite(value) || value < 0 || value > 1) {
-    throw new Error(`La API devolvió un ${fieldName} inválido.`);
+    throw new Error(`The API returned an invalid ${fieldName}.`);
   }
   return value;
 }
@@ -252,8 +252,8 @@ function renderWarnings(value, isOutsideDomain) {
   const warnings = normalizeWarnings(value);
   if (isOutsideDomain && warnings.length === 0) {
     warnings.push(
-      "La observación queda fuera de la envolvente de referencia obtenida del training AI4I.",
-      "No se aplica el umbral ni se emite una clasificación.",
+      "The observation falls outside the reference envelope derived from AI4I training data.",
+      "The threshold is not applied and no classification is issued.",
     );
   }
 
@@ -268,19 +268,19 @@ function renderWarnings(value, isOutsideDomain) {
 
 function renderResult(response) {
   if (!response || typeof response !== "object" || Array.isArray(response)) {
-    throw new Error("La API devolvió un resultado inválido.");
+    throw new Error("The API returned an invalid result.");
   }
 
   if (response.domain_status !== DOMAIN_WITHIN && response.domain_status !== DOMAIN_OUTSIDE) {
-    throw new Error("La API devolvió un estado de dominio inválido.");
+    throw new Error("The API returned an invalid domain status.");
   }
   if (typeof response.decision_applicable !== "boolean") {
-    throw new Error("La API devolvió un estado de decisión inválido.");
+    throw new Error("The API returned an invalid decision status.");
   }
 
-  const threshold = asFiniteUnitInterval(response.threshold, "umbral");
+  const threshold = asFiniteUnitInterval(response.threshold, "threshold");
   const isOutsideDomain = response.domain_status === DOMAIN_OUTSIDE;
-  const decimalFormat = new Intl.NumberFormat("es-CL", {
+  const decimalFormat = new Intl.NumberFormat("en-US", {
     minimumFractionDigits: 4,
     maximumFractionDigits: 4,
   });
@@ -291,32 +291,32 @@ function renderResult(response) {
       response.risk_score !== null ||
       response.predicted_failure !== null
     ) {
-      throw new Error("La API devolvió un resultado fuera de dominio inconsistente.");
+      throw new Error("The API returned an inconsistent out-of-domain result.");
     }
 
     domainNotice.hidden = false;
     riskScaleWrap.hidden = true;
-    riskScore.textContent = "No disponible";
+    riskScore.textContent = "Unavailable";
     riskScore.classList.add("is-unavailable");
-    scoreRaw.textContent = "No se calcula fuera de la envolvente de referencia.";
-    thresholdValue.textContent = "No aplicable";
-    classificationValue.textContent = "No aplicable";
-    decisionPill.textContent = "Sin decisión";
+    scoreRaw.textContent = "Not calculated outside the reference envelope.";
+    thresholdValue.textContent = "Not applicable";
+    classificationValue.textContent = "Not applicable";
+    decisionPill.textContent = "No decision";
     decisionPill.className = "decision-pill is-outside";
     thresholdExplanation.textContent =
-      "No se aplica el umbral ni se emite una clasificación fuera de la envolvente de referencia.";
-    resultStatus.textContent = "Fuera del dominio observado";
+      "The threshold is not applied and no classification is issued outside the reference envelope.";
+    resultStatus.textContent = "Outside the reference envelope";
     resultStatus.className = "result-status result-status-outside";
     resultPanel.classList.add("is-outside");
     renderWarnings(response.warnings ?? response.warning, true);
   } else {
     if (response.decision_applicable !== true) {
-      throw new Error("La API devolvió una decisión no aplicable dentro del dominio.");
+      throw new Error("The API returned a non-applicable decision within the reference domain.");
     }
 
-    const score = asFiniteUnitInterval(response.risk_score, "score de riesgo");
+    const score = asFiniteUnitInterval(response.risk_score, "risk score");
     if (typeof response.predicted_failure !== "boolean") {
-      throw new Error("La API devolvió una clasificación inválida.");
+      throw new Error("The API returned an invalid classification.");
     }
 
     const predictedFailure = response.predicted_failure;
@@ -324,21 +324,21 @@ function renderResult(response) {
     riskScaleWrap.hidden = false;
     riskScore.textContent = decimalFormat.format(score);
     riskScore.classList.remove("is-unavailable");
-    scoreRaw.textContent = "escala 0–1 · no evaluada como probabilidad calibrada";
+    scoreRaw.textContent = "0–1 scale · not evaluated as a calibrated probability";
     thresholdValue.textContent = decimalFormat.format(threshold);
-    classificationValue.textContent = predictedFailure ? "Fallo clasificado" : "Sin fallo clasificado";
-    decisionPill.textContent = predictedFailure ? "Sobre el umbral" : "Bajo el umbral";
+    classificationValue.textContent = predictedFailure ? "Failure predicted" : "No failure predicted";
+    decisionPill.textContent = predictedFailure ? "At or above threshold" : "Below threshold";
     decisionPill.className = `decision-pill ${predictedFailure ? "is-positive" : "is-negative"}`;
     riskMeter.value = score;
     riskMeter.textContent = decimalFormat.format(score);
-    riskMeter.setAttribute("aria-label", `Score de riesgo: ${decimalFormat.format(score)}`);
+    riskMeter.setAttribute("aria-label", `Risk score: ${decimalFormat.format(score)}`);
     riskMeter.classList.toggle("is-positive", predictedFailure);
     thresholdMeter.value = threshold;
     thresholdMeter.textContent = decimalFormat.format(threshold);
-    thresholdMeter.setAttribute("aria-label", `Umbral de decisión: ${decimalFormat.format(threshold)}`);
+    thresholdMeter.setAttribute("aria-label", `Decision threshold: ${decimalFormat.format(threshold)}`);
     thresholdExplanation.textContent =
-      "La clasificación es positiva cuando el score es igual o superior al umbral. Este resultado describe una observación y no un diagnóstico mecánico.";
-    resultStatus.textContent = predictedFailure ? "Clasificación positiva" : "Clasificación negativa";
+      "The classification is positive when the score is greater than or equal to the threshold. This result describes an observation, not a mechanical diagnosis.";
+    resultStatus.textContent = predictedFailure ? "Positive classification" : "Negative classification";
     resultStatus.className = `result-status ${
       predictedFailure ? "result-status-positive" : "result-status-negative"
     }`;
@@ -356,13 +356,13 @@ function markResultAsStale() {
     return;
   }
   resultPanel.classList.add("is-stale");
-  resultStatus.textContent = "Entrada modificada";
+  resultStatus.textContent = "Input changed";
   resultStatus.className = "result-status result-status-stale";
 }
 
 function formatApiErrors(payload, status) {
   if (status >= 500) {
-    return [{ message: "La API no pudo completar la solicitud. Inténtalo de nuevo." }];
+    return [{ message: "The API could not complete the request. Try again." }];
   }
 
   const details = payload && Array.isArray(payload.detail) ? payload.detail : [];
@@ -372,7 +372,7 @@ function formatApiErrors(payload, status) {
     for (const detail of details) {
       const path = Array.isArray(detail.loc) ? detail.loc : [];
       const field = path.at(-1);
-      const label = typeof field === "string" ? (fieldLabels[field] ?? field) : "Entrada";
+      const label = typeof field === "string" ? (fieldLabels[field] ?? field) : "Input";
       const reason = translateValidationReason(detail);
       errors.push({
         message: `${label}: ${reason}.`,
@@ -387,7 +387,7 @@ function formatApiErrors(payload, status) {
     return [{ message: payload.detail }];
   }
 
-  return [{ message: `La API respondió con un error (${status}). Revisa los valores e inténtalo otra vez.` }];
+  return [{ message: `The API returned an error (${status}). Check the values and try again.` }];
 }
 
 function translateValidationReason(detail) {
@@ -395,43 +395,43 @@ function translateValidationReason(detail) {
   const validationType = typeof detail.type === "string" ? detail.type : "";
 
   if (validationType === "missing") {
-    return "es obligatorio";
+    return "is required";
   }
   if (validationType === "literal_error") {
-    return "debe ser una categoría admitida";
+    return "must be a supported category";
   }
   if (validationType === "greater_than_equal") {
-    return `debe ser igual o superior a ${context.ge ?? "el mínimo admitido"}`;
+    return `must be greater than or equal to ${context.ge ?? "the supported minimum"}`;
   }
   if (validationType === "greater_than") {
-    return `debe ser superior a ${context.gt ?? "el mínimo admitido"}`;
+    return `must be greater than ${context.gt ?? "the supported minimum"}`;
   }
   if (validationType === "less_than_equal") {
-    return `debe ser igual o inferior a ${context.le ?? "el máximo admitido"}`;
+    return `must be less than or equal to ${context.le ?? "the supported maximum"}`;
   }
   if (validationType === "less_than") {
-    return `debe ser inferior a ${context.lt ?? "el máximo admitido"}`;
+    return `must be less than ${context.lt ?? "the supported maximum"}`;
   }
   if (validationType === "int_type" || validationType === "int_parsing") {
-    return "debe ser un número entero";
+    return "must be an integer";
   }
   if (
     validationType === "float_type" ||
     validationType === "float_parsing" ||
     validationType === "finite_number"
   ) {
-    return "debe ser un número finito";
+    return "must be a finite number";
   }
   if (validationType === "extra_forbidden") {
-    return "no pertenece al contrato de entrada";
+    return "is not part of the input contract";
   }
-  return "contiene un valor inválido";
+  return "contains an invalid value";
 }
 
 async function parseResponseBody(response) {
   const contentType = response.headers.get("content-type") ?? "";
   if (!contentType.includes("application/json")) {
-    throw new Error("La API devolvió una respuesta inesperada.");
+    throw new Error("The API returned an unexpected response.");
   }
   return response.json();
 }
@@ -482,12 +482,12 @@ form.addEventListener("submit", async (event) => {
   } catch (error) {
     const message =
       error instanceof TypeError
-        ? "No se pudo conectar con la API. Confirma que la aplicación esté en ejecución."
+        ? "Could not connect to the API. Make sure the application is running."
         : error instanceof SyntaxError
-          ? "La API devolvió JSON no válido."
+          ? "The API returned invalid JSON."
         : error instanceof Error
           ? error.message
-          : "Ocurrió un error inesperado al calcular el score.";
+          : "An unexpected error occurred while calculating the risk score.";
     showErrors([{ message }]);
   } finally {
     setLoading(false);

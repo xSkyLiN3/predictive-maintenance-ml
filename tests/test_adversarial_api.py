@@ -122,8 +122,8 @@ def _assert_outside_response(payload: dict[str, object]) -> None:
     assert isinstance(warnings, list)
     assert any(
         "ai4i" in warning.lower()
-        and "fuera" in warning.lower()
-        and "no se generó score" in warning.lower()
+        and "outside" in warning.lower()
+        and "no score or classification was generated" in warning.lower()
         for warning in warnings
     )
 
@@ -221,7 +221,7 @@ def test_duplicate_json_keys_are_rejected_with_400_and_security_headers(
     response = client.post("/predict", content=body, headers={"content-type": "application/json"})
 
     assert response.status_code == 400
-    assert isinstance(response.json().get("detail"), str)
+    assert response.json()["detail"] == f"The JSON object repeats the key {duplicate_field!r}."
     _assert_security_headers(response)
     assert pipeline.calls == 0
 
@@ -245,7 +245,7 @@ def test_request_body_limit_accepts_exact_boundary_and_rejects_next_byte(
     assert accepted.status_code == 200
     _assert_within_response(accepted.json())
     assert rejected.status_code == 413
-    assert isinstance(rejected.json().get("detail"), str)
+    assert rejected.json()["detail"] == "The /predict request body exceeds the 16 KiB limit."
     _assert_security_headers(rejected)
     assert pipeline.calls == calls_after_accepted
 

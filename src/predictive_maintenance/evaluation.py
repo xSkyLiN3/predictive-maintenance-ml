@@ -179,11 +179,11 @@ def _confusion_matrix_png(metrics: Mapping[str, Any]) -> bytes:
                 fontsize=13,
                 color="white" if matrix[row, column] > matrix.max() / 2 else "#263238",
             )
-    axis.set_xticks((0, 1), labels=("Pred. sin fallo", "Pred. fallo"))
-    axis.set_yticks((0, 1), labels=("Real sin fallo", "Real fallo"))
-    axis.set_xlabel("Predicción")
+    axis.set_xticks((0, 1), labels=("Pred. no failure", "Pred. failure"))
+    axis.set_yticks((0, 1), labels=("Actual no failure", "Actual failure"))
+    axis.set_xlabel("Prediction")
     axis.set_ylabel("Target")
-    axis.set_title("Matriz de confusión — evaluación final holdout", weight="bold")
+    axis.set_title("Confusion matrix — final holdout evaluation", weight="bold")
     output = io.BytesIO()
     figure.savefig(
         output,
@@ -844,7 +844,7 @@ def _build_final_report(
     rows = []
     labels = {
         "dummy": "Dummy prior",
-        "logistic_regression": "Regresión logística",
+        "logistic_regression": "Logistic regression",
         "random_forest": "Random forest",
     }
     for name in ("dummy", "logistic_regression", "random_forest"):
@@ -855,52 +855,53 @@ def _build_final_report(
         )
     oof = threshold_selection["oof_metrics"]
     final = evaluation["metrics"]
-    return f"""# Resultado M3 — selección y evaluación final
+    return f"""# M3 result — selection and final evaluation
 
-> Run `{run_manifest["run_id"]}`. AI4I 2020 es sintético. Este resultado no valida uso industrial
-> y los scores de `predict_proba` no se evaluaron como probabilidades calibradas.
+> Run `{run_manifest["run_id"]}`. AI4I 2020 is synthetic. This result does not validate industrial
+> use, and the `predict_proba` scores were not assessed as calibrated probabilities.
 
-## Selección exclusivamente sobre training
+## Selection exclusively on training data
 
-| Candidato | AP media CV | AP std (ddof=0) | ROC-AUC media CV |
+| Candidate | Mean CV AP | AP std (ddof=0) | Mean CV ROC-AUC |
 |---|---:|---:|---:|
 {chr(10).join(rows)}
 
-Modelo elegido: **`{evaluation["selected_model"]}`**. El dummy obtuvo AP media
-`{run_manifest["dummy_mean_average_precision"]:.6f}` y el candidato elegido
+Selected model: **`{evaluation["selected_model"]}`**. The dummy achieved mean AP
+`{run_manifest["dummy_mean_average_precision"]:.6f}`, and the selected candidate achieved
 `{run_manifest["selected_mean_average_precision"]:.6f}`.
 
-El umbral `{evaluation["threshold"]:.12g}` se congeló con predicciones OOF de training antes de
-abrir holdout. En OOF: precision `{oof["precision"]:.4f}`, recall `{oof["recall"]:.4f}` y F1
-`{oof["f1"]:.4f}`. Estas cifras fueron parte de la selección, no son el resultado final.
+The threshold `{evaluation["threshold"]:.12g}` was frozen using OOF training predictions before
+the holdout was opened. OOF precision was `{oof["precision"]:.4f}`, recall was
+`{oof["recall"]:.4f}`, and F1 was `{oof["f1"]:.4f}`. These values informed selection; they are not
+the final result.
 
-![AP por fold](figures/01_cv_average_precision.png)
+![AP by fold](figures/01_cv_average_precision.png)
 
-![Curva OOF](figures/02_oof_precision_recall.png)
+![OOF curve](figures/02_oof_precision_recall.png)
 
-## Evaluación final única sobre holdout
+## One-time final holdout evaluation
 
 - Average Precision: **{final["average_precision"]:.6f}**.
 - ROC-AUC: {final["roc_auc"]:.6f}.
-- Precision al umbral: {final["precision"]:.6f}.
-- Recall al umbral: {final["recall"]:.6f}.
-- F1 al umbral: {final["f1"]:.6f}.
-- Matriz `[[TN, FP], [FN, TP]]`: `{final["confusion_matrix"]}`.
-- Accuracy: {final["accuracy"]:.6f}, mostrada con prevalencia positiva
-  {final["target_prevalence"]:.4%} y referencia de clase mayoritaria
+- Precision at the threshold: {final["precision"]:.6f}.
+- Recall at the threshold: {final["recall"]:.6f}.
+- F1 at the threshold: {final["f1"]:.6f}.
+- Matrix `[[TN, FP], [FN, TP]]`: `{final["confusion_matrix"]}`.
+- Accuracy: {final["accuracy"]:.6f}, shown with positive prevalence
+  {final["target_prevalence"]:.4%} and majority-class reference
   {final["majority_class_accuracy"]:.6f}.
 
-![Matriz de confusión final](figures/{CONFUSION_FIGURE_FILENAME})
+![Final confusion matrix](figures/{CONFUSION_FIGURE_FILENAME})
 
-## Límites
+## Limitations
 
-- El holdout se consultó una sola vez después de congelar modelo y umbral; ejecuciones posteriores
-  reutilizan el recibo versionado.
-- El split aleatorio estima generalización IID dentro del generador sintético, no generalización
-  temporal, entre máquinas o en industria.
-- `class_weight` mejora el tratamiento de la minoría, pero los scores no están calibrados y no
-  deben interpretarse como frecuencias industriales de fallo.
-- No se probaron más algoritmos, hiperparámetros ni features después de observar el resultado.
+- The holdout was accessed once after the model and threshold were frozen; later runs reuse the
+  versioned receipt.
+- The random split estimates IID generalization within the synthetic generator, not temporal,
+  cross-machine, or real-world industrial generalization.
+- `class_weight` improves minority-class handling, but the scores are not calibrated and must not
+  be interpreted as industrial failure frequencies.
+- No additional algorithms, hyperparameters, or features were tested after observing the result.
 """
 
 

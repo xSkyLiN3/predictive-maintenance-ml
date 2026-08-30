@@ -1,106 +1,107 @@
-# Hoja de ruta
+# Roadmap
 
-Cada hito tiene una puerta de revisión. No se debe comenzar el siguiente solo porque queden tokens o tiempo disponibles.
+Each milestone has a review gate. Work advances only after the preceding gate criteria are met.
 
-## M0 — Entorno y estructura
+## M0 — Environment and structure
 
-**Resultado:** proyecto Python 3.12 reproducible, todavía sin modelado.
+**Outcome:** reproducible Python 3.12 project, without modeling yet.
 
-- Crear `.venv` explícitamente con Python 3.12.
-- Definir `pyproject.toml` y dependencias mínimas.
-- Crear estructura `src/`, `tests/`, `data/`, `notebooks/`, `reports/` y `artifacts/`.
-- Configurar Ruff y pytest.
-- Documentar comandos PowerShell.
+- Create `.venv` explicitly with Python 3.12.
+- Define `pyproject.toml` and minimal dependencies.
+- Create the `src/`, `tests/`, `data/`, `notebooks/`, `reports/`, and `artifacts/` structure.
+- Configure Ruff and pytest.
+- Document PowerShell commands.
 
-**Puerta:** una instalación limpia importa el paquete y ejecuta una prueba mínima.
+**Gate:** a clean installation imports the package and runs a minimal test.
 
-## M1 — Ingesta y contrato de datos
+## M1 — Data ingestion and contract
 
-**Resultado:** dataset oficial descargado y validado mediante código.
+**Outcome:** official dataset downloaded and validated through code.
 
-- Descargar desde UCI.
-- Guardar metadatos y checksum.
-- Verificar esquema, tipos, categorías, nulos, duplicados y target.
-- Implementar lista explícita de features permitidas y columnas prohibidas.
-- Crear pruebas de regresión del esquema.
+- Download from UCI.
+- Store metadata and checksum.
+- Verify schema, types, categories, nulls, duplicates, and target.
+- Implement an explicit list of allowed features and prohibited columns.
+- Create schema-regression tests.
 
-**Puerta:** Ruff y pytest pasan; ninguna columna de leakage puede entrar accidentalmente al entrenamiento.
+**Gate:** Ruff and pytest pass; no leakage column can accidentally enter training.
 
-## M2 — EDA y protocolo cerrado
+## M2 — EDA and closed protocol
 
-**Resultado:** informe breve que sustenta las decisiones de modelado.
+**Outcome:** brief report supporting the modeling decisions.
 
-- Materializar primero la partición estratificada reproducible y sellar el holdout.
-- Medir prevalencia y revisar rangos.
-- Crear 5–7 visualizaciones relevantes.
-- Identificar anomalías y limitaciones.
-- Confirmar por escrito métricas y estrategia de umbral.
+- First materialize the reproducible stratified partition and seal the holdout.
+- Measure prevalence and review ranges.
+- Create 5–7 relevant visualizations.
+- Identify anomalies and limitations.
+- Confirm the metrics and threshold strategy in writing.
 
-**Puerta:** revisión humana del informe antes de entrenar modelos candidatos.
+**Gate:** human review of the report before training candidate models.
 
-## M3 — Baseline, modelos y evaluación
+## M3 — Baseline, models, and evaluation
 
-**Estado:** completado y verificado en el run `b15bab7b54bc2e1f`.
+**Status:** completed and verified in run `b15bab7b54bc2e1f`.
 
-**Resultado:** modelo seleccionado y evaluado limpiamente.
+**Outcome:** model selected and evaluated cleanly.
 
-- Entrenar Dummy, logística y random forest.
-- Comparar mediante validación cruzada solo en training.
-- Elegir umbral sin consultar test.
-- Evaluar una vez en holdout.
-- Guardar pipeline, configuración, métricas y gráficos.
+- Train Dummy, logistic regression, and random forest.
+- Compare them through cross-validation on training only.
+- Choose the threshold without consulting the holdout.
+- Evaluate once on the holdout.
+- Save the pipeline, configuration, metrics, and plots.
 
-**Puerta:** ejecución repetida con la misma configuración reproduce los resultados dentro de tolerancias declaradas.
+**Gate:** repeated execution with the same configuration reproduces the results within the stated
+tolerances.
 
-## M4 — API e interfaz local
+## M4 — API and local interface
 
-**Estado:** completado y verificado sobre el run `b15bab7b54bc2e1f`.
+**Status:** completed and verified against run `b15bab7b54bc2e1f`.
 
-**Resultado:** demo funcional en localhost.
+**Outcome:** functional localhost demo.
 
-- Implementar `/health`, `/model-info` y `/predict`.
-- Validar inputs con esquemas estrictos.
-- Crear interfaz HTML/CSS sencilla servida localmente.
-- Mostrar score, decisión y advertencia educativa sin afirmar calibración.
-- Añadir pruebas de API e inferencia.
-- Abstenerse explícitamente fuera de la envolvente marginal educativa, sin presentarla como límite
-  físico ni detector OOD completo.
-- Rechazar de forma controlada JSON ambiguo o excesivo y evitar pérdida de precisión en la UI.
+- Implement `/health`, `/model-info`, and `/predict`.
+- Validate inputs with strict schemas.
+- Create a simple locally served HTML/CSS interface.
+- Show the score, decision, and educational warning without claiming calibration.
+- Add API and inference tests.
+- Explicitly abstain outside the educational marginal envelope without presenting it as a physical
+  limit or complete OOD detector.
+- Reject ambiguous or excessive JSON in a controlled way and prevent precision loss in the UI.
 
-**Puerta:** un usuario puede levantar la aplicación siguiendo el README, completar el flujo
-principal y obtener respuestas controladas ante entradas adversariales.
+**Gate:** a user can start the application by following the README, complete the main flow, and
+receive controlled responses to adversarial inputs.
 
-## M5 — Cierre y revisión de publicación
+## M5 — Closure and publication review
 
-**Estado:** completado y verificado en local.
+**Status:** completed and verified locally.
 
-**Resultado:** candidato técnico aprobado para preparar publicación.
+**Outcome:** technical candidate approved for publication preparation.
 
-- Completar README, ficha del modelo y arquitectura.
-- Verificar instalación desde cero.
-- Ejecutar suite completa y revisión de secretos/licencias.
-- Revisar accesibilidad y claridad de la interfaz.
-- Comparar claims del README con evidencia generada.
+- Complete the README, model card, and architecture.
+- Verify installation from scratch.
+- Run the full suite and review secrets/licenses.
+- Review interface accessibility and clarity.
+- Compare README claims with generated evidence.
 
-**Puerta:** el MVP local pasó la revisión. La licencia, publicación y demo fueron autorizadas para
-M6 el 2026-08-19 y posteriormente superaron la auditoría del snapshot e historial.
+**Gate:** the local MVP passed review. The license, publication, and demo were authorized for M6
+on 2026-08-19 and subsequently passed the snapshot and history audit.
 
-## M6 — Publicación y demo educativa
+## M6 — Publication and educational demo
 
-**Estado:** completado y verificado.
+**Status:** completed and verified.
 
-**Resultado:** release público `v1.0.0`, CI verificable y demo stateless detrás de HTTPS.
+**Outcome:** public release `v1.0.0`, verifiable CI, and a stateless demo behind HTTPS.
 
-- Adoptar MIT sin mezclarla con la licencia `CC BY 4.0` del dataset.
-- Mantener modelo, features, umbral y holdout congelados; corregir solo la trazabilidad de la
-  envolvente y contextualizar precision/recall desde la matriz ya versionada.
-- Verificar el paquete en Windows y Linux, y construir un runtime no root sin particiones de datos.
-- Curar README, changelog, captura, metadata y commits honestos.
-- Auditar secretos, dependencias, archivos staged y tamaños antes del push.
-- Publicar el repositorio y release en GitHub.
-- Desplegar una demo educativa con TLS, límites de recursos y sin persistencia de inputs.
-- Integrar el enlace únicamente después de smoke tests externos satisfactorios.
+- Adopt MIT without mixing it with the dataset's `CC BY 4.0` license.
+- Keep the model, features, threshold, and holdout frozen; only correct envelope traceability and
+  contextualize precision/recall from the already versioned matrix.
+- Verify the package on Windows and Linux, and build a non-root runtime without data partitions.
+- Curate the README, changelog, screenshot, metadata, and honest commits.
+- Audit secrets, dependencies, staged files, and sizes before the push.
+- Publish the repository and release on GitHub.
+- Deploy an educational demo with TLS, resource limits, and no input persistence.
+- Add the link only after successful external smoke tests.
 
-**Puerta superada:** CI verde, release verificable, demo saludable y claims públicos conciliados
-con la evidencia versionada. Un proyecto ML posterior será un hito distinto, no una expansión de
-este MVP.
+**Gate passed:** green CI, verifiable release, healthy demo, and public claims reconciled with the
+versioned evidence. A subsequent ML project will be a separate milestone, not an expansion of this
+MVP.

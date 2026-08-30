@@ -144,6 +144,9 @@ def test_final_evaluation_creates_ticket_before_one_read_and_then_uses_cache(
     assert calls == ["read"]
     assert first.cached is False
     assert first.evaluation.is_file()
+    final_report = first.report.read_text(encoding="utf-8")
+    assert "# M3 result — selection and final evaluation" in final_report
+    assert "## One-time final holdout evaluation" in final_report
     receipt = json.loads(first.evaluation.read_text(encoding="utf-8"))
     assert receipt["receipt"] == "final_holdout_evaluation_complete"
     assert receipt["holdout"]["application_reads_for_evaluation"] == 1
