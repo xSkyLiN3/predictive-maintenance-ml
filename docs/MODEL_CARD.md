@@ -17,8 +17,8 @@
 | Frozen threshold | `0.6965799216184142` |
 | Decision rule | `risk_score >= threshold` |
 | Applicability layer | Marginal envelope derived only from training; abstention outside it |
-| Status | Local release candidate `1.0.1`; M3 result frozen in `v1.0.0` |
-| Availability | Public endpoint at `https://ml.nightstrike.cloud`; verify the deployed version before use |
+| Status | Educational software release `1.0.1`; M3 result frozen in `v1.0.0` |
+| Availability | Public educational demo at `https://ml.nightstrike.cloud`; re-verified after every deployment |
 
 The service receives six variables from one operational observation. It invokes the model and
 returns a score for the positive class `Machine failure` only when the five numerical variables are
@@ -292,9 +292,10 @@ Local mode retains `127.0.0.1:8000` and local hosts as defaults. M6 makes the bi
 an explicit host allowlist configurable through environment variables for operation behind a
 proxy; it does not allow a `*` allowlist. The application loads the pipeline once after validating
 the active pointer, manifests, hashes, final receipt, ledger, versions, classes, and feature order.
-Inference startup must not read raw, training, or holdout data. Public availability was established
-for `v1.0.0` after completing the M6 deployment checks. The `v1.0.1` candidate must pass the same
-checks after deployment; every version remains an educational demo, not industrial validation.
+Inference startup must not read raw, training, or holdout data. Public availability was originally
+established for `v1.0.0` after completing the M6 deployment checks. The operational gate for every
+release, including `v1.0.1`, requires the same post-deployment checks; every version remains an
+educational demo, not industrial validation.
 
 ## 7. Limitations and responsible-use considerations
 

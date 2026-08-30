@@ -6,6 +6,8 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.0.1] - 2026-08-30
+
 ### Changed
 
 - Made English the canonical public language across the browser demo, API descriptions, warnings,
@@ -53,5 +55,6 @@ All notable changes to this project are documented here. The format follows
 - The score is not calibrated as a real-world failure probability.
 - The demo is educational and must not be used to make maintenance or safety decisions.
 
-[Unreleased]: https://github.com/xSkyLiN3/predictive-maintenance-ml/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/xSkyLiN3/predictive-maintenance-ml/compare/v1.0.1...HEAD
+[1.0.1]: https://github.com/xSkyLiN3/predictive-maintenance-ml/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/xSkyLiN3/predictive-maintenance-ml/releases/tag/v1.0.0

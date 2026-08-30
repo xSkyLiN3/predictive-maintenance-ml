@@ -1,14 +1,13 @@
 # Demo container and deployment
 
-This document covers the `v1.0.1` image and its deployment procedure. It does not claim that this
-release candidate is already running publicly. Service availability does not turn the educational
-classifier into an industrial system.
+This document covers the `v1.0.1` image and its deployment procedure. Service availability does not
+turn the educational classifier into an industrial system.
 
-The public endpoint is <https://ml.nightstrike.cloud>, behind Nginx and TLS. Until `v1.0.1` is
-deployed, that endpoint may still serve the previous release. After deployment, verify the version,
-English interface, API messages, and asset cache keys before announcing the release. The host must
-publish the container port only on loopback. The container must run as UID/GID `10001`, use a
-read-only filesystem, have no capabilities, and have explicit CPU, memory, and process limits.
+The public endpoint is <https://ml.nightstrike.cloud>, behind Nginx and TLS. During a rollout, it may
+temporarily serve an earlier release. After every deployment, verify the running version, English
+interface, API messages, and asset cache keys before announcing the release. The host must publish
+the container port only on loopback. The container must run as UID/GID `10001`, use a read-only
+filesystem, have no capabilities, and have explicit CPU, memory, and process limits.
 
 ## Build guarantees
 
