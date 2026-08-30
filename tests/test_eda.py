@@ -102,8 +102,8 @@ def test_eda_generates_six_idempotent_artifacts_without_holdout(tmp_path: Path) 
         assert rows[0]["lower_inclusive"] is True
         assert all(row["upper_inclusive"] is True for row in rows)
     report = artifacts.report.read_text(encoding="utf-8")
-    assert "exclusivamente la partición de **training**" in report
-    assert "Aún no hay modelos entrenados" in report
+    assert "uses exclusively the **training** partition" in report
+    assert "There are no trained models" in report
     assert "`predict_proba[:, 1]`" in report
     assert "`score >= threshold`" in report
     assert not (processed_dir / "holdout.csv").exists()

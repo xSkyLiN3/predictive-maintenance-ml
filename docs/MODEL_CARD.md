@@ -1,139 +1,140 @@
 # Model Card — Machine Failure Risk Classifier
 
-> **Modelo educativo.** AI4I 2020 es un dataset sintético. Este modelo no está validado
-> para uso industrial, seguridad, mantenimiento real ni decisiones operativas. Su `risk_score`
-> no fue evaluado como probabilidad calibrada.
+> **Educational model.** AI4I 2020 is a synthetic dataset. This model is not validated for
+> industrial use, safety, real maintenance, or operational decisions. Its `risk_score` was not
+> evaluated as a calibrated probability.
 
-## 1. Identidad y resumen
+## 1. Identity and summary
 
-| Campo | Valor |
+| Field | Value |
 |---|---|
-| Producto | `Machine Failure Risk Classifier` |
-| Run del modelo | `b15bab7b54bc2e1f` |
-| Versión del schema de artefactos | `1` |
-| Tarea | Clasificación binaria de `Machine failure` para una observación |
-| Modelo elegido | `random_forest` (`RandomForestClassifier`) |
-| Salida continua | `predict_proba[:, 1]`, expuesta como `risk_score` solo si la decisión aplica |
-| Umbral congelado | `0.6965799216184142` |
-| Regla de decisión | `risk_score >= threshold` |
-| Capa de aplicabilidad | Envolvente marginal derivada solo de training; abstención fuera de ella |
-| Estado | Release educativo `1.0.0`; resultado M3 congelado |
-| Disponibilidad | Demo pública verificada en `https://ml.nightstrike.cloud` |
+| Product | `Machine Failure Risk Classifier` |
+| Model run | `b15bab7b54bc2e1f` |
+| Artifact schema version | `1` |
+| Task | Binary classification of `Machine failure` for one observation |
+| Selected model | `random_forest` (`RandomForestClassifier`) |
+| Continuous output | `predict_proba[:, 1]`, exposed as `risk_score` only when the decision applies |
+| Frozen threshold | `0.6965799216184142` |
+| Decision rule | `risk_score >= threshold` |
+| Applicability layer | Marginal envelope derived only from training; abstention outside it |
+| Status | Local release candidate `1.0.1`; M3 result frozen in `v1.0.0` |
+| Availability | Public endpoint at `https://ml.nightstrike.cloud`; verify the deployed version before use |
 
-El servicio recibe seis variables de una observación operativa. Solo invoca el modelo y devuelve un
-score para la clase positiva `Machine failure` cuando las cinco variables numéricas están dentro de
-la envolvente marginal obtenida exclusivamente de training AI4I. En ese caso, la clasificación
-booleana se deriva aplicando
-el umbral elegido con predicciones out-of-fold de training. Fuera de esa referencia el servicio se
-abstiene. El producto demuestra un flujo reproducible de ingeniería de machine learning; no
-demuestra utilidad sobre maquinaria real.
+The service receives six variables from one operational observation. It invokes the model and
+returns a score for the positive class `Machine failure` only when the five numerical variables are
+within the marginal envelope obtained exclusively from AI4I training. In that case, the Boolean
+classification is derived by applying the threshold selected with out-of-fold training
+predictions. Outside that reference, the service abstains. The product demonstrates a reproducible
+machine-learning engineering workflow; it does not demonstrate usefulness on real machinery.
 
-## 2. Propósito y usos previstos
+## 2. Purpose and intended uses
 
-Usos previstos:
+Intended uses:
 
-- demostrar en un proyecto de portfolio trazabilidad de datos, prevención de leakage, selección
-  por validación cruzada, evaluación final y servicio reproducible de inferencia;
-- puntuar observaciones individuales compatibles con el schema y dentro de la referencia marginal,
-  y abstenerse explícitamente cuando algún campo queda fuera;
-- permitir revisión técnica y experimentación educativa, localmente o mediante una demo pública
-  stateless de superficie mínima;
-- comparar el resultado real contra un baseline sin seleccionar una cifra por marketing.
+- demonstrate, in a portfolio project, data traceability, leakage prevention, cross-validation
+  selection, final evaluation, and a reproducible inference service;
+- score individual observations compatible with the schema and within the marginal reference, and
+  explicitly abstain when any field falls outside;
+- enable technical review and educational experimentation, locally or through a public, stateless,
+  minimal-surface demo;
+- compare the real result against a baseline without selecting a number for marketing.
 
-Usuarios previstos: personas que revisen o estudien el proyecto y desarrolladores que ejecuten la
-demo. No está destinado a operadores industriales.
+Intended users: people reviewing or studying the project and developers running the demo. It is not
+intended for industrial operators.
 
-Usos explícitamente no previstos:
+Explicitly unintended uses:
 
-- decidir mantenimiento, seguridad, paradas, inventario o asignación de personal;
-- predecir vida útil restante, tiempo hasta el fallo o una secuencia futura;
-- inferir la causa o el modo físico de un fallo;
-- evaluar maquinaria, plantas, fabricantes o condiciones reales no representadas;
-- tratar el score como frecuencia o probabilidad calibrada de un fallo real;
-- sustituir diagnóstico, análisis de ingeniería o supervisión humana;
-- integración industrial o uso de producción sin una validación independiente.
+- making maintenance, safety, shutdown, inventory, or staffing decisions;
+- predicting remaining useful life, time to failure, or a future sequence;
+- inferring the cause or physical mode of a failure;
+- evaluating unrepresented real machinery, plants, manufacturers, or conditions;
+- treating the score as a calibrated frequency or probability of a real failure;
+- replacing diagnosis, engineering analysis, or human oversight;
+- industrial integration or production use without independent validation.
 
-## 3. Datos
+## 3. Data
 
-### 3.1 Fuente y licencia
+### 3.1 Source and license
 
 - Dataset: **AI4I 2020 Predictive Maintenance Dataset**.
-- Fuente: UCI Machine Learning Repository, dataset ID 601.
+- Source: UCI Machine Learning Repository, dataset ID 601.
 - DOI: [10.24432/C5HS5C](https://doi.org/10.24432/C5HS5C).
-- Licencia: [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
-- Atribución y transformaciones: [DATA_ATTRIBUTION.md](DATA_ATTRIBUTION.md).
-- Tamaño del snapshot: `10000` observaciones.
-- Naturaleza: datos sintéticos inspirados en escenarios de mantenimiento predictivo.
-- Datos personales: el proyecto documenta que no contiene datos personales.
-- SHA-256 del CSV fuente: `dc6630cd9b1f0f853922fad78a1b6436570d3f1ec863f1dd5c4340ac56bc8a8e`.
+- License: [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
+- Attribution and transformations: [DATA_ATTRIBUTION.md](DATA_ATTRIBUTION.md).
+- Snapshot size: `10,000` observations.
+- Nature: synthetic data inspired by predictive-maintenance scenarios.
+- Personal data: the project documents that it contains no personal data.
+- Source CSV SHA-256: `dc6630cd9b1f0f853922fad78a1b6436570d3f1ec863f1dd5c4340ac56bc8a8e`.
 
-Que el dataset sea sintético limita cualquier conclusión sobre condiciones, ruido, deriva,
-dependencias temporales y mecanismos de fallo de equipos reales.
+The dataset's synthetic nature limits any conclusion about conditions, noise, drift, temporal
+dependencies, and failure mechanisms in real equipment.
 
-### 3.2 Target y features
+### 3.2 Target and features
 
-Target oficial: `Machine failure`, con valores `0` y `1`. Se conservó la etiqueta del CSV sin
-recalcularla desde los modos de fallo.
+Official target: `Machine failure`, with values `0` and `1`. The CSV label was preserved without
+recalculating it from the failure modes.
 
-| Feature sklearn | Campo API | Tipo o unidad |
+| sklearn feature | API field | Type or unit |
 |---|---|---|
-| `Type` | `type` | Categoría `L`, `M` o `H` |
+| `Type` | `type` | Category `L`, `M`, or `H` |
 | `Air temperature [K]` | `air_temperature_k` | Kelvin |
 | `Process temperature [K]` | `process_temperature_k` | Kelvin |
-| `Rotational speed [rpm]` | `rotational_speed_rpm` | Revoluciones por minuto |
-| `Torque [Nm]` | `torque_nm` | Newton-metro |
-| `Tool wear [min]` | `tool_wear_min` | Minutos |
+| `Rotational speed [rpm]` | `rotational_speed_rpm` | Revolutions per minute |
+| `Torque [Nm]` | `torque_nm` | Newton-meter |
+| `Tool wear [min]` | `tool_wear_min` | Minutes |
 
-Columnas excluidas obligatoriamente:
+Mandatorily excluded columns:
 
-- identificadores `UDI` y `Product ID`, por no representar señales operativas generalizables;
-- `TWF`, `HDF`, `PWF`, `OSF` y `RNF`, porque son indicadores de modos de fallo vinculados al
-  target y producirían fuga de información.
+- identifiers `UDI` and `Product ID`, because they do not represent generalizable operational
+  signals;
+- `TWF`, `HDF`, `PWF`, `OSF`, and `RNF`, because they are failure-mode indicators linked to the
+  target and would cause information leakage.
 
-El snapshot contiene `27` desacuerdos entre `Machine failure` y el OR de los cinco indicadores:
-`9` positivos sin modo activo y `18` negativos con `RNF = 1`. El target oficial no se corrigió.
-Esta anomalía es una posible fuente de ruido de etiqueta y refuerza la exclusión de los modos.
+The snapshot contains `27` disagreements between `Machine failure` and the OR of the five
+indicators: `9` positives without an active mode and `18` negatives with `RNF = 1`. The official
+target was not corrected. This anomaly is a possible source of label noise and reinforces the
+exclusion of the modes.
 
-### 3.3 Partición
+### 3.3 Partition
 
-- Método: `sklearn.model_selection.train_test_split`.
-- Semilla: `42`.
-- Estratificación: `Machine failure`.
-- Training: `8000` filas (`80 %`).
-- Holdout: `2000` filas (`20 %`).
-- SHA-256 de training:
+- Method: `sklearn.model_selection.train_test_split`.
+- Seed: `42`.
+- Stratification: `Machine failure`.
+- Training: `8,000` rows (`80%`).
+- Holdout: `2,000` rows (`20%`).
+- Training SHA-256:
   `3b114192f249951632f4c700c07b5edf4306fcff89ac90abe556f15687cf803a`.
-- SHA-256 de holdout:
+- Holdout SHA-256:
   `50a1c9c07a57afbc6f34dd112852b61a44f81b6a83341241dd1bc7079f3ac4b7`.
 
-El holdout se materializó antes de la EDA, no participó en selección ni ajuste del umbral y fue
-leído una sola vez para la evaluación final del run congelado.
+The holdout was materialized before the EDA, did not participate in selection or threshold tuning,
+and was read once for the final evaluation of the frozen run.
 
-## 4. Entrenamiento y selección
+## 4. Training and selection
 
-### 4.1 Protocolo
+### 4.1 Protocol
 
-- Validación: `StratifiedKFold(n_splits=5, shuffle=True, random_state=42)`.
-- Métrica principal: Average Precision media no ponderada de los cinco folds.
-- Métrica secundaria: ROC-AUC.
-- Desviación estándar de CV: `ddof=0`.
+- Validation: `StratifiedKFold(n_splits=5, shuffle=True, random_state=42)`.
+- Primary metric: unweighted mean Average Precision across the five folds.
+- Secondary metric: ROC-AUC.
+- CV standard deviation: `ddof=0`.
 - Baseline: `DummyClassifier(strategy="prior")`.
-- Candidatos: regresión logística L2 balanceada y random forest balanceado.
-- No se realizó búsqueda de hiperparámetros ni se probaron más algoritmos.
-- Los mismos folds se reutilizaron para todos los candidatos.
-- Preprocesamiento y estimador permanecieron dentro de un `Pipeline` de scikit-learn.
+- Candidates: balanced L2 logistic regression and balanced random forest.
+- No hyperparameter search was performed, and no additional algorithms were tested.
+- The same folds were reused for all candidates.
+- Preprocessing and estimator remained inside a scikit-learn `Pipeline`.
 
-`Type` se transformó con `OneHotEncoder`, categorías fijas `L`, `M`, `H`,
-`handle_unknown="error"` y salida densa. Las cinco variables numéricas pasaron por
-`StandardScaler`; `ColumnTransformer(remainder="drop")` eliminó cualquier otra columna.
+`Type` was transformed with `OneHotEncoder`, fixed categories `L`, `M`, `H`,
+`handle_unknown="error"`, and dense output. The five numerical variables passed through
+`StandardScaler`; `ColumnTransformer(remainder="drop")` removed every other column.
 
-La puerta frente al baseline exigía literalmente que la AP media del candidato ganador fuera
-mayor que la del Dummy. Empates de candidatos dentro de `1e-12` favorecían la regresión
-logística. El random forest ganó sin necesidad de ese desempate.
+The gate against the baseline literally required the winning candidate's mean AP to be greater
+than the Dummy's. Candidate ties within `1e-12` favored logistic regression. The random forest won
+without needing that tiebreaker.
 
-### 4.2 Random forest congelado
+### 4.2 Frozen random forest
 
-| Parámetro | Valor |
+| Parameter | Value |
 |---|---:|
 | `n_estimators` | `300` |
 | `criterion` | `gini` |
@@ -146,121 +147,121 @@ logística. El random forest ganó sin necesidad de ese desempate.
 | `random_state` | `42` |
 | `n_jobs` | `1` |
 
-### 4.3 Selección del umbral
+### 4.3 Threshold selection
 
-Después de elegir el modelo se generó una predicción `predict_proba[:, 1]` out-of-fold por cada
-fila de training. El umbral `0.6965799216184142` maximiza F1 sobre esas predicciones con la
-regla inclusiva `score >= threshold`. Los empates dentro de `1e-12` se resolvían por menor
-diferencia absoluta entre precision y recall y, después, por el umbral menor. El holdout no se
-usó para elegir ni modificar este valor.
+After selecting the model, one out-of-fold `predict_proba[:, 1]` prediction was generated for each
+training row. Threshold `0.6965799216184142` maximizes F1 over those predictions under the inclusive
+rule `score >= threshold`. Ties within `1e-12` were resolved by the smallest absolute difference
+between precision and recall, then by the lower threshold. The holdout was not used to select or
+modify this value.
 
-## 5. Resultados
+## 5. Results
 
-Los valores siguientes se reproducen de los recibos JSON versionados. Average Precision es la
-métrica principal; accuracy se muestra únicamente con prevalencia y baseline mayoritario.
+The following values are reproduced from the versioned JSON receipts. Average Precision is the
+primary metric; accuracy is shown only with prevalence and the majority baseline.
 
-### 5.1 Validación cruzada sobre training
+### 5.1 Cross-validation on training
 
-| Candidato | AP media | AP std (`ddof=0`) | ROC-AUC media |
+| Candidate | Mean AP | AP std (`ddof=0`) | Mean ROC-AUC |
 |---|---:|---:|---:|
 | Dummy prior | `0.033875` | `0.0002500000000000002` | `0.5` |
-| Regresión logística | `0.44143285508642044` | `0.06850845339545959` | `0.8992749262131948` |
+| Logistic regression | `0.44143285508642044` | `0.06850845339545959` | `0.8992749262131948` |
 | Random forest | `0.6438124425485383` | `0.02247288575462437` | `0.9699351406866447` |
 
-La mejora de AP media del random forest frente al Dummy fue `0.6099374425485383`. Estas cifras
-son estimaciones de selección y no resultados del holdout.
+The random forest's mean AP improvement over the Dummy was `0.6099374425485383`. These figures are
+selection estimates, not holdout results.
 
-### 5.2 Métricas OOF de selección del umbral
+### 5.2 OOF threshold-selection metrics
 
-| Métrica | Valor |
+| Metric | Value |
 |---|---:|
-| Average Precision pooled, diagnóstico | `0.6332800463156792` |
-| ROC-AUC pooled, diagnóstico | `0.968384753067352` |
+| Pooled Average Precision, diagnostic | `0.6332800463156792` |
+| Pooled ROC-AUC, diagnostic | `0.968384753067352` |
 | Precision | `0.5878787878787879` |
 | Recall | `0.7158671586715867` |
 | F1 | `0.6455906821963394` |
-| Predicciones positivas | `330` |
-| Matriz `[[TN, FP], [FN, TP]]` | `[[7593, 136], [77, 194]]` |
+| Positive predictions | `330` |
+| Matrix `[[TN, FP], [FN, TP]]` | `[[7593, 136], [77, 194]]` |
 
-Las métricas pooled se registraron como diagnóstico; la selección del modelo usó la AP media de
-los cinco folds, no la AP pooled.
+The pooled metrics were recorded as diagnostics; model selection used mean AP across the five
+folds, not pooled AP.
 
-### 5.3 Evaluación final única sobre holdout
+### 5.3 Single final evaluation on holdout
 
-| Métrica | Valor |
+| Metric | Value |
 |---|---:|
 | Average Precision | `0.6495379423468456` |
 | ROC-AUC | `0.9654579222993546` |
-| Precision al umbral | `0.5882352941176471` |
-| IC Wilson 95 % de precision (`50/85`) | `0.4820101461448797`–`0.6868299449467584` |
-| Recall al umbral | `0.7352941176470589` |
-| IC Wilson 95 % de recall (`50/68`) | `0.619922660101109`–`0.825502593301211` |
-| F1 al umbral | `0.6535947712418301` |
+| Precision at threshold | `0.5882352941176471` |
+| 95% Wilson CI for precision (`50/85`) | `0.4820101461448797`–`0.6868299449467584` |
+| Recall at threshold | `0.7352941176470589` |
+| 95% Wilson CI for recall (`50/68`) | `0.619922660101109`–`0.825502593301211` |
+| F1 at threshold | `0.6535947712418301` |
 | Accuracy | `0.9735` |
-| Prevalencia positiva | `0.034` |
-| Accuracy de clase mayoritaria | `0.966` |
-| Predicciones positivas | `85` |
-| Verdaderos negativos | `1897` |
-| Falsos positivos | `35` |
-| Falsos negativos | `18` |
-| Verdaderos positivos | `50` |
+| Positive prevalence | `0.034` |
+| Majority-class accuracy | `0.966` |
+| Positive predictions | `85` |
+| True negatives | `1897` |
+| False positives | `35` |
+| False negatives | `18` |
+| True positives | `50` |
 
-Matriz de confusión, con filas como clase real y columnas como clase predicha:
+Confusion matrix, with rows as actual class and columns as predicted class:
 
-|  | Predicho 0 | Predicho 1 |
+|  | Predicted 0 | Predicted 1 |
 |---|---:|---:|
-| Real 0 | `1897` | `35` |
-| Real 1 | `18` | `50` |
+| Actual 0 | `1897` | `35` |
+| Actual 1 | `18` | `50` |
 
-El resultado corresponde a `2000` observaciones y al mismo umbral congelado
-`0.6965799216184142`. No se modificaron modelo, features ni umbral después de observarlo.
+The result covers `2,000` observations at the same frozen threshold `0.6965799216184142`. The model,
+features, and threshold were not modified after observing it.
 
-Los intervalos son Wilson bilaterales del 95 % y se calcularon posteriormente solo desde la matriz
-final ya versionada: precision usa `TP / (TP + FP) = 50/85` y recall usa
-`TP / (TP + FN) = 50/68`. No se accedió de nuevo a observaciones, targets ni scores del holdout.
-El endpoint `/model-info` los expone como `precision_wilson_95` y `recall_wilson_95`, derivados de
-la misma matriz verificada al cargar la aplicación; no los persiste como una segunda evaluación.
+The intervals are two-sided 95% Wilson intervals and were calculated later only from the already
+versioned final matrix: precision uses `TP / (TP + FP) = 50/85`, and recall uses
+`TP / (TP + FN) = 50/68`. Holdout observations, targets, and scores were not accessed again. The
+`/model-info` endpoint exposes them as `precision_wilson_95` and `recall_wilson_95`, derived from the
+same matrix verified when the application loads; it does not persist them as a second evaluation.
 
-Estos intervalos describen incertidumbre por soporte finito condicionada a este holdout. No miden
-incertidumbre por observación, no corrigen el carácter sintético o un cambio de distribución y no
-se usaron para seleccionar ni ajustar el sistema.
+These intervals describe finite-support uncertainty conditional on this holdout. They do not
+measure per-observation uncertainty, do not correct for synthetic nature or a distribution change,
+and were not used to select or tune the system.
 
-## 6. Contrato de inferencia de la demo educativa
+## 6. Educational demo inference contract
 
-La aplicación expone:
+The application exposes:
 
-- `GET /health`: disponibilidad e identidad del modelo cargado;
-- `GET /model-info`: modelo, umbral, métricas finales y advertencias;
-- `POST /predict`: estado de aplicabilidad y, solo cuando corresponde, score y clasificación;
-- `GET /`: interfaz estática.
+- `GET /health`: availability and identity of the loaded model;
+- `GET /model-info`: model, threshold, final metrics, and warnings;
+- `POST /predict`: applicability status and, only when appropriate, score and classification;
+- `GET /`: static interface.
 
-`POST /predict` exige exactamente:
+`POST /predict` requires exactly:
 
-| Campo | Contrato |
+| Field | Contract |
 |---|---|
-| `type` | String exacto `L`, `M` o `H` |
-| `air_temperature_k` | Número finito mayor que `0` |
-| `process_temperature_k` | Número finito mayor que `0` |
-| `rotational_speed_rpm` | Entero no negativo |
-| `torque_nm` | Número finito no negativo |
-| `tool_wear_min` | Entero no negativo |
+| `type` | Exact string `L`, `M`, or `H` |
+| `air_temperature_k` | Finite number greater than `0` |
+| `process_temperature_k` | Finite number greater than `0` |
+| `rotational_speed_rpm` | Non-negative integer |
+| `torque_nm` | Finite non-negative number |
+| `tool_wear_min` | Non-negative integer |
 
-Se rechazan campos extra, `null`, booleanos, strings numéricos, `NaN` e infinitos. Estos límites
-validan estructura, unidades y signos; no son límites físicos ni prueban pertenencia al dominio
-AI4I. El body JSON admite como máximo `16 KiB` (`16.384` bytes): excederlos devuelve `413`. Los
-nombres de miembros JSON deben ser únicos; una clave duplicada devuelve `400` en vez de aplicar la
-semántica ambigua de “último valor gana”. Los demás rechazos de schema y fallos de inferencia se
-entregan como errores JSON controlados y serializables, sin eco innecesario del input ni detalles de
-la excepción interna.
+Extra fields, `null`, booleans, numerical strings, `NaN`, and infinities are rejected. These limits
+validate structure, units, and signs; they are not physical limits and do not prove membership in
+the AI4I domain. The JSON body admits at most `16 KiB` (`16,384` bytes): exceeding that returns
+`413`. JSON member names must be unique; a duplicate key returns `400` instead of applying the
+ambiguous "last value wins" semantics. Other schema rejections and inference failures are returned
+as controlled, serializable JSON errors, without unnecessary input echoing or details of the
+internal exception.
 
-La interfaz web restringe `rotational_speed_rpm` y `tool_wear_min` a enteros seguros de JavaScript
-mediante `Number.isSafeInteger` (`0` a `9.007.199.254.740.991`). Este máximo evita pérdida de
-precisión en el navegador; no es un límite físico ni la envolvente aplicable al modelo.
+The web interface restricts `rotational_speed_rpm` and `tool_wear_min` to JavaScript-safe integers
+through `Number.isSafeInteger` (`0` to `9,007,199,254,740,991`). This maximum prevents precision loss
+in the browser; it is neither a physical limit nor the model's applicability envelope.
 
-Después de validar el schema, el servicio aplica esta referencia marginal de training, con
-extremos inclusivos:
+After validating the schema, the service applies this training marginal reference, with inclusive
+endpoints:
 
-| Campo | Envolvente exacta observada en training AI4I |
+| Field | Exact envelope observed in AI4I training |
 |---|---:|
 | `air_temperature_k` | `295.3`–`304.5` K |
 | `process_temperature_k` | `305.7`–`313.8` K |
@@ -268,88 +269,86 @@ extremos inclusivos:
 | `torque_nm` | `3.8`–`76.6` Nm |
 | `tool_wear_min` | `0`–`253` min |
 
-Con todos los campos dentro, la respuesta declara
-`domain_status = "within_reference_envelope"` y
-`decision_applicable = true`; `risk_score` es el score para la clase positiva y
-`predicted_failure` aplica el umbral congelado. Si cualquier campo queda fuera, la request conserva
-status HTTP `200`, pero el modelo no se invoca y no se emite decisión:
+With all fields inside, the response declares `domain_status = "within_reference_envelope"` and
+`decision_applicable = true`; `risk_score` is the score for the positive class, and
+`predicted_failure` applies the frozen threshold. If any field falls outside, the response retains
+HTTP status `200`, but the model is not invoked and no decision is issued:
 `domain_status = "outside_reference_envelope"`,
-`decision_applicable = false`, `risk_score = null` y `predicted_failure = null`. `warnings`
-identifica individualmente cada campo que excede su intervalo.
+`decision_applicable = false`, `risk_score = null`, and `predicted_failure = null`. `warnings`
+individually identify each field that exceeds its interval.
 
-Los intervalos son mínimos y máximos univariados de las `8000` filas de training, obtenidos del
-resumen EDA versionado que declara `scope = "training_only"` y `holdout_profiled = false`. No son
-límites físicos ni un detector OOD completo. No evalúan combinaciones entre variables, densidad,
-deriva,
-secuencia o plausibilidad causal. Por ello, `within_reference_envelope` significa solamente
-“dentro de todos los
-rangos marginales observados”; una observación así marcada todavía puede ser atípica o irreal. Si
-existe score, tampoco es una estimación calibrada de la probabilidad de fallo.
+The intervals are the univariate minima and maxima from the `8,000` training rows, obtained from the
+versioned EDA summary that declares `scope = "training_only"` and `holdout_profiled = false`. They
+are neither physical limits nor a complete OOD detector. They do not evaluate combinations among
+variables, density, drift, sequence, or causal plausibility. Therefore,
+`within_reference_envelope` means only "within all observed marginal ranges"; an observation marked
+that way may still be atypical or unrealistic. If a score exists, it is also not a calibrated
+estimate of failure probability.
 
-Esta capa de abstención no reentrenó el pipeline, no cambió el run, las features, el umbral o las
-métricas M3 y no requirió una nueva lectura del holdout.
+This abstention layer did not retrain the pipeline, change the run, features, threshold, or M3
+metrics, or require another holdout read.
 
-El modo local conserva `127.0.0.1:8000` y hosts locales como defaults. M6 permite configurar bind,
-puerto y una allowlist explícita de hosts mediante variables de entorno para ejecutarlo detrás de un
-proxy; no admite una allowlist `*`. La aplicación carga una vez el pipeline después de validar puntero
-activo, manifiestos, hashes, recibo final, ledger, versiones, clases y orden de features. El arranque
-de inferencia no debe leer raw, training ni holdout. La disponibilidad pública quedó establecida al
-completar las verificaciones de despliegue M6; sigue siendo una demo educativa y no una validación
-industrial.
+Local mode retains `127.0.0.1:8000` and local hosts as defaults. M6 makes the bind address, port, and
+an explicit host allowlist configurable through environment variables for operation behind a
+proxy; it does not allow a `*` allowlist. The application loads the pipeline once after validating
+the active pointer, manifests, hashes, final receipt, ledger, versions, classes, and feature order.
+Inference startup must not read raw, training, or holdout data. Public availability was established
+for `v1.0.0` after completing the M6 deployment checks. The `v1.0.1` candidate must pass the same
+checks after deployment; every version remains an educational demo, not industrial validation.
 
-## 7. Limitaciones y consideraciones responsables
+## 7. Limitations and responsible-use considerations
 
-### 7.1 Datos y generalización
+### 7.1 Data and generalization
 
-- AI4I 2020 es sintético y no representa una población comprobada de maquinaria industrial.
-- El split aleatorio estima generalización IID dentro del generador; no mide generalización
-  temporal, entre máquinas, plantas, fabricantes o regímenes operativos.
-- No existe validación externa con datos industriales reales.
-- La etiqueta oficial presenta los `27` desacuerdos documentados con los modos de fallo.
-- La prevalencia del holdout fue `0.034`; métricas y errores deben interpretarse en ese contexto.
+- AI4I 2020 is synthetic and does not represent a verified population of industrial machinery.
+- The random split estimates IID generalization within the generator; it does not measure temporal
+  generalization or generalization across machines, plants, manufacturers, or operating regimes.
+- There is no external validation with real industrial data.
+- The official label has the `27` documented disagreements with the failure modes.
+- Holdout prevalence was `0.034`; metrics and errors must be interpreted in that context.
 
-### 7.2 Score, umbral y OOD
+### 7.2 Score, threshold, and OOD
 
-- No se evaluaron calibración, error de calibración ni confiabilidad probabilística.
-- Optimizar F1 no representa costos reales de falsos positivos y falsos negativos.
-- El desempate del umbral es determinista, no una preferencia operacional.
-- La API se abstiene fuera de la envolvente marginal de training, pero no detecta OOD conjunto,
-  deriva ni inputs estadísticamente atípicos dentro de esos intervalos.
-- No se cuantifica incertidumbre por predicción.
-- Cada request es una observación independiente; el modelo carece de historia temporal.
+- Calibration, calibration error, and probabilistic reliability were not evaluated.
+- Optimizing F1 does not represent real false-positive and false-negative costs.
+- The threshold tiebreaker is deterministic, not an operational preference.
+- The API abstains outside the training marginal envelope, but it does not detect joint OOD, drift,
+  or statistically atypical inputs within those intervals.
+- Per-prediction uncertainty is not quantified.
+- Each request is an independent observation; the model has no temporal history.
 
-### 7.3 Riesgos de uso y ética
+### 7.3 Use risks and ethics
 
-- Un falso negativo podría ocultar un fallo en una interpretación indebida; un falso positivo
-  podría inducir intervenciones innecesarias. Ninguno de esos costos fue modelado.
-- Presentar el score como probabilidad, diagnóstico o recomendación sería engañoso.
-- No se evaluaron desempeño por subgrupos operativos, equidad, impactos económicos ni riesgos de
-  automatización. La ausencia de datos personales no demuestra ausencia de impacto.
-- Cualquier uso real requeriría revisión de ingeniería, seguridad, gobernanza y supervisión
-  humana, además de datos representativos del entorno objetivo.
-- El binario Joblib solo debe cargarse desde el bundle local verificado: deserializar artefactos
-  de procedencia no confiable puede ejecutar código.
+- A false negative could conceal a failure under improper interpretation; a false positive could
+  prompt unnecessary interventions. Neither cost was modeled.
+- Presenting the score as a probability, diagnosis, or recommendation would be misleading.
+- Performance by operational subgroup, fairness, economic impacts, and automation risks were not
+  evaluated. The absence of personal data does not demonstrate the absence of impact.
+- Any real use would require engineering, safety, governance, and human-oversight review, in
+  addition to data representative of the target environment.
+- The Joblib binary must be loaded only from the verified local bundle: deserializing artifacts of
+  untrusted provenance can execute code.
 
-## 8. Reproducibilidad y trazabilidad
+## 8. Reproducibility and traceability
 
-### 8.1 Identidades criptográficas
+### 8.1 Cryptographic identities
 
-| Artefacto o configuración | SHA-256 |
+| Artifact or configuration | SHA-256 |
 |---|---|
-| Configuración M3 | `d880c8048fcb3c09395e38702fd9ca04b1d6e3e0b53fd882e7dd728bdb1b9065` |
-| Plan de folds | `2c24c5165e54481a6eb35ac08f579c78601ea191eee8a0d0a76537b034eddf48` |
-| Pipeline local | `8f383492fff0a1199a7f62289651a29da39f4c6a149762aa9b75c099efc1568a` |
-| Manifiesto del run | `01c3c72a75df64922470ee163166fbb2437fad0b6c279ca54f0b5687ccb02a2a` |
-| Resultados CV | `ce9f62b79834c0da8d6a44311ae3714c18922820fc33f61a8ca9b3ab9f9e12f2` |
-| Selección del umbral | `9790eedc834f5624029a24c2e64a544392c171995bde51d33f89cf7cbe70d412` |
-| Recibo de evaluación final | `f3c947fe38fca0053c3f14e75c01681e5cef1dbcbc09e57fddb15409fd1e26c8` |
+| M3 configuration | `d880c8048fcb3c09395e38702fd9ca04b1d6e3e0b53fd882e7dd728bdb1b9065` |
+| Fold plan | `2c24c5165e54481a6eb35ac08f579c78601ea191eee8a0d0a76537b034eddf48` |
+| Local pipeline | `8f383492fff0a1199a7f62289651a29da39f4c6a149762aa9b75c099efc1568a` |
+| Run manifest | `01c3c72a75df64922470ee163166fbb2437fad0b6c279ca54f0b5687ccb02a2a` |
+| CV results | `ce9f62b79834c0da8d6a44311ae3714c18922820fc33f61a8ca9b3ab9f9e12f2` |
+| Threshold selection | `9790eedc834f5624029a24c2e64a544392c171995bde51d33f89cf7cbe70d412` |
+| Final evaluation receipt | `f3c947fe38fca0053c3f14e75c01681e5cef1dbcbc09e57fddb15409fd1e26c8` |
 
-El ledger global registra `holdout_evaluation_complete` para el holdout y el run indicados. Una
-ejecución posterior debe reutilizar el recibo, no volver a abrir ese holdout.
+The global ledger records `holdout_evaluation_complete` for the indicated holdout and run. A later
+execution must reuse the receipt, not reopen that holdout.
 
-### 8.2 Entorno registrado por el run
+### 8.2 Environment recorded by the run
 
-| Componente | Versión |
+| Component | Version |
 |---|---|
 | Python | `3.12.0` |
 | scikit-learn | `1.9.0` |
@@ -358,57 +357,60 @@ ejecución posterior debe reutilizar el recibo, no volver a abrir ese holdout.
 | joblib | `1.5.3` |
 | matplotlib | `3.11.1` |
 
-El pipeline exacto evaluado se versiona junto a su manifiesto SHA-256. La decisión evita sustituir
-en Linux la serialización Joblib fijada por el recibo final; esos bytes no son portables entre
-sistemas operativos aunque el entrenamiento sea determinista. `python -m predictive_maintenance
-train` permite reproducir el flujo desde training sin leer holdout, mientras que la demo carga
-únicamente el artefacto propio del repositorio después de validar toda la cadena de recibos. La
-resolución exacta probada se conserva en `requirements/constraints-win-py312.txt`.
+The exact evaluated pipeline is versioned alongside its SHA-256 manifest and copied unchanged into
+the Linux image. Re-training or re-serializing the model on another platform is not expected to
+reproduce byte-for-byte identical Joblib output, even though training is deterministic; replacing
+the pinned artifact would therefore break the final receipt.
+`python -m predictive_maintenance train` makes it possible to reproduce the workflow from training
+without reading the holdout, while the demo loads only the repository's own artifact after
+validating the entire receipt chain. The exact tested resolution is retained in
+`requirements/constraints-win-py312.txt`.
 
-Artefactos versionados principales:
+Primary versioned artifacts:
 
-- [manifiesto del pipeline](../artifacts/m3/b15bab7b54bc2e1f/artifact_manifest.json);
-- [manifiesto del run](../reports/modeling/b15bab7b54bc2e1f/run_manifest.json);
-- [resultados de validación cruzada](../reports/modeling/b15bab7b54bc2e1f/cv_results.json);
-- [selección OOF del umbral](../reports/modeling/b15bab7b54bc2e1f/threshold_selection.json);
-- [recibo final](../reports/modeling/b15bab7b54bc2e1f/final_evaluation.json);
-- [informe M3](../reports/modeling/b15bab7b54bc2e1f/M3_REPORT.md);
-- [ledger de acceso al holdout](../reports/holdout_access/50a1c9c07a57afbc6f34dd112852b61a44f81b6a83341241dd1bc7079f3ac4b7.json);
-- [contrato de datos y evaluación](DATA_EVALUATION.md);
-- [registro de decisiones](DECISIONS.md).
+- [pipeline manifest](../artifacts/m3/b15bab7b54bc2e1f/artifact_manifest.json);
+- [run manifest](../reports/modeling/b15bab7b54bc2e1f/run_manifest.json);
+- [cross-validation results](../reports/modeling/b15bab7b54bc2e1f/cv_results.json);
+- [OOF threshold selection](../reports/modeling/b15bab7b54bc2e1f/threshold_selection.json);
+- [final receipt](../reports/modeling/b15bab7b54bc2e1f/final_evaluation.json);
+- [M3 report](../reports/modeling/b15bab7b54bc2e1f/M3_REPORT.md);
+- [holdout-access ledger](../reports/holdout_access/50a1c9c07a57afbc6f34dd112852b61a44f81b6a83341241dd1bc7079f3ac4b7.json);
+- [data and evaluation contract](DATA_EVALUATION.md);
+- [decision record](DECISIONS.md).
 
-## 9. Mantenimiento y gestión de cambios
+## 9. Maintenance and change management
 
-No hay reentrenamiento programado, monitorización, telemetría ni detector de deriva. El modelo y
-el umbral están congelados para este MVP local.
+There is no scheduled retraining, monitoring, telemetry, or drift detector. The model and threshold
+are frozen for this local MVP.
 
-Reglas de mantenimiento:
+Maintenance rules:
 
-- si falta el binario versionado, restaurarlo desde una revisión Git verificada; `train` puede
-  reproducir el flujo, pero una reserialización en otro sistema operativo no sustituye
-  silenciosamente el artefacto evaluado ni autoriza repetir el holdout consumido;
-- validar siempre run, hashes, recibo final, ledger, versiones, clases y orden de features antes
-  de servir inferencia;
-- tratar cambios de target, features, dataset, split, protocolo, modelos, umbral o contrato API
-  como una nueva versión documentada, no como una corrección silenciosa;
-- mantener separada la envolvente marginal de aplicabilidad de los límites físicos: cambiarla es
-  una decisión del contrato de servicio y no modifica por sí mismo el modelo ni sus métricas;
-- no usar las métricas del holdout ya observado para escoger una nueva variante;
-- actualizar esta ficha si cambia la identidad del modelo o cualquiera de sus supuestos;
-- revisar compatibilidad y volver a ejecutar pruebas ante actualizaciones de Python,
-  scikit-learn, joblib, NumPy, pandas, FastAPI o Pydantic;
-- tratar la demo pública M6 como educativa y stateless, sin almacenar inputs ni incluir datos o
-  particiones; no confundir su disponibilidad con validación industrial o madurez de producción.
+- if the versioned binary is missing, restore it from a verified Git revision; `train` can
+  reproduce the workflow, but reserialization on another operating system does not silently
+  replace the evaluated artifact or authorize repeating the consumed holdout;
+- always validate the run, hashes, final receipt, ledger, versions, classes, and feature order
+  before serving inference;
+- treat changes to the target, features, dataset, split, protocol, models, threshold, or API
+  contract as a new documented version, not a silent correction;
+- keep the marginal applicability envelope separate from physical limits: changing it is a
+  service-contract decision and does not by itself modify the model or its metrics;
+- do not use metrics from the already observed holdout to select a new variant;
+- update this card if the model identity or any of its assumptions changes;
+- review compatibility and rerun tests after updates to Python, scikit-learn, joblib, NumPy,
+  pandas, FastAPI, or Pydantic;
+- treat the public M6 demo as educational and stateless, without storing inputs or including data
+  or partitions; do not confuse its availability with industrial validation or production
+  maturity.
 
-Antes de considerar un uso real se necesitarían, como mínimo, datos industriales representativos,
-separaciones temporales y por máquina, validación externa, evaluación de calibración, costos de
-error, límites operativos definidos por especialistas, detección OOD y deriva, monitorización,
-seguridad del servicio y un proceso explícito de gobernanza y retirada.
+Before considering real use, the minimum requirements would include representative industrial
+data, temporal and per-machine splits, external validation, calibration evaluation, error costs,
+expert-defined operating limits, OOD and drift detection, monitoring, service security, and an
+explicit governance and withdrawal process.
 
-## 10. Procedencia de esta ficha
+## 10. Provenance of this card
 
-Todas las cifras, parámetros e identidades de esta ficha proceden de los artefactos versionados
-enlazados arriba y de la documentación aceptada del proyecto. La envolvente procede del resumen EDA
-versionado de training y los intervalos Wilson se derivan de la matriz final versionada. No se
-consultaron CSV raw, training o holdout, no se recalcularon predicciones y no se produjo una nueva
-evaluación para redactarla.
+All figures, parameters, and identities in this card come from the versioned artifacts linked above
+and the project's accepted documentation. The envelope comes from the versioned training EDA
+summary, and the Wilson intervals are derived from the versioned final matrix. Raw, training, and
+holdout CSV files were not consulted, predictions were not recomputed, and no new evaluation was
+produced to write it.

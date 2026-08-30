@@ -1,49 +1,50 @@
-# Atribución de datos y transformaciones
+# Data attribution and transformations
 
-## Dataset fuente
+## Source dataset
 
-- Título: **AI4I 2020 Predictive Maintenance Dataset**.
-- Fuente: [UCI Machine Learning Repository, dataset 601](https://archive.ics.uci.edu/dataset/601/ai4i+2020+predictive+maint).
+- Title: **AI4I 2020 Predictive Maintenance Dataset**.
+- Source: [UCI Machine Learning Repository, dataset 601](https://archive.ics.uci.edu/dataset/601/ai4i+2020+predictive+maint).
 - DOI: <https://doi.org/10.24432/C5HS5C>.
-- Licencia: [Creative Commons Attribution 4.0 International](https://creativecommons.org/licenses/by/4.0/)
+- License: [Creative Commons Attribution 4.0 International](https://creativecommons.org/licenses/by/4.0/)
   (`CC BY 4.0`).
-- Artículo introductorio indicado por UCI: S. Matzka (2020), *Explainable Artificial
+- Introductory article listed by UCI: S. Matzka (2020), *Explainable Artificial
   Intelligence for Predictive Maintenance Applications*.
 
-Cita recomendada por UCI:
+Recommended citation from UCI:
 
 > AI4I 2020 Predictive Maintenance Dataset [Dataset]. (2020). UCI Machine Learning Repository.
 > <https://doi.org/10.24432/C5HS5C>.
 
-AI4I es un dataset sintético. La atribución a UCI y la licencia anterior corresponden al dataset,
-no constituyen una validación de este proyecto ni de sus resultados.
+AI4I is a synthetic dataset. The attribution to UCI and the license above apply to the dataset;
+they do not constitute validation of this project or its results.
 
-## Cambios y material derivado
+## Changes and derived material
 
-Este proyecto no modifica ni redistribuye el CSV original en Git. El comando de ingesta conserva
-una copia local inmutable y verifica su identidad mediante tamaño y SHA-256. A partir de esa copia
-se realizan estas transformaciones:
+This project neither modifies nor redistributes the original CSV in Git. The ingestion command
+keeps an immutable local copy and verifies its identity by size and SHA-256. The following
+transformations are performed from that copy:
 
-- validación del esquema y perfil descriptivo;
-- selección mediante allowlist de seis variables y exclusión de identificadores/modos de fallo;
-- partición estratificada reproducible 80/20 en archivos locales;
-- estadísticas y figuras de EDA calculadas únicamente sobre training;
-- validación cruzada, predicciones OOF, selección de modelo y umbral;
-- métricas y figuras de una evaluación final única del holdout;
-- entrenamiento de un pipeline y exposición mediante una demo educativa.
+- schema validation and descriptive profiling;
+- selection through a six-variable allowlist and exclusion of identifiers/failure modes;
+- reproducible 80/20 stratified partition into local files;
+- EDA statistics and figures computed only on training;
+- cross-validation, OOF predictions, model selection, and threshold selection;
+- metrics and figures from one final holdout evaluation;
+- pipeline training and exposure through an educational demo.
 
-Los reportes, figuras, código y pipeline producido por este proyecto se publican bajo la licencia
-MIT, conservando esta atribución al dataset fuente. El pipeline exacto evaluado sí se versiona:
-Joblib no produce bytes portables entre sistemas operativos y sustituirlo durante el despliegue
-rompería el recibo SHA-256. La licencia MIT del proyecto es independiente de la licencia
-`CC BY 4.0` que UCI declara para el dataset AI4I; los datos originales no se redistribuyen.
+The reports, figures, code, and pipeline produced by this project are released under the MIT
+license while retaining this attribution to the source dataset. The exact evaluated pipeline is
+copied unchanged into deployment. Re-training or re-serializing it on another platform is not
+expected to reproduce byte-for-byte identical Joblib output, and replacing the pinned artifact
+would break the SHA-256 receipt. The project's MIT license is independent of the
+`CC BY 4.0` license that UCI declares for the AI4I dataset; the original data is not redistributed.
 
-## Snapshot utilizado
+## Snapshot used
 
-- ZIP: 522.170 bytes; SHA-256
+- ZIP: 522,170 bytes; SHA-256
   `f601f14294bcf190f9d720676b7f0aea46a26cde9ab8ebc7b4f8174d9d26b252`.
-- CSV: 522.048 bytes; SHA-256
+- CSV: 522,048 bytes; SHA-256
   `dc6630cd9b1f0f853922fad78a1b6436570d3f1ec863f1dd5c4340ac56bc8a8e`.
 
-Los archivos originales permanecen ignorados por Git. Los detalles técnicos de descarga y
-verificación están en [../data/README.md](../data/README.md).
+The original files remain ignored by Git. Technical download and verification details are in
+[../data/README.md](../data/README.md).

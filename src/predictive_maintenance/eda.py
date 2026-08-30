@@ -231,7 +231,7 @@ def _plot_target_prevalence(frame: pd.DataFrame, path: Path) -> None:
     figure = _new_figure(7.2, 4.6)
     axis = figure.subplots()
     bars = axis.bar(
-        ["Sin fallo", "Fallo"],
+        ["No failure", "Failure"],
         counts.to_list(),
         color=[NEGATIVE_COLOR, POSITIVE_COLOR],
         width=0.62,
@@ -247,8 +247,8 @@ def _plot_target_prevalence(frame: pd.DataFrame, path: Path) -> None:
             color=TEXT_COLOR,
             fontsize=10,
         )
-    axis.set_title("Distribución del target — solo training", fontsize=13, weight="bold")
-    axis.set_ylabel("Observaciones")
+    axis.set_title("Target distribution — training only", fontsize=13, weight="bold")
+    axis.set_ylabel("Observations")
     axis.set_ylim(0, max(counts) * 1.14)
     _style_axis(axis, grid_axis="y")
     _save_figure(figure, path)
@@ -272,9 +272,9 @@ def _plot_type_support_and_rate(frame: pd.DataFrame, path: Path) -> None:
             ha="center",
             color=TEXT_COLOR,
         )
-    axes[0].set_title("Soporte por Type")
+    axes[0].set_title("Support by Type")
     axes[0].set_xlabel("Type")
-    axes[0].set_ylabel("Observaciones")
+    axes[0].set_ylabel("Observations")
     axes[0].set_ylim(0, max(supports) * 1.15)
     _style_axis(axes[0], grid_axis="y")
 
@@ -299,13 +299,13 @@ def _plot_type_support_and_rate(frame: pd.DataFrame, path: Path) -> None:
             fontsize=9,
         )
     upper_limit = max(row["wilson_95_high"] for row in summary) * 1.35
-    axes[1].set_title("Tasa positiva por Type (IC Wilson 95%)")
+    axes[1].set_title("Positive rate by Type (95% Wilson CI)")
     axes[1].set_xlabel("Type")
-    axes[1].set_ylabel("Proporción positiva")
+    axes[1].set_ylabel("Positive proportion")
     axes[1].set_ylim(0, upper_limit)
     axes[1].yaxis.set_major_formatter(mpl.ticker.PercentFormatter(1.0))
     _style_axis(axes[1], grid_axis="y")
-    figure.suptitle("Composición por Type — solo training", fontsize=13, weight="bold")
+    figure.suptitle("Composition by Type — training only", fontsize=13, weight="bold")
     _save_figure(figure, path)
 
 
@@ -314,8 +314,8 @@ def _plot_numeric_ecdf(frame: pd.DataFrame, path: Path) -> None:
     axes = figure.subplots(2, 3).ravel()
     for axis, column in zip(axes, NUMERIC_FEATURES, strict=False):
         for target_value, label, color in (
-            (0, "Sin fallo", NEGATIVE_COLOR),
-            (1, "Fallo", POSITIVE_COLOR),
+            (0, "No failure", NEGATIVE_COLOR),
+            (1, "Failure", POSITIVE_COLOR),
         ):
             values = sorted(frame.loc[frame[TARGET_COLUMN] == target_value, column].to_list())
             cumulative = [(index + 1) / len(values) for index in range(len(values))]
@@ -330,7 +330,7 @@ def _plot_numeric_ecdf(frame: pd.DataFrame, path: Path) -> None:
         _style_axis(axis)
     axes[-1].axis("off")
     figure.suptitle(
-        "Distribuciones numéricas normalizadas por clase — solo training",
+        "Normalized numeric distributions by class — training only",
         fontsize=13,
         weight="bold",
     )
@@ -358,7 +358,7 @@ def _plot_correlation(frame: pd.DataFrame, path: Path) -> None:
             )
     figure.colorbar(image, ax=axis, fraction=0.046, pad=0.04, label="Spearman ρ")
     axis.set_title(
-        "Correlación entre features numéricas — solo training",
+        "Correlation among numeric features — training only",
         fontsize=13,
         weight="bold",
         color=TEXT_COLOR,
@@ -370,8 +370,8 @@ def _plot_joint_relationships(frame: pd.DataFrame, path: Path) -> None:
     figure = _new_figure(12.0, 5.2)
     axes = figure.subplots(1, 2)
     relationships = (
-        ("Air temperature [K]", "Process temperature [K]", "Temperaturas"),
-        ("Rotational speed [rpm]", "Torque [Nm]", "Velocidad y torque"),
+        ("Air temperature [K]", "Process temperature [K]", "Temperatures"),
+        ("Rotational speed [rpm]", "Torque [Nm]", "Speed and torque"),
     )
     negative = frame[TARGET_COLUMN] == 0
     positive = frame[TARGET_COLUMN] == 1
@@ -393,16 +393,22 @@ def _plot_joint_relationships(frame: pd.DataFrame, path: Path) -> None:
             alpha=0.75,
             edgecolors="white",
             linewidths=0.25,
-            label=f"Fallo (n={int(positive.sum())})",
+            label=f"Failure (n={int(positive.sum())})",
         )
-        figure.colorbar(density, ax=axis, fraction=0.046, pad=0.04, label="Sin fallo por hexágono")
+        figure.colorbar(
+            density,
+            ax=axis,
+            fraction=0.046,
+            pad=0.04,
+            label="No-failure count per hexagon",
+        )
         axis.set_title(title)
         axis.set_xlabel(x_column)
         axis.set_ylabel(y_column)
         axis.legend(frameon=False, fontsize=8)
         _style_axis(axis)
     figure.suptitle(
-        "Relaciones conjuntas descriptivas — solo training",
+        "Descriptive joint relationships — training only",
         fontsize=13,
         weight="bold",
     )
@@ -432,14 +438,14 @@ def _plot_quintile_rates(frame: pd.DataFrame, path: Path) -> None:
         )
         axis.set_xticks(positions, labels=[f"Q{position}" for position in positions])
         axis.set_title(column)
-        axis.set_xlabel("Quintil de training")
-        axis.set_ylabel("Tasa positiva")
+        axis.set_xlabel("Training quintile")
+        axis.set_ylabel("Positive rate")
         axis.yaxis.set_major_formatter(mpl.ticker.PercentFormatter(1.0))
         axis.set_ylim(0.0, shared_ceiling)
         _style_axis(axis)
     axes[-1].axis("off")
     figure.suptitle(
-        "Tasa positiva por quintil (IC Wilson 95%) — solo training",
+        "Positive rate by quintile (95% Wilson CI) — training only",
         fontsize=13,
         weight="bold",
     )
@@ -498,100 +504,101 @@ def _build_report(summary: dict[str, Any]) -> str:
     figure_lines = [
         f"![{filename.removesuffix('.png')}](figures/{filename})" for filename in FIGURE_FILENAMES
     ]
-    return f"""# EDA de training y protocolo cerrado
+    return f"""# Training EDA and frozen protocol
 
-> Alcance: este informe usa exclusivamente la partición de **training** después de separar el
-> holdout. AI4I 2020 es sintético; las asociaciones observadas no validan uso industrial.
+> Scope: this report uses exclusively the **training** partition after separating the holdout.
+> AI4I 2020 is synthetic; the observed associations do not validate industrial use.
 
-## Protocolo congelado antes de modelar
+## Protocol frozen before modeling
 
-- Fuente fijada por SHA-256: `{summary["source"]["sha256"]}`.
-- Split: {1.0 - HOLDOUT_FRACTION:.0%} training / {HOLDOUT_FRACTION:.0%} holdout, estratificado,
-  semilla arbitraria predefinida `{RANDOM_SEED}` y orden original del snapshot fijado dentro de
-  cada partición. La semilla no se optimizó ni se comparó con otras.
-- Training analizado: {summary["training_rows"]:,} filas. El holdout no se carga ni se perfila.
-- Validación cruzada de M3: `StratifiedKFold(n_splits={CV_FOLDS}, shuffle=True,
-  random_state={RANDOM_SEED})`, compartida por todos los candidatos.
+- Source fixed by SHA-256: `{summary["source"]["sha256"]}`.
+- Split: {1.0 - HOLDOUT_FRACTION:.0%} training / {HOLDOUT_FRACTION:.0%} holdout, stratified,
+  with the predefined arbitrary random seed `{RANDOM_SEED}` and original snapshot order preserved
+  within each partition. The seed was neither optimized nor compared with alternatives.
+- Training rows analyzed: {summary["training_rows"]:,}. The holdout is neither loaded nor profiled.
+- M3 cross-validation: `StratifiedKFold(n_splits={CV_FOLDS}, shuffle=True,
+  random_state={RANDOM_SEED})`, shared by every candidate.
 - Baseline: `DummyClassifier(strategy="prior")`.
-- Selección: mayor AP media de los {CV_FOLDS} folds (`{PRIMARY_METRIC}`); ROC-AUC
-  (`{SECONDARY_METRIC}`) será secundaria. AP pooled OOF será solo diagnóstica y no sustituirá la
-  media CV. Un empate dentro de `{TIE_TOLERANCE:.0e}` entre logística y random forest favorece
-  logística por simplicidad. Si ningún candidato supera al dummy en AP media, no se abre holdout.
-- Umbral: `{THRESHOLD_STRATEGY}` sobre `predict_proba[:, 1]`. Se maximiza F1 con una predicción
-  OOF por fila de training y la regla `score >= threshold`; empates dentro de
-  `{TIE_TOLERANCE:.0e}` se resuelven por menor diferencia absoluta entre precision y recall y
-  luego por el menor umbral. El valor se congela antes de evaluar holdout una sola vez.
-- Todo preprocesamiento se ajustará dentro de cada fold mediante `Pipeline`.
+- Selection: highest mean AP across the {CV_FOLDS} folds (`{PRIMARY_METRIC}`); ROC-AUC
+  (`{SECONDARY_METRIC}`) is secondary. Pooled OOF AP is diagnostic only and does not replace the
+  CV mean. A tie within `{TIE_TOLERANCE:.0e}` between logistic regression and random forest favors
+  logistic regression for simplicity. If no candidate beats the dummy in mean AP, the holdout
+  remains sealed.
+- Threshold: `{THRESHOLD_STRATEGY}` on `predict_proba[:, 1]`. F1 is maximized using one OOF
+  prediction per training row and the `score >= threshold` rule; ties within
+  `{TIE_TOLERANCE:.0e}` are resolved by the smallest absolute difference between precision and
+  recall, then by the lower threshold. The value is frozen before the one-time holdout evaluation.
+- All preprocessing is fitted within each fold through a `Pipeline`.
 
-M1 necesariamente verificó conteos y rangos globales del archivo para validar su contrato. Desde
-la creación de esta partición en M2 no se usan estadísticas, ejemplos ni resultados específicos
-del holdout para tomar decisiones.
+M1 necessarily checked global file counts and ranges to validate the data contract. Since this
+partition was created in M2, no holdout-specific statistics, examples, or results have been used
+to make decisions.
 
-## Calidad y balance en training
+## Training data quality and class balance
 
-- Filas: {summary["training_rows"]:,}.
-- Positivos: {target["positive"]:,}; negativos: {target["negative"]:,}.
-- Prevalencia positiva: **{target["prevalence"]:.2%}**.
-- Celdas ausentes: {summary["quality"]["missing_cells"]}.
-- Filas repetidas sobre las seis features: {summary["quality"]["duplicate_feature_rows"]}.
-- Columnas analizadas: únicamente las seis features permitidas y `{TARGET_COLUMN}`.
+- Rows: {summary["training_rows"]:,}.
+- Positive: {target["positive"]:,}; negative: {target["negative"]:,}.
+- Positive prevalence: **{target["prevalence"]:.2%}**.
+- Missing cells: {summary["quality"]["missing_cells"]}.
+- Rows duplicated across the six features: {summary["quality"]["duplicate_feature_rows"]}.
+- Columns analyzed: only the six allowed features and `{TARGET_COLUMN}`.
 
 ## Type
 
-| Type | Filas | Positivos | Tasa positiva | IC Wilson 95% |
+| Type | Rows | Positive | Positive rate | 95% Wilson CI |
 |---|---:|---:|---:|---:|
 {chr(10).join(type_table)}
 
-La mayor tasa descriptiva aparece en `Type={highest_type["type"]}`
-({highest_type["positive_rate"]:.2%}); los intervalos y soportes deben acompañar cualquier lectura.
-No se interpreta como efecto causal.
+The highest descriptive rate occurs for `Type={highest_type["type"]}`
+({highest_type["positive_rate"]:.2%}); intervals and support must accompany any interpretation.
+This is not interpreted as a causal effect.
 
-## Perfil numérico de training
+## Training numeric profile
 
-| Feature | Min | Q1 | Mediana | Q3 | Max |
+| Feature | Min | Q1 | Median | Q3 | Max |
 |---|---:|---:|---:|---:|---:|
 {chr(10).join(numeric_rows)}
 
-La asociación monotónica más fuerte entre features numéricas es `{strongest_left}` frente a
-`{strongest_right}` (Spearman ρ = {strongest_value:.3f}). Esto puede importar para la estabilidad
-de coeficientes, pero no justifica eliminar variables antes de comparar los pipelines ya
-pre-registrados. También existe una asociación alta entre las temperaturas de aire y proceso
+The strongest monotonic association among numeric features is between `{strongest_left}` and
+`{strongest_right}` (Spearman ρ = {strongest_value:.3f}). This may matter for coefficient
+stability, but it does not justify removing variables before comparing the preregistered
+pipelines. Air and process temperature are also strongly associated
 (ρ = {temperature_correlation:.3f}).
 
-En training, las observaciones con fallo tienen medianas mayores de torque
-({failure_torque_median:.1f} frente a {no_failure_torque_median:.1f} Nm), desgaste
-({failure_wear_median:.0f} frente a {no_failure_wear_median:.0f} min) y temperatura del aire
-({failure_air_median:.1f} frente a {no_failure_air_median:.1f} K), y menor velocidad rotacional
-({failure_speed_median:.0f} frente a {no_failure_speed_median:.0f} rpm). Las ECDF muestran amplio
-solapamiento y los paneles conjuntos y por quintil no sugieren una única relación lineal uniforme.
-Estas observaciones descriptivas respaldan comparar los candidatos logística y random forest ya
-registrados; no prueban causalidad ni rendimiento predictivo.
+In the training data, failure observations have higher median torque
+({failure_torque_median:.1f} versus {no_failure_torque_median:.1f} Nm), tool wear
+({failure_wear_median:.0f} versus {no_failure_wear_median:.0f} min), and air temperature
+({failure_air_median:.1f} versus {no_failure_air_median:.1f} K), as well as lower rotational speed
+({failure_speed_median:.0f} versus {no_failure_speed_median:.0f} rpm). The ECDFs show substantial
+overlap, and the joint and quintile panels do not suggest a single uniform linear relationship.
+These descriptive observations support comparing the preregistered logistic regression and
+random forest candidates; they establish neither causality nor predictive performance.
 
-## Visualizaciones
+## Visualizations
 
 {chr(10).join(figure_lines)}
 
-Los quintiles son solo una ayuda visual calculada sobre training; no se incorporan como
-transformación ni crean nuevas features. Las ECDF están normalizadas dentro de cada clase, por lo
-que deben leerse junto al gráfico de prevalencia.
+The quintiles are only a visual aid calculated on training data; they are not included as a
+transformation and do not create new features. The ECDFs are normalized within each class, so they
+must be read alongside the prevalence chart.
 
-## Riesgos y limitaciones
+## Risks and limitations
 
-- El split aleatorio estima generalización IID dentro del mismo generador sintético; no mide
-  generalización temporal, entre máquinas ni en industria real.
-- Las asociaciones con el target son descriptivas y no causales. La EDA no habilita cambiar
-  target, features o candidatos sin una nueva decisión explícita.
-- Los positivos son escasos; tasas de subgrupos y quintiles tienen incertidumbre visible.
-- La ausencia de nulos o duplicados en AI4I no implica que datos reales tendrían esa calidad.
-- Los indicadores `TWF`, `HDF`, `PWF`, `OSF` y `RNF`, junto con identificadores, permanecen fuera
-  de los derivados y de todas las figuras para evitar leakage.
-- Las 27 discrepancias globales entre modos de fallo y target detectadas en M1 no se corrigen; el
-  target contractual sigue siendo `Machine failure`.
+- The random split estimates IID generalization within the same synthetic generator; it does not
+  measure temporal, cross-machine, or real-world industrial generalization.
+- Associations with the target are descriptive, not causal. The EDA does not authorize changing
+  the target, features, or candidates without a new explicit decision.
+- Positive cases are scarce; subgroup and quintile rates have visible uncertainty.
+- The absence of nulls or duplicates in AI4I does not imply that real data would have this quality.
+- The `TWF`, `HDF`, `PWF`, `OSF`, and `RNF` indicators, along with identifiers, remain excluded
+  from derived data and all figures to prevent leakage.
+- The 27 global discrepancies between failure modes and the target detected in M1 are not
+  corrected; the contractual target remains `Machine failure`.
 
-## Puerta de revisión
+## Review gate
 
-Este informe debe revisarse antes de ejecutar M3. Aún no hay modelos entrenados, métricas de
-validación ni resultados de holdout.
+This report must be reviewed before M3 runs. There are no trained models, validation metrics, or
+holdout results yet.
 """
 
 

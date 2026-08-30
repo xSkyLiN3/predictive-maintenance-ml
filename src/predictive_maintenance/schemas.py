@@ -16,14 +16,15 @@ API_FEATURE_NAMES = (
 )
 
 SYNTHETIC_DATA_WARNING = (
-    "AI4I 2020 es un dataset sintético; este resultado no valida uso industrial real."
+    "AI4I 2020 is a synthetic dataset; this result has not been validated for real-world "
+    "industrial use."
 )
 UNCALIBRATED_SCORE_WARNING = (
-    "risk_score es un score de predict_proba no evaluado como probabilidad calibrada."
+    "risk_score is a predict_proba score that has not been evaluated as a calibrated probability."
 )
 REFERENCE_ENVELOPE_WARNING = (
-    "La comprobación de dominio usa solo rangos marginales del training sintético AI4I; estar "
-    "dentro de ellos no demuestra que una observación sea realista."
+    "The domain check uses only marginal ranges from the synthetic AI4I training data; falling "
+    "within them does not demonstrate that an observation is realistic."
 )
 PUBLIC_WARNINGS = (
     SYNTHETIC_DATA_WARNING,
@@ -50,11 +51,11 @@ AI4I_TRAINING_REFERENCE_ENVELOPE: dict[str, tuple[float | int, float | int, str]
     "tool_wear_min": (0, 253, "min"),
 }
 REFERENCE_FIELD_LABELS = {
-    "air_temperature_k": "Temperatura del aire",
-    "process_temperature_k": "Temperatura del proceso",
-    "rotational_speed_rpm": "Velocidad rotacional",
+    "air_temperature_k": "Air temperature",
+    "process_temperature_k": "Process temperature",
+    "rotational_speed_rpm": "Rotational speed",
     "torque_nm": "Torque",
-    "tool_wear_min": "Desgaste de herramienta",
+    "tool_wear_min": "Tool wear",
 }
 
 
@@ -69,29 +70,29 @@ class PredictionRequest(BaseModel):
 
     model_config = ConfigDict(extra="forbid", strict=True)
 
-    type: Literal["L", "M", "H"] = Field(description="Tipo de producto AI4I.")
+    type: Literal["L", "M", "H"] = Field(description="AI4I product type.")
     air_temperature_k: float = Field(
         gt=0.0,
         allow_inf_nan=False,
-        description="Temperatura del aire, finita y mayor que cero kelvin.",
+        description="Finite air temperature greater than zero kelvin.",
     )
     process_temperature_k: float = Field(
         gt=0.0,
         allow_inf_nan=False,
-        description="Temperatura del proceso, finita y mayor que cero kelvin.",
+        description="Finite process temperature greater than zero kelvin.",
     )
     rotational_speed_rpm: int = Field(
         ge=0,
-        description="Velocidad rotacional entera y no negativa, en rpm.",
+        description="Non-negative integer rotational speed, in rpm.",
     )
     torque_nm: float = Field(
         ge=0.0,
         allow_inf_nan=False,
-        description="Torque finito y no negativo, en Nm.",
+        description="Finite non-negative torque, in Nm.",
     )
     tool_wear_min: int = Field(
         ge=0,
-        description="Desgaste de herramienta entero y no negativo, en minutos.",
+        description="Non-negative integer tool wear, in minutes.",
     )
 
     def to_model_row(self) -> dict[str, str | float | int]:
@@ -117,9 +118,8 @@ class PredictionRequest(BaseModel):
             if value < minimum or value > maximum:
                 label = REFERENCE_FIELD_LABELS[field_name]
                 warnings.append(
-                    f"{label} ({field_name}) está fuera de la envolvente marginal del training "
-                    "AI4I "
-                    f"[{minimum}, {maximum}] {unit}; no se generó score ni clasificación."
+                    f"{label} ({field_name}) is outside the marginal AI4I training envelope "
+                    f"[{minimum}, {maximum}] {unit}; no score or classification was generated."
                 )
         return tuple(warnings)
 

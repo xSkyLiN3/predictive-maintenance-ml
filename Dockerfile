@@ -29,7 +29,7 @@ FROM ${RUNTIME_IMAGE} AS runtime
 
 LABEL org.opencontainers.image.title="Machine Failure Risk Classifier" \
       org.opencontainers.image.description="Educational AI4I 2020 machine-failure risk demo" \
-      org.opencontainers.image.version="1.0.0" \
+      org.opencontainers.image.version="1.0.1" \
       org.opencontainers.image.licenses="MIT"
 
 ENV MACHINE_FAILURE_ALLOWED_HOSTS="127.0.0.1,localhost" \
@@ -50,7 +50,7 @@ COPY --from=wheel-builder /wheels /wheels
 RUN python -m pip install "pip==26.2.1" \
     && python -m pip install \
         --constraint /tmp/constraints-py312.txt \
-        /wheels/machine_failure_risk_classifier-1.0.0-py3-none-any.whl \
+        /wheels/machine_failure_risk_classifier-1.0.1-py3-none-any.whl \
     && python -m pip check \
     && python -m pip uninstall --yes pip setuptools \
     && rm -rf /wheels /tmp/constraints-py312.txt

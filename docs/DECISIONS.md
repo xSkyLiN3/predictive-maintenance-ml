@@ -1,323 +1,326 @@
-# Registro de decisiones
+# Decision record
 
-## D-001 — Desarrollo local antes de publicar
+## D-001 — Local development before publication
 
-- **Estado:** aceptada.
-- **Decisión:** completar y revisar el MVP en local antes de crear un remoto o desplegar.
-- **Motivo:** separar aprendizaje y experimentación de cualquier claim público.
+- **Status:** accepted.
+- **Decision:** complete and review the MVP locally before creating a remote or deploying.
+- **Rationale:** separate learning and experimentation from any public claim.
 
-## D-002 — Python 3.12 y CPU
+## D-002 — Python 3.12 and CPU
 
-- **Estado:** aceptada.
-- **Decisión:** usar Python 3.12 en `.venv` y entrenar en CPU.
-- **Motivo:** el equipo dispone de Python 3.12 y el dataset tabular es pequeño; una GPU añadiría complejidad sin aportar valor relevante.
+- **Status:** accepted.
+- **Decision:** use Python 3.12 in `.venv` and train on CPU.
+- **Rationale:** the equipment has Python 3.12 available, and the tabular dataset is small; a GPU
+  would add complexity without relevant value.
 
-## D-003 — Alcance de clasificación por observación
+## D-003 — Per-observation classification scope
 
-- **Estado:** aceptada.
-- **Decisión:** estimar `Machine failure` para una observación, no vida útil restante ni series temporales.
-- **Motivo:** es lo que permiten sostener honestamente los datos seleccionados.
+- **Status:** accepted.
+- **Decision:** estimate `Machine failure` for one observation, not remaining useful life or time
+  series.
+- **Rationale:** this is what the selected data can honestly support.
 
-## D-004 — Features operativas sin indicadores de fallo
+## D-004 — Operational features without failure indicators
 
-- **Estado:** aceptada.
-- **Decisión:** excluir identificadores y `TWF`, `HDF`, `PWF`, `OSF`, `RNF`.
-- **Motivo:** evitar señales no generalizables y leakage respecto del target.
+- **Status:** accepted.
+- **Decision:** exclude identifiers and `TWF`, `HDF`, `PWF`, `OSF`, `RNF`.
+- **Rationale:** prevent non-generalizable signals and leakage with respect to the target.
 
-## D-005 — Average Precision como métrica principal
+## D-005 — Average Precision as the primary metric
 
-- **Estado:** aceptada.
-- **Decisión:** usar Average Precision, complementada con precision, recall, F1, matriz de confusión y ROC-AUC.
-- **Motivo:** la clase positiva es minoritaria y accuracy aislada sería poco informativa.
+- **Status:** accepted.
+- **Decision:** use Average Precision, complemented by precision, recall, F1, a confusion matrix,
+  and ROC-AUC.
+- **Rationale:** the positive class is a minority, and accuracy alone would be uninformative.
 
-## D-006 — Empaquetado mínimo con dependencias por fase
+## D-006 — Minimal packaging with dependencies by phase
 
-- **Estado:** aceptada.
-- **Decisión:** usar `setuptools` con estructura `src/`; mantener `pandas` como única dependencia
-  de ejecución durante M1 y aislar pytest y Ruff en el extra `dev`.
-- **Motivo:** M1 necesita lectura y validación tabular, mientras que scikit-learn, FastAPI y sus
-  dependencias no son necesarios hasta hitos posteriores. Esto mantiene el entorno pequeño y
-  evita implementar fases por anticipado.
+- **Status:** accepted.
+- **Decision:** use `setuptools` with a `src/` structure; keep `pandas` as the only runtime
+  dependency during M1 and isolate pytest and Ruff in the `dev` extra.
+- **Rationale:** M1 needs tabular reading and validation, while scikit-learn, FastAPI, and their
+  dependencies are not needed until later milestones. This keeps the environment small and avoids
+  implementing phases in advance.
 
-## D-007 — Snapshot de datos inmutable y verificado
+## D-007 — Immutable, verified data snapshot
 
-- **Estado:** aceptada.
-- **Decisión:** descargar el ZIP oficial con la biblioteca estándar, exigir tamaño y SHA-256
-  conocidos, extraer únicamente `ai4i2020.csv` y volver a verificar el CSV. Conservar ambos en
-  `data/raw/` sin sustituir silenciosamente archivos existentes. Registrar fecha, fuente, DOI,
-  licencia, tamaños y hashes en metadata local.
-- **Motivo:** asegura trazabilidad y detecta cambios en la fuente sin añadir una dependencia HTTP
-  para una sola descarga. Los datos y la metadata local no se versionan; las identidades esperadas
-  sí quedan fijadas en código y documentación.
+- **Status:** accepted.
+- **Decision:** download the official ZIP with the standard library, require known size and
+  SHA-256, extract only `ai4i2020.csv`, and verify the CSV again. Keep both in `data/raw/` without
+  silently replacing existing files. Record the date, source, DOI, license, sizes, and hashes in
+  local metadata.
+- **Rationale:** this ensures traceability and detects source changes without adding an HTTP
+  dependency for a single download. The data and local metadata are not versioned; the expected
+  identities are pinned in code and documentation.
 
-## D-008 — Conservar el target oficial sin derivarlo de los modos de fallo
+## D-008 — Preserve the official target without deriving it from failure modes
 
-- **Estado:** aceptada.
-- **Decisión:** usar la columna original `Machine failure` sin corregirla ni recalcularla desde
-  `TWF`, `HDF`, `PWF`, `OSF` o `RNF`. El validador informa, pero no rechaza, las 27 filas donde el
-  target difiere del OR de esos indicadores.
-- **Motivo:** el CSV oficial contiene 9 fallos sin indicador activo y 18 casos con `RNF = 1` y
-  target 0. Reescribir el target alteraría la fuente. Los cinco indicadores continúan excluidos
-  obligatoriamente de las features por leakage.
+- **Status:** accepted.
+- **Decision:** use the original `Machine failure` column without correcting it or recalculating it
+  from `TWF`, `HDF`, `PWF`, `OSF`, or `RNF`. The validator reports, but does not reject, the 27 rows
+  where the target differs from the OR of those indicators.
+- **Rationale:** the official CSV contains 9 failures without an active indicator and 18 cases with
+  `RNF = 1` and target 0. Rewriting the target would alter the source. The five indicators remain
+  mandatorily excluded from the features because of leakage.
 
-## D-009 — Guardrails de fuente separados de límites industriales
+## D-009 — Source guardrails separate from industrial limits
 
-- **Estado:** aceptada.
-- **Decisión:** validar las variables numéricas contra envolventes redondeadas que contienen el
-  snapshot AI4I y registrar por separado los mínimos y máximos observados. No reutilizar estos
-  rangos como contrato futuro de la API ni presentarlos como límites físicos universales.
-- **Motivo:** M1 necesita detectar archivos corruptos o incompatibles, pero AI4I es sintético y sus
-  extremos observados no justifican reglas sobre maquinaria real.
+- **Status:** accepted.
+- **Decision:** validate the numerical variables against rounded envelopes that contain the AI4I
+  snapshot, and separately record the observed minima and maxima. Do not reuse these ranges as a
+  future API contract or present them as universal physical limits.
+- **Rationale:** M1 needs to detect corrupt or incompatible files, but AI4I is synthetic, and its
+  observed endpoints do not justify rules about real machinery.
 
-## D-010 — Resolución de dependencias registrada para Windows y Python 3.12
+## D-010 — Dependency resolution recorded for Windows and Python 3.12
 
-- **Estado:** aceptada.
-- **Decisión:** mantener rangos de dependencias directas en `pyproject.toml` y registrar la
-  resolución transitiva probada en `requirements/constraints-win-py312.txt`.
-- **Motivo:** evita deriva accidental al reconstruir el entorno sin añadir otro gestor de
-  dependencias. El archivo registra versiones, pero no promete reproducibilidad binaria entre
-  plataformas ni sustituye la verificación funcional con Ruff y pytest.
+- **Status:** accepted.
+- **Decision:** keep direct dependency ranges in `pyproject.toml` and record the tested transitive
+  resolution in `requirements/constraints-win-py312.txt`.
+- **Rationale:** this prevents accidental drift when rebuilding the environment without adding
+  another dependency manager. The file records versions but does not promise binary
+  reproducibility across platforms or replace functional verification with Ruff and pytest.
 
-## D-011 — Sellar el holdout antes de la EDA
+## D-011 — Seal the holdout before EDA
 
-- **Estado:** aceptada.
-- **Decisión:** materializar al inicio de M2 un split 80/20 estratificado con semilla `42`, antes
-  de calcular estadísticas o gráficos orientados a decisiones. La semilla fue una elección
-  arbitraria previa a resultados y no se comparará con otras. La EDA carga solamente training.
-- **Motivo:** `ROADMAP.md` y el contrato de evaluación ya exigían separar el holdout antes de la
-  selección; `TASKS.md` lo ubicaba por error en M3. Mover la tarea a M2 alinea el checklist sin
-  cambiar target, features ni proporción. M1 sí verificó agregados globales necesarios para el
-  contrato de fuente; la ceguera específica del holdout comienza desde esta materialización.
+- **Status:** accepted.
+- **Decision:** at the beginning of M2, materialize a stratified 80/20 split with seed `42` before
+  calculating decision-oriented statistics or plots. The seed was an arbitrary choice made before
+  results and will not be compared with others. The EDA loads training only.
+- **Rationale:** `ROADMAP.md` and the evaluation contract already required separating the holdout
+  before selection; `TASKS.md` mistakenly placed it in M3. Moving the task to M2 aligns the
+  checklist without changing the target, features, or ratio. M1 did verify the global aggregates
+  needed for the source contract; holdout-specific blindness begins with this materialization.
 
-## D-012 — Derivados sin columnas de leakage
+## D-012 — Derivatives without leakage columns
 
-- **Estado:** aceptada.
-- **Decisión:** guardar `train.csv` y `holdout.csv` con exactamente las seis features permitidas y
-  `Machine failure`; no conservar `UDI`, `Product ID` ni indicadores de modos en los derivados.
-  Versionar un manifiesto determinista, no los CSV.
-- **Motivo:** una allowlist física reduce el riesgo de que M3 incorpore columnas prohibidas por un
-  `drop` incompleto. Los hashes y configuración del manifiesto permiten reconstruir y auditar la
-  partición sin publicar datos derivados.
+- **Status:** accepted.
+- **Decision:** store `train.csv` and `holdout.csv` with exactly the six allowed features and
+  `Machine failure`; do not retain `UDI`, `Product ID`, or mode indicators in the derivatives.
+  Version a deterministic manifest, not the CSV files.
+- **Rationale:** a physical allowlist reduces the risk that M3 incorporates prohibited columns
+  through an incomplete `drop`. The manifest hashes and configuration allow the partition to be
+  reconstructed and audited without publishing derived data.
 
-## D-013 — Protocolo de selección y umbral cerrado en M2
+## D-013 — Closed selection and threshold protocol in M2
 
-- **Estado:** aceptada.
-- **Decisión:** usar cinco folds estratificados con shuffle y semilla `42`; seleccionar por AP
-  media, con ROC-AUC secundaria; baseline dummy de prior. AP pooled OOF será solo diagnóstica. Un
-  empate dentro de `1e-12` entre logística y random forest favorece logística. El umbral
-  maximizará F1 sobre `predict_proba[:, 1]` OOF del modelo elegido aplicando
-  `score >= threshold`, con el mismo margen de empate y desempate determinista documentado. Si
-  ningún candidato supera al dummy en AP media, no se evaluará holdout.
-- **Motivo:** cierra las decisiones antes de observar resultados de modelos o holdout, evita
-  optimizar una narrativa posterior y no inventa costos industriales inexistentes.
+- **Status:** accepted.
+- **Decision:** use five stratified folds with shuffle and seed `42`; select by mean AP, with
+  secondary ROC-AUC; use a prior dummy baseline. Pooled OOF AP will be diagnostic only. A tie within
+  `1e-12` between logistic regression and random forest favors logistic regression. The threshold
+  will maximize F1 over the selected model's OOF `predict_proba[:, 1]` using
+  `score >= threshold`, with the same tie margin and the documented deterministic tiebreaker. If no
+  candidate beats the dummy on mean AP, the holdout will not be evaluated.
+- **Rationale:** this closes decisions before model or holdout results are observed, prevents
+  optimizing a later narrative, and does not invent nonexistent industrial costs.
 
-## D-014 — Dependencias mínimas para M2
+## D-014 — Minimal dependencies for M2
 
-- **Estado:** aceptada.
-- **Decisión:** añadir scikit-learn para el split y futuro modelado, y matplotlib para seis figuras
-  reproducibles. No añadir seaborn, statsmodels ni tooling de notebooks.
-- **Motivo:** ambas dependencias tienen una función directa en el hito y serán suficientes para la
-  EDA. Los intervalos Wilson se calculan con una fórmula pequeña, evitando otra dependencia.
+- **Status:** accepted.
+- **Decision:** add scikit-learn for the split and future modeling, and matplotlib for six
+  reproducible figures. Do not add seaborn, statsmodels, or notebook tooling.
+- **Rationale:** both dependencies have a direct role in the milestone and will be sufficient for
+  the EDA. Wilson intervals are calculated with a small formula, avoiding another dependency.
 
-## D-015 — Versiones informativas y hashes invariantes del split
+## D-015 — Informational versions and invariant split hashes
 
-- **Estado:** aceptada.
-- **Decisión:** conservar en el manifiesto las versiones exactas del entorno que lo creó, pero no
-  exigir que una reconstrucción use el mismo parche de Python 3.12. Fuente, configuración,
-  columnas, tamaños y hashes de los CSV sí son invariantes estrictos.
-- **Motivo:** `pyproject.toml` admite cualquier Python 3.12.x. Si otra revisión reconstruye bytes
-  idénticos, rechazarla solo porque difiere la versión informativa impediría reproducibilidad sin
-  mejorar la integridad; una diferencia real del splitter continúa detectándose por los hashes.
+- **Status:** accepted.
+- **Decision:** retain in the manifest the exact versions of the environment that created it, but
+  do not require a reconstruction to use the same Python 3.12 patch release. Source, configuration,
+  columns, sizes, and CSV hashes are strict invariants.
+- **Rationale:** `pyproject.toml` allows any Python 3.12.x. If another revision reconstructs
+  identical bytes, rejecting it only because the informational version differs would prevent
+  reproducibility without improving integrity; an actual splitter difference remains detectable by
+  the hashes.
 
-## D-016 — Pipelines y complejidad fija antes de M3
+## D-016 — Pipelines and fixed complexity before M3
 
-- **Estado:** aceptada.
-- **Decisión:** comparar exactamente dummy de prior, regresión logística L2 balanceada
-  (`l1_ratio=0`, `C=1`, `liblinear`) y random forest balanceado de 300 árboles, profundidad 8 y
-  hojas mínimas 5.
-  `Type` se codifica con categorías fijas L/M/H y las numéricas se estandarizan dentro de cada
-  `Pipeline`. No se hará tuning. Todos los parámetros estocásticos usan semilla `42` y el forest
-  usa un solo proceso.
-- **Motivo:** son candidatos pequeños, interpretables y suficientemente distintos para el MVP.
-  Fijarlos antes de calcular CV impide optimizar la narrativa después de ver resultados y mantiene
-  el costo reproducible en CPU.
+- **Status:** accepted.
+- **Decision:** compare exactly a prior dummy, balanced L2 logistic regression (`l1_ratio=0`, `C=1`,
+  `liblinear`), and a balanced random forest with 300 trees, depth 8, and minimum leaf size 5.
+  `Type` is encoded with fixed L/M/H categories, and the numerical variables are standardized
+  within each `Pipeline`. No tuning will be performed. All stochastic parameters use seed `42`,
+  and the forest uses a single process.
+- **Rationale:** these are small, interpretable, and sufficiently different candidates for the
+  MVP. Fixing them before calculating CV prevents optimizing the narrative after seeing results and
+  keeps the cost reproducible on CPU.
 
-## D-017 — Operacionalización final de CV y puerta del baseline
+## D-017 — Final operationalization of CV and baseline gate
 
-- **Estado:** aceptada.
-- **Decisión:** materializar una sola tupla de cinco folds y reutilizarla en los tres candidatos y
-  las predicciones OOF. Reportar desviación estándar poblacional (`ddof=0`) y deltas pareados por
-  fold. La puerta es estricta: `AP_media_ganador > AP_media_dummy`; no se le aplica la tolerancia
-  de empates. Reruns reutilizarán resultados finales y no reabrirán holdout.
-- **Motivo:** elimina ambigüedades operativas sin cambiar la métrica ni el criterio congelados en
-  M2, y reconcilia la evaluación única con una CLI idempotente.
+- **Status:** accepted.
+- **Decision:** materialize a single tuple of five folds and reuse it for all three candidates and
+  the OOF predictions. Report population standard deviation (`ddof=0`) and paired per-fold deltas.
+  The gate is strict: `winner_mean_ap > dummy_mean_ap`; the tie tolerance does not apply to it.
+  Reruns will reuse final results and will not reopen the holdout.
+- **Rationale:** this removes operational ambiguity without changing the metric or criterion frozen
+  in M2 and reconciles the single evaluation with an idempotent CLI.
 
-## D-018 — Dependencias directas de los artefactos M3
+## D-018 — Direct dependencies of M3 artifacts
 
-- **Estado:** aceptada.
-- **Decisión:** declarar NumPy y joblib como dependencias directas, aunque scikit-learn también las
-  instale transitivamente. NumPy implementa validación y agregación explícitas; joblib serializa el
-  pipeline elegido. Registrar también matplotlib en la identidad de versión del run.
-- **Motivo:** el código del proyecto importa y usa estas librerías directamente. Declararlas evita
-  depender accidentalmente del grafo transitivo y hace auditable la identidad de artefactos y
-  figuras.
+- **Status:** accepted.
+- **Decision:** declare NumPy and joblib as direct dependencies, even though scikit-learn also
+  installs them transitively. NumPy implements explicit validation and aggregation; joblib
+  serializes the selected pipeline. Also record matplotlib in the run's version identity.
+- **Rationale:** the project code imports and uses these libraries directly. Declaring them avoids
+  accidental reliance on the transitive graph and makes the identity of artifacts and figures
+  auditable.
 
-## D-019 — Ledger global y publicación recuperable de la evaluación
+## D-019 — Global ledger and recoverable publication of the evaluation
 
-- **Estado:** aceptada.
-- **Decisión:** aislar cada corrida en `reports/modeling/<run_id>/` y
-  `artifacts/m3/<run_id>/`, ligar pipeline, configuración, folds, recibos y figuras mediante
-  SHA-256, y reclamar la evaluación con un ledger exclusivo indexado por el SHA-256 del holdout
-  en `reports/holdout_access/`. Publicar primero un bundle local recuperable y el recibo
-  versionable al final. Un run distinto, aunque cambie los roots de salida, no puede volver a
-  consumir el mismo holdout.
-- **Motivo:** una bandera por run no protegía el mismo test frente a cambios de configuración. El
-  ledger global preserva la semántica de evaluación única; el bundle permite reparar una
-  publicación interrumpida sin segunda lectura. La garantía cubre el flujo secuencial de la
-  aplicación desde la raíz, no una lectura manual deliberada del CSV.
+- **Status:** accepted.
+- **Decision:** isolate each run in `reports/modeling/<run_id>/` and `artifacts/m3/<run_id>/`, link
+  the pipeline, configuration, folds, receipts, and figures by SHA-256, and claim the evaluation
+  with an exclusive ledger indexed by the holdout SHA-256 in `reports/holdout_access/`. Publish a
+  recoverable local bundle first and the versionable receipt last. A different run, even if output
+  roots change, cannot consume the same holdout again.
+- **Rationale:** a per-run flag did not protect the same test against configuration changes. The
+  global ledger preserves single-evaluation semantics; the bundle can repair an interrupted
+  publication without a second read. The guarantee covers the application's sequential workflow
+  from the root, not a deliberate manual read of the CSV.
 
-## D-020 — Resultado M3 congelado sin iteración post-holdout
+## D-020 — Frozen M3 result without post-holdout iteration
 
-- **Estado:** aceptada.
-- **Decisión:** conservar el run `b15bab7b54bc2e1f` como resultado M3. Random forest ganó con AP
-  media CV `0.643812`; el umbral OOF fue `0.6965799216184142`. En la única evaluación holdout:
-  AP `0.649538`, ROC-AUC `0.965458`, precision `0.588235`, recall `0.735294`, F1 `0.653595` y
-  matriz `[[1897, 35], [18, 50]]`. No ajustar modelos, features ni umbral después de observar
-  estas métricas.
-- **Motivo:** publicar el resultado real preserva el protocolo pre-registrado y evita convertir el
-  holdout en un conjunto de validación encubierto. AI4I es sintético y estos valores no validan
-  desempeño industrial ni calibración probabilística.
+- **Status:** accepted.
+- **Decision:** preserve run `b15bab7b54bc2e1f` as the M3 result. Random forest won with mean CV AP
+  `0.643812`; the OOF threshold was `0.6965799216184142`. In the single holdout evaluation: AP
+  `0.649538`, ROC-AUC `0.965458`, precision `0.588235`, recall `0.735294`, F1 `0.653595`, and matrix
+  `[[1897, 35], [18, 50]]`. Do not tune models, features, or the threshold after observing these
+  metrics.
+- **Rationale:** publishing the real result preserves the preregistered protocol and avoids turning
+  the holdout into a hidden validation set. AI4I is synthetic, and these values do not validate
+  industrial performance or probabilistic calibration.
 
-## D-021 — Inferencia read-only sobre el run final
+## D-021 — Read-only inference on the final run
 
-- **Estado:** aceptada.
-- **Decisión:** cargar para M4 únicamente el pipeline evaluado del run `b15bab7b54bc2e1f` mediante
-  un loader de inferencia que valida puntero activo, manifiestos, hashes, recibo final, ledger,
-  versiones, clases y orden de features antes de deserializar. Cargarlo una vez en el lifespan de
-  FastAPI y no invocar el flujo de evaluación ni resolver archivos de datos.
-- **Motivo:** la aplicación debe servir el resultado congelado sin reabrir el holdout, recalcular
-  métricas, reparar artefactos ni mezclar una selección distinta. Fallar cerrado ante una
-  inconsistencia es preferible a servir un modelo cuya identidad no pueda demostrarse.
+- **Status:** accepted.
+- **Decision:** for M4, load only the evaluated pipeline from run `b15bab7b54bc2e1f` through an
+  inference loader that validates the active pointer, manifests, hashes, final receipt, ledger,
+  versions, classes, and feature order before deserializing. Load it once in the FastAPI lifespan,
+  and do not invoke the evaluation workflow or resolve data files.
+- **Rationale:** the application must serve the frozen result without reopening the holdout,
+  recalculating metrics, repairing artifacts, or mixing in a different selection. Failing closed on
+  an inconsistency is preferable to serving a model whose identity cannot be demonstrated.
 
-## D-022 — Schema API semántico sin aparentar soporte industrial
+## D-022 — Semantic API schema without implying industrial support
 
-- **Estado:** aceptada.
-- **Decisión:** separar nombres públicos de las columnas sklearn y exigir JSON estricto con
-  categoría L/M/H, números finitos, temperaturas mayores que cero kelvin, y velocidad, torque y
-  desgaste no negativos; velocidad y desgaste son enteros. No imponer como límites API las
-  envolventes 295–305/305–315/1.000–3.000/0–80/0–260 usadas por M1 para validar la fuente.
-- **Motivo:** conserva D-009 y evita presentar extremos de un generador sintético como límites
-  físicos. Este contrato valida forma, unidades y signos, no detecta out-of-distribution; la API y
-  la interfaz advierten que extrapolar puede producir scores poco fiables.
-- **Evolución:** D-026 conserva este schema y añade una abstención por soporte marginal sin tratar
-  los extremos observados como validación física ni como detector OOD completo.
+- **Status:** accepted.
+- **Decision:** separate public names from sklearn columns and require strict JSON with category
+  L/M/H, finite numbers, temperatures greater than zero kelvin, and non-negative speed, torque, and
+  wear; speed and wear are integers. Do not impose as API limits the
+  295–305/305–315/1,000–3,000/0–80/0–260 envelopes used by M1 to validate the source.
+- **Rationale:** this preserves D-009 and avoids presenting endpoints from a synthetic generator as
+  physical limits. This contract validates shape, units, and signs; it does not detect
+  out-of-distribution inputs. The API and interface warn that extrapolation may produce unreliable
+  scores.
+- **Evolution:** D-026 retains this schema and adds marginal-support abstention without treating
+  observed endpoints as physical validation or a complete OOD detector.
 
-## D-023 — Aplicación local mínima y superficie cerrada
+## D-023 — Minimal local application and closed surface
 
-- **Estado:** aceptada.
-- **Decisión:** añadir FastAPI, Pydantic y Uvicorn como dependencias directas; usar `httpx2` solo en
-  el extra `dev` para `TestClient`. Servir HTML/CSS/JavaScript estático sin Jinja2 ni multipart,
-  enlazar Uvicorn a `127.0.0.1`, aceptar solo hosts locales y aplicar CSP y headers defensivos. No
-  habilitar documentación web dependiente de CDN; conservar solamente el schema OpenAPI JSON.
-- **Motivo:** cubre la demo y sus pruebas con el menor grafo funcional, evita recursos externos y
-  mantiene M4 dentro del alcance local sin autenticación, base de datos, telemetría ni despliegue.
+- **Status:** accepted.
+- **Decision:** add FastAPI, Pydantic, and Uvicorn as direct dependencies; use `httpx2` only in the
+  `dev` extra for `TestClient`. Serve static HTML/CSS/JavaScript without Jinja2 or multipart, bind
+  Uvicorn to `127.0.0.1`, accept only local hosts, and apply CSP and defensive headers. Do not enable
+  CDN-dependent web documentation; retain only the JSON OpenAPI schema.
+- **Rationale:** this covers the demo and its tests with the smallest functional graph, avoids
+  external resources, and keeps M4 within local scope without authentication, a database,
+  telemetry, or deployment.
 
-## D-024 — Cierre reproducible del MVP local
+## D-024 — Reproducible closure of the local MVP
 
-- **Estado:** aceptada.
-- **Decisión:** cerrar M5 después de reproducir desde una copia limpia las dependencias, los ocho
-  outputs EDA, el run `b15bab7b54bc2e1f` y el SHA-256 exacto del pipeline. La prueba ejecutó
-  `174/174` tests y arrancó la aplicación con el holdout inaccesible, sin invocar otra evaluación.
-- **Motivo:** una reproducción documentada ofrece evidencia más fuerte que repetir comandos sobre
-  el entorno de desarrollo y preserva el contrato de evaluación única.
+- **Status:** accepted.
+- **Decision:** close M5 after reproducing from a clean copy the dependencies, the eight EDA
+  outputs, run `b15bab7b54bc2e1f`, and the pipeline's exact SHA-256. The test ran `174/174` tests and
+  started the application with the holdout inaccessible, without invoking another evaluation.
+- **Rationale:** a documented reproduction provides stronger evidence than repeating commands in
+  the development environment and preserves the single-evaluation contract.
 
-## D-025 — Separar atribución de datos, licencia del código y autorizaciones
+## D-025 — Separate data attribution, code license, and authorizations
 
-- **Estado:** aceptada.
-- **Decisión:** documentar AI4I y sus transformaciones bajo `CC BY 4.0` sin aplicar esa licencia
-  automáticamente al código. La licencia del código queda pendiente de una elección del usuario.
-  Publicar en GitHub requerirá además un commit curado, revisión final de secretos y autorización
-  explícita. Desplegar será una decisión posterior y separada.
-- **Motivo:** atribución, licencia de código, publicación y operación son permisos distintos. M5
-  puede cerrar el producto local sin presumir ninguno de ellos.
-- **Evolución:** D-029 registra la elección posterior de MIT y la autorización separada de M6.
+- **Status:** accepted.
+- **Decision:** document AI4I and its transformations under `CC BY 4.0` without automatically
+  applying that license to the code. The code license remains pending a user choice. Publication on
+  GitHub will additionally require a curated commit, final secrets review, and explicit
+  authorization. Deployment will be a later, separate decision.
+- **Rationale:** attribution, code licensing, publication, and operation are distinct permissions.
+  M5 can close the local product without presuming any of them.
+- **Evolution:** D-029 records the subsequent MIT choice and the separate M6 authorization.
 
-## D-026 — Abstención marginal y endurecimiento adversarial del contrato API
+## D-026 — Marginal abstention and adversarial hardening of the API contract
 
-- **Estado:** aceptada.
-- **Decisión:** mantener el schema semántico de D-022 y añadir antes de inferencia una comprobación
-  inclusiva contra los extremos exactos observados en AI4I: aire `295.3`–`304.5` K, proceso
-  `305.7`–`313.8` K, velocidad `1168`–`2886` rpm, torque `3.8`–`76.6` Nm y desgaste `0`–`253` min.
-  Una observación interior conserva `domain_status = "within_reference_envelope"`,
-  `decision_applicable = true` y la
-  inferencia normal. Si uno o más campos quedan fuera, responder `200` sin invocar el modelo ni
-  decidir: `domain_status = "outside_reference_envelope"`, `decision_applicable = false`,
-  `risk_score = null` y
-  `predicted_failure = null`, con una advertencia por cada campo infractor. Esta envolvente es una
-  referencia educativa de soporte marginal, no un límite físico ni detección OOD conjunta. No
-  contradice D-009: una observación exterior sigue siendo válida para el schema y recibe una
-  abstención explícita, no un rechazo presentado como regla industrial.
+- **Status:** accepted.
+- **Decision:** retain the semantic schema from D-022 and add, before inference, an inclusive check
+  against the exact endpoints observed in AI4I: air `295.3`–`304.5` K, process `305.7`–`313.8` K,
+  speed `1168`–`2886` rpm, torque `3.8`–`76.6` Nm, and wear `0`–`253` min. An interior observation
+  retains `domain_status = "within_reference_envelope"`, `decision_applicable = true`, and normal
+  inference. If one or more fields fall outside, respond with `200` without invoking the model or
+  making a decision: `domain_status = "outside_reference_envelope"`,
+  `decision_applicable = false`, `risk_score = null`, and `predicted_failure = null`, with one
+  warning per offending field. This envelope is an educational marginal-support reference, not a
+  physical limit or joint OOD detection. It does not contradict D-009: an out-of-envelope
+  observation remains valid for the schema and receives explicit abstention, not a rejection
+  presented as an industrial rule.
 
-  Endurecer además el transporte: rechazar claves JSON duplicadas con `400`, limitar el body a
-  `16 KiB` (`16.384` bytes) con `413`, devolver errores de validación e inferencia como JSON
-  controlado y exigir en la UI enteros seguros de JavaScript para velocidad y desgaste
-  (`Number.isSafeInteger`, de `0` a `9.007.199.254.740.991`). Este último máximo protege la
-  serialización del navegador y no expresa soporte industrial.
-- **Motivo:** no asignar score ni decisión a extrapolaciones marginales evidentes y cerrar casos
-  adversariales que podían producir ambigüedad, pérdida de precisión o errores no controlados. Es
-  un cambio del contrato de servicio: no cambia features, target, pipeline, run, umbral ni métricas,
-  no reabre el holdout y no autoriza publicación o despliegue.
+  Also harden transport: reject duplicate JSON keys with `400`, limit the body to `16 KiB`
+  (`16,384` bytes) with `413`, return validation and inference errors as controlled JSON, and
+  require JavaScript-safe integers in the UI for speed and wear (`Number.isSafeInteger`, from `0`
+  to `9,007,199,254,740,991`). This last maximum protects browser serialization and does not express
+  industrial support.
+- **Rationale:** do not assign a score or decision to obvious marginal extrapolations, and address
+  adversarial cases that could produce ambiguity, precision loss, or uncontrolled errors. This is
+  a service-contract change: it does not change features, target, pipeline, run, threshold, or
+  metrics, does not reopen the holdout, and does not authorize publication or deployment.
 
-## D-027 — Procedencia de la envolvente exclusivamente desde training
+## D-027 — Envelope provenance exclusively from training
 
-- **Estado:** aceptada; precisa la procedencia declarada en D-026 sin cambiar sus valores.
-- **Decisión:** definir la envolvente de abstención desde
-  `reports/eda/summary.json`, que declara `scope = "training_only"`, `training_rows = 8000` y
-  `holdout_profiled = false`. Mantener los cinco pares ya publicados porque coinciden exactamente
-  con esos extremos de training. Fijarlos en el código para que inferencia continúe sin leer datos
-  ni reportes, y añadir una regresión que los compara con el resumen versionado de training.
-- **Motivo:** D-026 describía los valores como extremos de AI4I sin separar con suficiente claridad
-  su procedencia del snapshot completo. Aunque en este split los extremos de training coinciden con
-  los globales, una regla de aplicabilidad no debe obtener información del holdout. La corrección no
-  reabre ningún CSV, no cambia respuestas, pipeline, run, umbral o métricas y no convierte la regla
-  marginal en un detector OOD.
+- **Status:** accepted; clarifies the provenance stated in D-026 without changing its values.
+- **Decision:** define the abstention envelope from `reports/eda/summary.json`, which declares
+  `scope = "training_only"`, `training_rows = 8000`, and `holdout_profiled = false`. Retain the five
+  already published pairs because they exactly match those training endpoints. Pin them in code so
+  inference continues without reading data or reports, and add a regression that compares them
+  with the versioned training summary.
+- **Rationale:** D-026 described the values as AI4I endpoints but did not clearly distinguish their
+  provenance from the complete snapshot. Although the training endpoints in this split match the
+  global ones, an applicability rule must not obtain information from the holdout. The
+  correction does not reopen any CSV, change responses, pipeline, run, threshold, or metrics, or
+  turn the marginal rule into an OOD detector.
 
-## D-028 — Intervalos Wilson derivados de la matriz final congelada
+## D-028 — Wilson intervals derived from the frozen final matrix
 
-- **Estado:** aceptada.
-- **Decisión:** acompañar precision y recall con intervalos Wilson bilaterales del 95 %, calculados
-  exclusivamente desde `[[1897, 35], [18, 50]]`, la matriz del recibo final versionado. Precision
-  usa `50/85` y obtiene `0.4820101461448797`–`0.6868299449467584`; recall usa `50/68` y obtiene
-  `0.619922660101109`–`0.825502593301211`. `/model-info` los deriva en memoria de la matriz cuya
-  integridad ya valida el loader; el recibo final y su ledger permanecen inmutables.
-- **Motivo:** el holdout contiene solo `68` positivos y `85` predicciones positivas. Mostrar la
-  incertidumbre por soporte finito evita una lectura excesivamente precisa de las estimaciones sin
-  volver a abrir observaciones o scores. Los intervalos no corrigen sesgos, shift, dependencia ni
-  la naturaleza sintética; no son incertidumbre por predicción y no se usan para elegir o modificar
-  modelo, features, umbral o claims.
+- **Status:** accepted.
+- **Decision:** accompany precision and recall with two-sided 95% Wilson intervals, calculated
+  exclusively from `[[1897, 35], [18, 50]]`, the matrix in the versioned final receipt. Precision
+  uses `50/85` and yields `0.4820101461448797`–`0.6868299449467584`; recall uses `50/68` and yields
+  `0.619922660101109`–`0.825502593301211`. `/model-info` derives them in memory from the matrix whose
+  integrity the loader already validates; the final receipt and its ledger remain immutable.
+- **Rationale:** the holdout contains only `68` positives and `85` positive predictions. Showing
+  finite-support uncertainty avoids an overly precise reading of the estimates without reopening
+  observations or scores. The intervals do not correct for bias, shift, dependence, or synthetic
+  nature; they are not per-prediction uncertainty and are not used to select or modify the model,
+  features, threshold, or claims.
 
-## D-029 — Licencia y autorización separada para M6
+## D-029 — Separate license and authorization for M6
 
-- **Estado:** aceptada el `2026-08-19`; evoluciona D-025.
-- **Decisión:** licenciar el código bajo MIT, manteniendo separada la atribución y licencia
-  `CC BY 4.0` de AI4I. Preparar y ejecutar la publicación en GitHub y una demo pública educativa,
-  stateless y de superficie mínima. No incluir datasets, particiones o inputs almacenados en la
-  imagen ni presentar el despliegue como un sistema industrial o de producción.
-- **Motivo:** el usuario autorizó expresamente ambas acciones después del cierre local. La licencia,
-  la publicación y el despliegue siguen siendo decisiones conceptualmente separadas; la
-  autorización no descongela modelo, features, split, umbral o métricas y no permite reabrir el
-  holdout. La demo solo se declarará disponible después de verificar el endpoint desplegado.
+- **Status:** accepted on `2026-08-19`; evolves D-025.
+- **Decision:** license the code under MIT, keeping AI4I's attribution and `CC BY 4.0` license
+  separate. Prepare and execute publication on GitHub and a public, educational, stateless demo
+  with a minimal surface. Do not include datasets, partitions, or stored inputs in the image, or
+  present the deployment as an industrial or production system.
+- **Rationale:** the project owner approved both actions after local closure. Licensing,
+  publication, and deployment remain conceptually separate decisions; the authorization does not
+  unfreeze the model, features, split, threshold, or metrics, and it does not permit reopening the
+  holdout. The demo will be declared available only after verifying the deployed endpoint.
 
-## D-030 — Distribuir el artefacto exacto evaluado
+## D-030 — Distribute the exact evaluated artifact
 
-- **Estado:** aceptada el `2026-08-19` tras la validación Linux de CI.
-- **Decisión:** versionar el pipeline Joblib de 1,25 MB y su manifiesto, y copiar esos bytes exactos
-  al runtime. Verificar SHA-256, identidad del run, versiones, recibos de selección, evaluación
-  final y ledger antes de `joblib.load`. No aceptar modelos subidos ni incluir datasets o
-  particiones en la imagen. Mantener `train` como flujo reproducible separado, no como mecanismo
-  que sustituya silenciosamente el artefacto desplegado.
-- **Motivo:** CI confirmó que tanto los PNG de Matplotlib como la serialización Joblib varían byte
-  a byte entre Windows y Linux. Regenerar el pipeline en el build rompía correctamente el recibo
-  del modelo evaluado; relajar el hash habría servido un artefacto distinto. Distribuir el binario
-  propio, pequeño y fijado preserva la identidad de evaluación y reduce la superficie del build,
-  que ya no descarga datos ni materializa el holdout.
+- **Status:** accepted on `2026-08-19` after Linux CI validation.
+- **Decision:** version the 1.25 MB Joblib pipeline and its manifest, and copy those exact bytes into
+  the runtime. Verify SHA-256, run identity, versions, selection receipts, final evaluation, and
+  ledger before `joblib.load`. Do not accept uploaded models or include datasets or partitions in
+  the image. Keep `train` as a separate reproducible workflow, not as a mechanism that silently
+  replaces the deployed artifact.
+- **Rationale:** CI confirmed that regenerating Matplotlib PNGs and Joblib serialization on Windows
+  and Linux can produce different bytes. Regenerating the pipeline in the build correctly failed
+  validation against the evaluated model's receipt; relaxing the hash would have served a different
+  artifact. Distributing the project's own small, pinned binary preserves evaluation identity and
+  reduces the build surface, which no longer downloads data or materializes the holdout.

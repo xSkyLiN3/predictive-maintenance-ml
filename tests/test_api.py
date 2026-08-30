@@ -338,9 +338,9 @@ def test_health_model_info_and_predict_have_exact_public_shapes(client: TestClie
         "warnings": list(PUBLIC_WARNINGS),
     }
     joined_warnings = " ".join(prediction.json()["warnings"]).lower()
-    assert "sintético" in joined_warnings
-    assert "no evaluado como probabilidad calibrada" in joined_warnings
-    assert "no valida uso industrial" in joined_warnings
+    assert "synthetic dataset" in joined_warnings
+    assert "not been evaluated as a calibrated probability" in joined_warnings
+    assert "has not been validated for real-world industrial use" in joined_warnings
 
 
 @pytest.mark.parametrize(
@@ -397,7 +397,7 @@ def test_inference_failure_is_reported_as_service_unavailable() -> None:
         response = test_client.post("/predict", json=_valid_payload())
 
     assert response.status_code == 503
-    assert isinstance(response.json().get("detail"), str)
+    assert response.json()["detail"] == "The local model could not process this observation."
 
 
 def test_openapi_publishes_the_strict_unbounded_request_contract(client: TestClient) -> None:
@@ -405,6 +405,10 @@ def test_openapi_publishes_the_strict_unbounded_request_contract(client: TestCli
 
     assert response.status_code == 200
     document = response.json()
+    assert document["info"]["description"] == (
+        "Educational demo using the synthetic AI4I 2020 dataset. "
+        "risk_score is not a calibrated probability."
+    )
     schemas = document["components"]["schemas"]
     request_schema = schemas["PredictionRequest"]
     assert request_schema["additionalProperties"] is False
@@ -423,6 +427,14 @@ def test_openapi_publishes_the_strict_unbounded_request_contract(client: TestCli
     assert properties["torque_nm"]["minimum"] == 0
     assert properties["tool_wear_min"]["type"] == "integer"
     assert properties["tool_wear_min"]["minimum"] == 0
+    assert {feature: properties[feature]["description"] for feature in API_FEATURE_NAMES} == {
+        "type": "AI4I product type.",
+        "air_temperature_k": "Finite air temperature greater than zero kelvin.",
+        "process_temperature_k": "Finite process temperature greater than zero kelvin.",
+        "rotational_speed_rpm": "Non-negative integer rotational speed, in rpm.",
+        "torque_nm": "Finite non-negative torque, in Nm.",
+        "tool_wear_min": "Non-negative integer tool wear, in minutes.",
+    }
     for feature in API_FEATURE_NAMES[1:]:
         assert "maximum" not in properties[feature]
 
@@ -452,10 +464,11 @@ def test_local_ui_and_static_assets_expose_the_json_prediction_flow(client: Test
 
     assert index.status_code == 200
     assert index.headers["content-type"].startswith("text/html")
+    assert '<html lang="en-US">' in index.text
     assert '<form id="prediction-form"' in index.text
-    assert "/static/app.css?v=1.0.0" in index.text
-    assert "/static/app.js?v=1.0.0" in index.text
-    assert "/static/favicon.svg?v=1.0.0" in index.text
+    assert "/static/app.css?v=1.0.1" in index.text
+    assert "/static/app.js?v=1.0.1" in index.text
+    assert "/static/favicon.svg?v=1.0.1" in index.text
     for field in API_FEATURE_NAMES:
         assert "required" in _control_tag(index.text, field)
     for field in API_FEATURE_NAMES[1:]:
@@ -463,9 +476,9 @@ def test_local_ui_and_static_assets_expose_the_json_prediction_flow(client: Test
     for field in ("rotational_speed_rpm", "torque_nm", "tool_wear_min"):
         assert 'min="0"' in _control_tag(index.text, field)
     page_text = index.text.lower()
-    assert "dataset sintético" in page_text
-    assert "no está calibrado" in page_text
-    assert "no valida uso industrial" in page_text
+    assert "synthetic dataset" in page_text
+    assert "score is not calibrated" in page_text
+    assert "has not been validated for real-world industrial" in page_text
 
     assert stylesheet.status_code == 200
     assert stylesheet.headers["content-type"].startswith("text/css")
@@ -474,6 +487,7 @@ def test_local_ui_and_static_assets_expose_the_json_prediction_flow(client: Test
     assert "javascript" in script.headers["content-type"]
     assert 'fetch("/predict"' in script.text
     assert "JSON.stringify" in script.text
+    assert 'Intl.NumberFormat("en-US"' in script.text
     assert favicon.status_code == 200
     assert favicon.headers["content-type"].startswith("image/svg+xml")
 
